@@ -28,6 +28,9 @@ struct Experiment {
     std::string detectionOutputFile = ""; // Define at runtime
     std::string tdoaOutputFile      = "";
     std::string doaOutputFile       = "";
+    
+    unsigned int programRunTime;
+    TimePoint programStartTime; // placeholder value
 
     const std::string filterWeights = "filters/highpass_taps@101_cutoff@20k_window@hamming_fs@100k.txt";
     

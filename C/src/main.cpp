@@ -177,7 +177,7 @@ void DataProcessor(Session& sess, Experiment& exp) {
         fftwf_plan fftFilter = fftwf_plan_dft_r2c_1d(paddedLength, paddedFilterWeights.data(), reinterpret_cast<fftwf_complex*>(filterFreq.data()), FFTW_ESTIMATE);
         fftwf_execute(fftFilter);
         fftwf_destroy_plan(fftFilter);
-        
+         
         // Container for pulling bytes from buffer (dataBuffer)
         std::vector<uint8_t> dataBytes;
 
@@ -385,6 +385,7 @@ int main(int argc, char *argv[]) {
 
     int firmwareVersion = std::stoi(argv[3]);
     exp.energyDetThresh = std::stod(argv[4]);
+    exp.programRunTime = std::stoi(argv[5]);
 
     cout << "Listening to IP address " << sess.UDP_IP.c_str() << " and port " << sess.UDP_PORT << endl;
 
@@ -413,6 +414,7 @@ int main(int argc, char *argv[]) {
     while (true) {
         
         RestartListener(sess);
+        exp.programStartTime = std::chrono::system_clock::now();
         
         std::thread listenerThread(UdpListener, std::ref(sess), exp.PACKET_SIZE);
         std::thread processorThread(DataProcessor, std::ref(sess), std::ref(exp));
