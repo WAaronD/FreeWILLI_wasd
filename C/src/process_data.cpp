@@ -1,10 +1,6 @@
 #include "utils.h"
 
-using std::cout;
-using std::endl;
-using std::cerr;
 using TimePoint = std::chrono::system_clock::time_point;
-
 
 void ConvertData(std::vector<float>& dataSegment, std::span<uint8_t> dataBytes, unsigned int& DATA_SIZE, unsigned int& HEAD_SIZE) {
     /**
@@ -67,7 +63,7 @@ void GenerateTimestamps(std::vector<TimePoint>& dataTimes, std::span<uint8_t> da
     // Check if the previous time was set and if the elapsed time is not equal to the expected increment
     if (previousTimeSet && (elapsedTime != MICRO_INCR)){
         std::stringstream msg; // compose message to dispatch
-        msg <<  "Error: Time not incremented by " <<  MICRO_INCR << " " << elapsedTime << endl;
+        msg <<  "Error: Time not incremented by " <<  MICRO_INCR << " " << elapsedTime << std::endl;
         throw std::runtime_error(msg.str());
     }
 
@@ -192,17 +188,17 @@ void ProcessSegmentStacked(vector<double>& data, vector<TimePoint>& times, const
         }
     }
     #ifdef PRINT_PROCESS_SEGMENT_1240
-        cout << "Ch1 size " << ch1.size() << endl;
-        cout << "First few elements in ch1 " << ch1.size() << endl;
+        std::cout << "Ch1 size " << ch1.size() << std::endl;
+        std::cout << "First few elements in ch1 " << ch1.size() << std::endl;
         for (size_t j = 0; j < 12; j++){
-            cout << ch1[j] << " ";
+            std::cout << ch1[j] << " ";
         }
-        cout << endl;
-        cout << "Last few elements in ch1 " << ch1.size() << endl;
+        std::cout << std::endl;
+        std::cout << "Last few elements in ch1 " << ch1.size() << std::endl;
         for (size_t j = ch1.size() - 12; j < ch1.size(); j++){
-            cout << ch1[j] << " ";
+            std::cout << ch1[j] << " ";
         }
-        cout << endl;
+        std::cout << std::endl;
     #endif
 
     //ProcessSegment(ch1, times, outputFile);  // Use memptr to access raw data

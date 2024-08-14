@@ -1,22 +1,19 @@
 #!/bin/bash
 
-# Example to run program ./run_cpp_program.sh 2 0 self 1045 2500
+# Example to run program ./run_cpp_program.sh self 1045 2500 120 0
 if [ "$#" -ne 5 ]; then
-  echo "Usage: $0 <run_time_in_minutes> <sleep_time_in_minutes> <UDP_IP> <UDP_PORT> <DETECTION_THRESHOLD>"
-  echo "Example: ./run_cpp_program.sh 1 0 self 1045 2500"
+  echo "Usage: $0 <UDP_IP> <UDP_PORT> <DETECTION_THRESHOLD> <RUN_TIME_SEC> <SLEEP_TIME_SEC>"
+  echo "Example: ./run_cpp_program.sh self 1045 2500 120 0"
   exit 1
 fi
 
-RUN_TIME=$1
-SLEEP_TIME=$2
-UDP_IP=$3
-UDP_PORT=$4
-DETECTION_THRESHOLD=$5
+UDP_IP=$1
+UDP_PORT=$2
+DETECTION_THRESHOLD=$3
+RUN_TIME_SEC=$4
+SLEEP_TIME_SEC=$5
 FIRMWARE_VERSION=1240
-
-# Convert minutes to seconds
-RUN_TIME_SEC=$((RUN_TIME * 60))
-SLEEP_TIME_SEC=$((SLEEP_TIME * 60))
+CHECK_TIME=$((RUN_TIME_SEC + 2))
 
 # Program executable
 PROGRAM="./bin/HarpListen"
@@ -49,11 +46,13 @@ trap cleanup SIGINT
 
 while true; do
   # Run the compiled C++ program in the background
-  #"$PROGRAM" "$UDP_IP" $UDP_PORT $FIRMWARE_VERSION $DETECTION_THRESHOLD &
-  "$PROGRAM" "$UDP_IP" $UDP_PORT $FIRMWARE_VERSION $DETECTION_THRESHOLD > /dev/null 2>> "$ERROR_LOG" &
+  #"$PROGRAM" "$UDP_IP" $UDP_PORT $FIRMWARE_VERSION $DETECTION_THRESHOLD $RUN_TIME_SEC > /dev/null 2>> "$ERROR_LOG" &
+  "$PROGRAM" "$UDP_IP" $UDP_PORT $FIRMWARE_VERSION $DETECTION_THRESHOLD $RUN_TIME_SEC > /dev/null 2>> "$ERROR_LOG" &
   
   # Get the PID of the last background command
   PID=$!
+
+  sleep 1 # allow program to initialize variables and begin execution before checking it 
   
   if kill -0 $PID ; then
     echo "Program Running..."
@@ -62,15 +61,23 @@ while true; do
   fi
 
   # Allow the program to run for the specified time in seconds
-  sleep $RUN_TIME_SEC
+  sleep $CHECK_TIME
   
   # Check if the program is still running and kill it if necessary
-  if kill -0 $PID ; then
-    kill $PID
-    echo "Restarting program."
-  else
-    echo "Program crashed or terminated unexpectedly."
+  if kill -0 $PID 2>/dev/null; then
+    echo "Program did not exit within the specified time, forcefully terminating..."
+    kill -SIGKILL $PID
   fi
+
+  # Wait for the program to terminate and get its exit status
+  wait $PID
+  EXIT_STATUS=$?
+
+  if [ $EXIT_STATUS -eq 0 ]; then
+    echo "Program exited successfully with status 0."
+  else
+    echo "Program exited with status $EXIT_STATUS."
+  fi  
 
   # Wait for the specified sleep time in seconds before restarting
   sleep $SLEEP_TIME_SEC

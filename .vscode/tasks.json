@@ -4,16 +4,40 @@
         {
             "label": "build",
             "type": "shell",
-            "command": "/usr/bin/make",
-            "args": [],
+            "command": "make",
+            "args": [
+                "-C",
+                "${workspaceFolder}/C/out"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/C"
+            },
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
-            "options": {
-                "cwd": "${workspaceFolder}/build"
-            },
             "problemMatcher": ["$gcc"]
+        },
+        {
+            "label": "run",
+            "type": "shell",
+            "command": "./bin/HarpListen",
+            "args": [
+                "self",
+                "1045",
+                "1240",
+                "2500",
+                "20"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/C"
+            },
+            "group": {
+                "kind": "test",
+                "isDefault": false
+            },
+            "dependsOn": "build",
+            "problemMatcher": []
         }
     ]
 }

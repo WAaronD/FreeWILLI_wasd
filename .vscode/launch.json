@@ -5,10 +5,10 @@
             "name": "Launch Program",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/your_executable_name", // Replace with your actual executable
-            "args": [],
+            "program": "${workspaceFolder}/C/bin/HarpListen", // Replace with your actual executable
+            "args": ["self", "1045", "1240", "2500", "20"],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/C",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",

@@ -1,9 +1,5 @@
 #include "TDOA_estimation.h"
 
-using std::cout;
-using std::endl;
-using std::cerr;
-
 Eigen::VectorXf GCC_PHAT_FFTW(Eigen::MatrixXcf& savedFFTs, fftwf_plan& inverseFFT, const int& interp, int& paddedLength, unsigned int& NUM_CHAN, const unsigned int& SAMPLE_RATE) {
     /**
     * @brief Computes the Generalized Cross-Correlation with Phase Transform (GCC-PHAT) between pairs of signals.

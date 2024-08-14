@@ -29,10 +29,10 @@ DESCRIPTION:
 EXAMPLE RUN:
 
 Execute (datalogger simulator):
-./HarpListen 192.168.7.2 1045 1240 2500
+./HarpListen 192.168.7.2 1045 1240 2500 2
 
 Execute (datalogger):
-./HarpListen 192.168.100.220 50000 1240 2500
+./HarpListen 192.168.100.220 50000 1240 2500 2
 
 
 RESOURCES:
@@ -45,10 +45,7 @@ RESOURCES:
 #include "TDOA_estimation.h"
 #include "utils.h"
 #include "pch.h"
-using std::cout;
-using std::cin;
-using std::endl;
-using std::cerr;
+
 using namespace std::chrono_literals;
 
 // Global variables (used for manual testing and logging to console)
@@ -102,8 +99,8 @@ void UdpListener(Session& sess, unsigned int PACKET_SIZE) {
                 durationPacketTime = endPacketTime - startPacketTime;
                 std::stringstream msg; // compose message to dispatch
                 msg << "Num packets received is " <<  packetCounter << " " << durationPacketTime.count() / printInterval  
-                    << " " << queueSize << " " << packetCounter - queueSize << " " << detectionCounter << endl;
-                cout << msg.str(); // using one instance of "<<" makes the operation atomic
+                    << " " << queueSize << " " << packetCounter - queueSize << " " << detectionCounter << std::endl;
+                std::cout << msg.str(); // using one instance of "<<" makes the operation atomic
                 startPacketTime = std::chrono::steady_clock::now();
             }
 
@@ -113,11 +110,11 @@ void UdpListener(Session& sess, unsigned int PACKET_SIZE) {
                 
         }
     } catch (const std::exception& e ) {
-        cerr << "Error occured in UDP Listener Thread: \n";
+        std::cerr << "Error occured in UDP Listener Thread: \n";
         
         std::stringstream msg; // compose message to dispatch
-        msg << e.what() << endl;
-        cerr << msg.str();
+        msg << e.what() << std::endl;
+        std::cerr << msg.str();
 
         sess.errorOccurred = true;
     }
@@ -147,10 +144,7 @@ void DataProcessor(Session& sess, Experiment& exp) {
         int channelSize = exp.DATA_SEGMENT_LENGTH / exp.NUM_CHAN; 
         
         // Read filter weights from file 
-        std::vector<double> filterWeights = ReadFIRFilterFile(exp.filterWeights);
-        
-        // Convert filter coefficients to float
-        std::vector<float> filterWeightsFloat(filterWeights.begin(), filterWeights.end());        
+        std::vector<float> filterWeightsFloat = ReadFIRFilterFile(exp.filterWeights);
         
         // Declare time checking variables
         bool previousTimeSet = false;
@@ -162,7 +156,7 @@ void DataProcessor(Session& sess, Experiment& exp) {
 
         int paddedLength = filterWeightsFloat.size() + channelSize - 1;
         int fftOutputSize = (paddedLength / 2) + 1;
-        cout << "Padded size: " << paddedLength << endl;
+        std::cout << "Padded size: " << paddedLength << std::endl;
         
         // Matrices for (transformed) channel data
         static Eigen::MatrixXf channelData(paddedLength, exp.NUM_CHAN);
@@ -188,15 +182,25 @@ void DataProcessor(Session& sess, Experiment& exp) {
         }
         
         // set the frequency of file writes
-        const std::chrono::milliseconds FLUSH_INTERVAL(1000);
-        const size_t BUFFER_SIZE_THRESHOLD = 1000; // Adjust as needed
-        auto lastFlushTime = std::chrono::steady_clock::now();
+        BufferWriter bufferWriter;
+        bufferWriter._flushInterval = 1000ms;
+        bufferWriter._bufferSizeThreshold = 1000; // Adjust as needed
+        bufferWriter._lastFlushTime = std::chrono::steady_clock::now();
         
         while (!sess.errorOccurred) {
             
             sess.dataTimes.clear();
             sess.dataSegment.clear();
             sess.dataBytesSaved.clear();
+
+            auto elapsedTime = std::chrono::system_clock::now() - exp.programStartTime;
+            
+            if (elapsedTime >= exp.programRuntime) {
+                std::cout << "Terminating program from inside DataProcessor... duration reached" << std::endl;
+                std::cout << "Flushing buffers of length: " << sess.peakAmplitudeBuffer.size() << std::endl;
+                bufferWriter.write(sess, exp);
+                std::exit(0);
+            }
 
             while (sess.dataSegment.size() < exp.DATA_SEGMENT_LENGTH) {
                 
@@ -206,7 +210,7 @@ void DataProcessor(Session& sess, Experiment& exp) {
                 size_t queueSize = sess.dataBuffer.size();
                 if (queueSize < 1) {
                     sess.dataBufferLock.unlock();
-                    //cout << "Sleeping: " << endl;
+                    //std::cout << "Sleeping: " << std::endl;
                     std::this_thread::sleep_for(80ms);
                     continue;
                 }
@@ -223,18 +227,18 @@ void DataProcessor(Session& sess, Experiment& exp) {
                 ConvertData(sess.dataSegment, dataBytes, exp.DATA_SIZE, exp.HEAD_SIZE); // bytes data is decoded and appended to sess.dataSegment
                 auto endCDTime = std::chrono::steady_clock::now();
                 std::chrono::duration<double> durationCD = endCDTime - startCDTime;
-                //cout << "Convert data: " << durationCD.count() << endl;
+                //std::cout << "Convert data: " << durationCD.count() << std::endl;
                 
                 auto startTimestamps = std::chrono::steady_clock::now();
                 GenerateTimestamps(sess.dataTimes, dataBytes, exp.MICRO_INCR, previousTimeSet, previousTime , exp.detectionOutputFile, exp.tdoaOutputFile, exp.doaOutputFile);
                 auto endTimestamps = std::chrono::steady_clock::now();
                 std::chrono::duration<double> durationGenerate = endTimestamps - startTimestamps;
-                //cout << "durationGenerate: " << durationGenerate.count() << endl;
+                //std::cout << "durationGenerate: " << durationGenerate.count() << std::endl;
 
                 // Check if the amount of bytes in packet is what is expected
                 if (dataBytes.size() != exp.PACKET_SIZE) {
                     std::stringstream msg; // compose message to dispatch
-                    msg << "Error: incorrect number of bytes in packet: " <<  "PACKET_SIZE: " << exp.PACKET_SIZE << " dataBytes size: " << dataBytes.size() << endl;
+                    msg << "Error: incorrect number of bytes in packet: " <<  "PACKET_SIZE: " << exp.PACKET_SIZE << " dataBytes size: " << dataBytes.size() << std::endl;
                     throw std::runtime_error(msg.str());
                 }
 
@@ -269,7 +273,7 @@ void DataProcessor(Session& sess, Experiment& exp) {
             }
             auto afterFFTWF = std::chrono::steady_clock::now();
             std::chrono::duration<double> durationFFTWF = afterFFTWF - beforeFFTWF;
-            cout << "FFT time: " << durationFFTWF.count() << endl;
+            //std::cout << "FFT time: " << durationFFTWF.count() << std::endl;
 
             auto beforeFFTW = std::chrono::steady_clock::now();
             for (int i = 0; i < exp.NUM_CHAN; i++) {
@@ -277,16 +281,16 @@ void DataProcessor(Session& sess, Experiment& exp) {
             }
             auto afterFFTW = std::chrono::steady_clock::now();
             std::chrono::duration<double> durationFFTW = afterFFTW - beforeFFTW;
-            cout << "FFT filter time: " << durationFFTW.count() << endl;
+            //std::cout << "FFT filter time: " << durationFFTW.count() << std::endl;
             
             auto beforeGCCW = std::chrono::steady_clock::now();
             Eigen::VectorXf resultMatrix = GCC_PHAT_FFTW(savedFFTs, exp.inverseFFT, exp.interp, paddedLength, exp.NUM_CHAN, exp.SAMPLE_RATE);
             auto afterGCCW = std::chrono::steady_clock::now();
             std::chrono::duration<double> durationGCCW = afterGCCW - beforeGCCW;
-            cout << "GCC time: " << durationGCCW.count() << endl;
+            //std::cout << "GCC time: " << durationGCCW.count() << std::endl;
             
             Eigen::VectorXf DOAs = DOA_EstimateVerticalArray(resultMatrix, exp.speedOfSound, exp.chanSpacing);
-            cout << "DOAs: " << DOAs.transpose() << endl;
+            //std::cout << "DOAs: " << DOAs.transpose() << std::endl;
            
             // Write to buffers
             sess.peakAmplitudeBuffer.push_back(detResult.peakAmplitude);
@@ -294,72 +298,47 @@ void DataProcessor(Session& sess, Experiment& exp) {
             sess.resultMatrixBuffer.push_back(resultMatrix);
             sess.DOAsBuffer.push_back(DOAs);
 
-            auto currentTime = std::chrono::steady_clock::now();
-            if (sess.peakAmplitudeBuffer.size() >= BUFFER_SIZE_THRESHOLD) {//|| currentTime - lastFlushTime >= FLUSH_INTERVAL) {
-                cout << "Flushing buffers of length: " << sess.peakAmplitudeBuffer.size() << endl;
-
-                auto beforeW = std::chrono::steady_clock::now();
-                WritePulseAmplitudes(sess.peakAmplitudeBuffer, sess.peakTimesBuffer, exp.detectionOutputFile);
-                auto afterW = std::chrono::steady_clock::now();
-                std::chrono::duration<double> durationW = afterW - beforeW;
-                cout << "Write: " << durationW.count() << endl;
-
-                auto beforeW1 = std::chrono::steady_clock::now();
-                WriteArray(sess.resultMatrixBuffer, sess.peakTimesBuffer, exp.tdoaOutputFile);
-                auto afterW1 = std::chrono::steady_clock::now();
-                std::chrono::duration<double> durationW1 = afterW1 - beforeW1;
-                cout << "Write1: " << durationW1.count() << endl;
-
-                auto beforeW2 = std::chrono::steady_clock::now();
-                WriteArray(sess.DOAsBuffer, sess.peakTimesBuffer, exp.doaOutputFile);
-                auto afterW2 = std::chrono::steady_clock::now();
-                std::chrono::duration<double> durationW2 = afterW2 - beforeW2;
-                cout << "Write:2 " << durationW2.count() << endl;
-                
-                lastFlushTime = currentTime;
-                sess.peakAmplitudeBuffer.clear();
-                sess.peakTimesBuffer.clear();
-                sess.resultMatrixBuffer.clear();
-                sess.DOAsBuffer.clear();
-            
+            if (sess.peakAmplitudeBuffer.size() >= bufferWriter._bufferSizeThreshold) {//|| currentTime - lastFlushTime >= FLUSH_INTERVAL) {
+                std::cout << "Flushing buffers of length: " << sess.peakAmplitudeBuffer.size() << std::endl;
+                bufferWriter.write(sess, exp);
             }
         }
     } 
     catch (const GCC_Value_Error& e) {
         
         std::stringstream msg; // compose message to dispatch
-        msg << e.what() << endl;
-        cerr << msg.str();
+        msg << e.what() << std::endl;
+        std::cerr << msg.str();
         
         try {
            WriteDataToCerr(sess.dataTimes, sess.dataBytesSaved);
         }
         catch (...) {
-            cerr << "failed to write data to cerr \n";
+            std::cerr << "failed to write data to cerr \n";
         }
         sess.errorOccurred = true;
     }
     catch (const std::ios_base::failure& e) {
         std::stringstream msg; // compose message to dispatch
-        msg << e.what() << endl;
-        cerr << msg.str();
+        msg << e.what() << std::endl;
+        std::cerr << msg.str();
         std::exit(1);
     }
     catch (const std::exception& e ) {
-        cerr << "Error occured in data processor thread: \n";
+        std::cerr << "Error occured in data processor thread: \n";
 
         std::stringstream msg; // compose message to dispatch
-        msg << e.what() << endl;
-        cerr << msg.str();
+        msg << e.what() << std::endl;
+        std::cerr << msg.str();
 
         try {
            WriteDataToCerr(sess.dataTimes, sess.dataBytesSaved);
         }
         catch (...) {
-            cerr << "failed to write data to cerr \n";
+            std::cerr << "failed to write data to cerr \n";
         }
         sess.errorOccurred = true;
-        cerr << "End of catch statement\n";
+        std::cerr << "End of catch statement\n";
     }
 }
 
@@ -380,20 +359,20 @@ int main(int argc, char *argv[]) {
     if (sess.UDP_IP == "self") {
         sess.UDP_IP = "127.0.0.1";
     }
-    cout << "IP " << sess.UDP_IP << endl;
+    std::cout << "IP " << sess.UDP_IP << std::endl;
     sess.UDP_PORT = std::stoi(argv[2]);
 
     int firmwareVersion = std::stoi(argv[3]);
     exp.energyDetThresh = std::stod(argv[4]);
-    exp.programRunTime = std::stoi(argv[5]);
+    exp.programRuntime = std::chrono::seconds(std::stoi(argv[5]));
 
-    cout << "Listening to IP address " << sess.UDP_IP.c_str() << " and port " << sess.UDP_PORT << endl;
+    std::cout << "Listening to IP address " << sess.UDP_IP.c_str() << " and port " << sess.UDP_PORT << std::endl;
 
     //import variables according to firmware version specified
-    cout << "Firmware version: " << firmwareVersion << endl;
+    std::cout << "Firmware version: " << firmwareVersion << std::endl;
     const std::string path = "config_files/" + std::to_string(firmwareVersion) + "_config.txt";
     if (ProcessFile(exp, path)) {
-        cout  << "Error: Unable to open config file: " << path  << endl;
+        std::cout  << "Error: Unable to open config file: " << path  << std::endl;
         std::exit(1);
     }
     exp.ProcessFncPtr = ProcessSegmentInterleaved;
@@ -401,14 +380,14 @@ int main(int argc, char *argv[]) {
     exp.NUM_PACKS_DETECT = (int)(exp.TIME_WINDOW * 100000 / exp.SAMPS_PER_CHANNEL);
     exp.DATA_SEGMENT_LENGTH = exp.NUM_PACKS_DETECT * exp.SAMPS_PER_CHANNEL * exp.NUM_CHAN; 
 
-    cout << "HEAD_SIZE: "              << exp.HEAD_SIZE               << endl; 
-    cout << "SAMPS_PER_CHAN: "         << exp.SAMPS_PER_CHANNEL       << endl;
-    cout << "BYTES_PER_SAMP: "         << exp.BYTES_PER_SAMP          << endl;
-    cout << "Bytes per packet:       " << exp.REQUIRED_BYTES          << endl;
-    cout << "Time between packets:   " << exp.MICRO_INCR              << endl;
-    cout << "Number of channels:     " << exp.NUM_CHAN                << endl;
-    cout << "Data bytes per channel: " << exp.DATA_BYTES_PER_CHANNEL  << endl;
-    cout << "Detecting over a time window of " << exp.TIME_WINDOW << " seconds, using " << exp.NUM_PACKS_DETECT <<  " packets" << endl;
+    std::cout << "HEAD_SIZE: "              << exp.HEAD_SIZE               << std::endl; 
+    std::cout << "SAMPS_PER_CHAN: "         << exp.SAMPS_PER_CHANNEL       << std::endl;
+    std::cout << "BYTES_PER_SAMP: "         << exp.BYTES_PER_SAMP          << std::endl;
+    std::cout << "Bytes per packet:       " << exp.REQUIRED_BYTES          << std::endl;
+    std::cout << "Time between packets:   " << exp.MICRO_INCR              << std::endl;
+    std::cout << "Number of channels:     " << exp.NUM_CHAN                << std::endl;
+    std::cout << "Data bytes per channel: " << exp.DATA_BYTES_PER_CHANNEL  << std::endl;
+    std::cout << "Detecting over a time window of " << exp.TIME_WINDOW << " seconds, using " << exp.NUM_PACKS_DETECT <<  " packets" << std::endl;
 
 
     while (true) {
@@ -423,10 +402,10 @@ int main(int argc, char *argv[]) {
         processorThread.join();
        
         if (sess.errorOccurred) {
-            cout << "Restarting threads..." << endl;
+            std::cout << "Restarting threads..." << std::endl;
         }
         else {
-            cout << "Unknown problem occurred" << endl;
+            std::cout << "Unknown problem occurred" << std::endl;
         }
         
         // Destroy FFTWF objects

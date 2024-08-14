@@ -1,8 +1,5 @@
 #include "utils.h"
 
-using std::cerr;
-using std::endl;
-using std::cout;
 using TimePoint = std::chrono::system_clock::time_point;
 
 void PrintTimes(const std::span<TimePoint> timestamps) {
@@ -28,9 +25,9 @@ void PrintTimes(const std::span<TimePoint> timestamps) {
             << timeData.tm_hour << ':'
             << timeData.tm_min << ':'
             << timeData.tm_sec << ':'
-            << microSeconds << endl;
+            << microSeconds << std::endl;
         
-        cout << msg.str();
+        std::cout << msg.str();
     }
 }
 
@@ -43,7 +40,7 @@ void RestartListener(Session& sess){
      * @param sess A reference to the Session object representing the listener session.
      */
     
-    cout << "restarting listener: \n";
+    std::cout << "restarting listener: \n";
 
     if (close(sess.datagramSocket) == -1) {
         throw std::runtime_error("Failed to close socket \n");
@@ -61,7 +58,7 @@ void RestartListener(Session& sess){
     serverAddr.sin_port = htons(sess.UDP_PORT);
 
     if (sess.UDP_IP == "192.168.100.220"){
-        cout << "Sending wake up data to IP address to data logger \n";
+        std::cout << "Sending wake up data to IP address to data logger \n";
         const char* m1 = "Open";
         unsigned char m2[96] = {0};
         unsigned char message[100];
@@ -107,23 +104,23 @@ void InitiateOutputFile(std::string& outputFile, std::tm& timeStruct, int64_t mi
                      std::to_string(timeStruct.tm_sec) + '-' + std::to_string(microSec) + '_' + feature;
     
     std::stringstream msg; // compose message to dispatch
-    msg << "created and writting to file: " << outputFile << endl;
-    cout << msg.str();
+    msg << "created and writting to file: " << outputFile << std::endl;
+    std::cout << msg.str();
     
     // Open the file in write mode and clear its contents if it exists, create a new file otherwise
     std::ofstream file(outputFile, std::ofstream::out | std::ofstream::trunc);
     if (file.is_open()) {
-        file << "Timestamp (microseconds)" << std::setw(20) << "Peak Amplitude" << endl;
+        file << "Timestamp (microseconds)" << std::setw(20) << "Peak Amplitude" << std::endl;
         file.close();
     } 
     else {
         std::stringstream throwMsg; // compose message to dispatch
-        throwMsg << "Error: Unable to open file for writing: " << outputFile << endl;
+        throwMsg << "Error: Unable to open file for writing: " << outputFile << std::endl;
         throw std::runtime_error(throwMsg.str());
     }
 }
 
-std::vector<double> ReadFIRFilterFile(const std::string& fileName) {
+std::vector<float> ReadFIRFilterFile(const std::string& fileName) {
      /**
      * @brief Reads a file containing the FIR filter taps and returns the values as an Armadillo column vector.
      *
@@ -138,29 +135,27 @@ std::vector<double> ReadFIRFilterFile(const std::string& fileName) {
     std::ifstream inputFile(fileName);
     if (!inputFile.is_open()) {
         std::stringstream msg; // compose message to dispatch
-        msg << "Error: Unable to open filter file '" << fileName << "'." << endl;
+        msg << "Error: Unable to open filter file '" << fileName << "'." << std::endl;
         throw std::ios_base::failure(msg.str());
     }
     std::string line;
-    std::vector<double> filterValues;
+    std::vector<float> filterValues;
     while (std::getline(inputFile, line)){
-        std::vector<double> values;
+        std::vector<float> values;
         std::stringstream stringStream(line);
         std::string token;
         
         while(std::getline(stringStream,token, ',')){
             try {
-                double value = std::stod(token);
+                float value = std::stod(token);
                 filterValues.push_back(value);
-                //cout << value << " ";
             } catch(const std::invalid_argument& e) {
                 std::stringstream errMsg; // compose message to dispatch
-                errMsg << "Invalid numeric value: " << token << endl;
-                cerr << errMsg.str();
+                errMsg << "Invalid numeric value: " << token << std::endl;
+                std::cerr << errMsg.str();
             }
         }
     }
-    //arma::Col<double> filter(filterValues);
     return filterValues;
 }
 
@@ -203,12 +198,12 @@ void WritePulseAmplitudes(std::span<float> clickPeakAmps, std::span<TimePoint> t
     */
     
 
-    //cout << "clickPeakAmps.size(): " << clickPeakAmps.size() << endl;
+    //std::cout << "clickPeakAmps.size(): " << clickPeakAmps.size() << std::endl;
     std::ofstream outfile(filename, std::ios::app);
     if (outfile.is_open()) {
         // Check if vectors have the same size
         if (clickPeakAmps.size() != timestamps.size()) {
-            cerr << "Error: Click amplitude and timestamp vectors have different sizes. \n";
+            std::cerr << "Error: Click amplitude and timestamp vectors have different sizes. \n";
             return;
         }
 
@@ -216,14 +211,14 @@ void WritePulseAmplitudes(std::span<float> clickPeakAmps, std::span<TimePoint> t
         for (size_t i = 0; i < clickPeakAmps.size(); ++i) {
             auto time_point = timestamps[i];
             auto time_since_epoch = std::chrono::duration_cast<std::chrono::microseconds>(time_point.time_since_epoch());
-            outfile << time_since_epoch.count() << std::setw(20) << clickPeakAmps[i] << endl;
+            outfile << time_since_epoch.count() << std::setw(20) << clickPeakAmps[i] << std::endl;
         }
 
     } 
     else {
         std::stringstream msg; // compose message to dispatch
-        msg << "Error: Could not open file " << filename << endl;
-        cerr << msg.str();
+        msg << "Error: Could not open file " << filename << std::endl;
+        std::cerr << msg.str();
     }
     outfile.close();
 }
@@ -273,18 +268,18 @@ void WriteDataToCerr(std::span<TimePoint> dataTimes, std::vector<std::vector<uin
     msg << "Timestmaps of data causing error: \n";
     for (const auto timestamp : dataTimes){
         auto convertedTime = std::chrono::duration_cast<std::chrono::microseconds>(timestamp.time_since_epoch()).count(); 
-        msg << convertedTime << endl;
+        msg << convertedTime << std::endl;
     }
-    msg << endl;
+    msg << std::endl;
     
-    msg << "Errored bytes of last packets: " << endl;
-    for (const auto byteArray : dataBytesSaved){
-        msg << endl;
+    msg << "Errored bytes of last packets: " << std::endl;
+    for (const auto& byteArray : dataBytesSaved){
+        msg << std::endl;
         for (const auto data : byteArray){
             msg << std::setw(2) << std::setfill('0') << static_cast<int>(data);
         }
-        msg << endl;
+        msg << std::endl;
     }
-    msg << endl;
-    cerr << msg.str();
+    msg << std::endl;
+    std::cerr << msg.str();
 }
