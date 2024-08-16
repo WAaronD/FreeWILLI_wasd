@@ -1,10 +1,10 @@
 """
 
  For running with Joe's Simulator:
-    sudo python multi_datalogger_reader.py --port 1045 --ip 192.168.7.2
+    sudo python main.py --port 1045 --ip 192.168.7.2
 
  For running in HARP lab:
-    sudo python multi_datalogger_reader.py
+    sudo python main.py
 
  testing program for getting data from 4 ch HARP 3B04 230307
  two channels at 200kHz/ch
@@ -19,6 +19,7 @@ import socket
 import threading
 import queue  
 import numpy as np
+import pandas as pd
 import sys
 import argparse
 import time
@@ -27,9 +28,9 @@ import psutil
 import os
 import traceback
 from scipy.signal import filtfilt, ellip, freqz, lfilter
-from process_data import  ThresholdDetect, SegmentPulses, PreprocessSegmentInterleaved, PreprocessSegmentStacked, SaveDataSegment, WritePulseAmplitudes
+from process_data import  ThresholdDetect, SegmentPulses, PreprocessSegmentInterleaved, PreprocessSegmentStacked, SaveDataSegment, WritePulseAmplitudes, tdoa2doa, WritePulseDOAs
 from TDOA_estimation import EllipticFilter, GCC_PHAT, CrossCorr, GenerateFIR_Filter, DOA_EstimateVerticalArray
-from utils import SetHighPriority
+from utils import SetHighPriority, LoadHydrophonePositions
 
 print('This code has been tested for python version 3.11.6, your version is:', sys.version)
 
@@ -40,6 +41,12 @@ parser.add_argument('--fw', default = 1240, type=int)                           
 parser.add_argument('--output_file', default = "clicks_data.txt", type=str)      # output file for logging time and peak amp. of pulses
 args = parser.parse_args()
 output_file = open(args.output_file, 'w')                 # clear contents in output file
+
+output_fileDOAs = "DOA_data.txt"
+_ = open(output_fileDOAs, 'w')
+output_fileTDOAs = "TDOA_data.txt"
+_ = open(output_fileTDOAs, 'w')
+
 
 UDP_IP = args.ip                                          # IP address of data logger or simulator 
 UDP_PORT = args.port                                      # Port to listen for UDP packets
@@ -159,22 +166,45 @@ def DataProcessor():
         global dataBuffer, dataSegment, dataTimes, detectionCounter
         
         ### define IIR filter - should be passed as function arguement
-        '''
+        
         order = 4
         ripple_dB = 0.1
-        cutoffFrequency = 10000
+        cutoffFrequency = 20000
         b, a = EllipticFilter(order, ripple_dB, cutoffFrequency, SAMPLE_RATE)
         print('b: ', b)
         print('a: ', a)
-        '''
+        
 
         ### define FIR filter - should be passed as function arguement 
-        cutoffFrequency = 10000  # Cutoff frequency for highpass filter
-        numTaps = 31  # Number of taps for the FIR filter
+        cutoffFrequency = 20000  # Cutoff frequency for highpass filter
+        numTaps = 51  # Number of taps for the FIR filter
         taps = GenerateFIR_Filter(cutoffFrequency, numTaps, SAMPLE_RATE)
         print(taps)
 
-
+        ### MOVE THIS CODE OUT!!!!!
+        H = LoadHydrophonePositions('../Data/SOCAL_H_72_HS_harp4chPar_recPos.txt')
+        #H = LoadHydrophonePositions('../Data/VLA_recPos.txt')
+        #print("H:")
+        #print(H)
+        #print(np.sum(H**2, axis=1))
+        #return
+        practiceTDOAs = pd.read_csv('../Data/tdoa_104.csv', delimiter='\s+', header=None)
+        speedOfSound = 1482.965459  # speed of sound
+        
+        """
+        for i in range(12):
+            row_list = list(practiceTDOAs.iloc[i+1])[0]
+            print(row_list)
+            # Convert the list of strings to a NumPy array of floats
+            examp = np.array([float(x) for x in row_list.split(',')])
+            #print("examp: ", examp)
+            result = tdoa2doa(H, speedOfSound, examp)
+            # Create a DataFrame to format the output as a table
+            print(result)
+        return
+        """
+        DOA_counter = 0
+        
         previousTime = False # initalize the previous packet time to False, update with every new packet
         while not errorEvent.is_set():
 
@@ -237,7 +267,11 @@ def DataProcessor():
                 ch1, ch2, ch3, ch4 = PreprocessSegment(dataSegment, NUM_PACKS_DETECT, NUM_CHAN, SAMPS_PER_CHANNEL)
             with dataTimesLock:
                 #values = SegmentPulses(ch1, dataTimes, SAMPLE_RATE, 2500, False) # Set true to save segmented pulses
-                values = ThresholdDetect(ch1,dataTimes, SAMPLE_RATE, 80)
+                ch1 = lfilter(taps, 1.0, ch1)
+                ch2 = lfilter(taps, 1.0, ch2)
+                ch3 = lfilter(taps, 1.0, ch3)
+                ch4 = lfilter(taps, 1.0, ch4)
+                values = ThresholdDetect(ch1,dataTimes, SAMPLE_RATE, 28)
             if values == None: # if no pulses were detected to segment, then get next segment
                 continue
             detectionCounter += 1
@@ -249,19 +283,14 @@ def DataProcessor():
             
             ### IIR code
             '''
-            ch1Filtered = filtfilt(b, a, ch1)
-            ch2Filtered = filtfilt(b, a, ch2)
-            ch3Filtered = filtfilt(b, a, ch3)
-            ch4Filtered = filtfilt(b, a, ch4)
+            ch1 = filtfilt(b, a, ch1)
+            ch2 = filtfilt(b, a, ch2)
+            ch3 = filtfilt(b, a, ch3)
+            ch4 = filtfilt(b, a, ch4)
             '''
-
             ### FIR code
             #print('ch1 examples: ', ch1[:10])
             prefiltTime = time.time()            
-            ch1 = lfilter(taps, 1.0, ch1)
-            ch2 = lfilter(taps, 1.0, ch2)
-            ch3 = lfilter(taps, 1.0, ch3)
-            ch4 = lfilter(taps, 1.0, ch4)
             #print('P FIR: ', time.time() - prefiltTime)
             #print('ch1 filt examples: ', ch1[:10])
 
@@ -269,15 +298,34 @@ def DataProcessor():
             
             #gccStart = time.time()
             tdoaEstimates = GCC_PHAT(dataMatrixFiltered, SAMPLE_RATE, NUM_CHAN, max_tau=None, interp=1)
+            WritePulseDOAs(clickTimes, [tdoaEstimates], output_fileTDOAs)
             #print("P GCC: ", time.time() - gccStart)
             #print('here')
             #print(tdoaEstimates)
             
-            chanSpacing  = np.array([1, 2, 3, 1, 2, 1])
-            doaEstimates = DOA_EstimateVerticalArray(tdoaEstimates, 1500, chanSpacing)
-            print(doaEstimates)
+            #chanSpacing  = np.array([1, 2, 3, 1, 2, 1])
+            #doaEstimates = DOA_EstimateVerticalArray(tdoaEstimates, 1500, chanSpacing)
+            #print(doaEstimates)
             #print('End all: ', time.time() - gccStart)
+
+
+
+            #row_list = list(practiceTDOAs.iloc[DOA_counter+1])[0]
+            #print(row_list)
+            # Convert the list of strings to a NumPy array of floats
+            #examp = np.array([float(x) for x in row_list.split(',')])
+            #print("examp: ", examp)
+            result = tdoa2doa(H, speedOfSound, tdoaEstimates)
+            print(result)
             
+
+            WritePulseDOAs(clickTimes, [result], output_fileDOAs)
+            
+            """
+            DOA_counter += 1
+            if DOA_counter % 100 ==0:
+                DOA_counter = 1
+            """
     except Exception as e:
         print(f"Error occurred in Data Processor thread: {e}")
         traceback.print_exc()  # Print detailed traceback information

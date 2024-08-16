@@ -42,8 +42,8 @@ struct Experiment {
     void(*ProcessFncPtr)(std::span<float>, Eigen::MatrixXf&, unsigned int)= nullptr;
 
     // Define FFTWF plans during runtime 
-    std::vector<fftwf_plan> fftForChannels; // fftwf object that points to channel 1
-
+    //std::vector<fftwf_plan> fftForChannels; // fftwf object that points to channel 1
+    fftwf_plan myFFTPlan = nullptr;
     fftwf_plan inverseFFT = nullptr;
 };
 

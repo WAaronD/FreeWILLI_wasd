@@ -8,6 +8,7 @@ import struct
 import argparse
 
 
+
 class TDOASimAction(argparse.Action):
     """
     Custom argparse action to handle the --tdoa_sim argument.
@@ -24,6 +25,22 @@ class TDOASimAction(argparse.Action):
             setattr(namespace, self.dest, 0)
         else:
             setattr(namespace, self.dest, int(values))
+
+def LoadHydrophonePositions(filePath):
+    #hyd_data = loadmat(filePath)  # Path to hydrophone data
+    hp = np.loadtxt(filePath, delimiter=',')
+    #hp = hyd_data['recPos']
+
+    H = np.array([  # Reorder hydrophones to fit new TDOA order
+        hp[1,:] - hp[0,:],
+        hp[2,:] - hp[0,:],
+        hp[3,:] - hp[0,:],
+        hp[2,:] - hp[1,:],
+        hp[3,:] - hp[1,:],
+        hp[3,:] - hp[2,:],
+    ])
+
+    return H
 
 
 def CheckSystem():
@@ -172,7 +189,7 @@ def DuplicateAndShiftChannels(dataMatrix, offset, NUM_CHAN):
 
 def InterleaveData(dataMatrix):
     dataFlattened = dataMatrix.reshape(-1, order='F')   # Interleave the values of the rows uniformly
-    return dataFlattened, np.where(dataFlattened > 500)[0][0] # return the flattened matrix as well as index of first high amplitude value
+    return dataFlattened, np.where(dataFlattened > 200)[0][0] # return the flattened matrix as well as index of first high amplitude value
 
 
 #def StackData(dataMatrix, NUM_CHAN, SAMPS_PER_CHANNEL):

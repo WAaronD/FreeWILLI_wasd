@@ -77,7 +77,7 @@ SetHighPriority(15) # set this process to run the program at high priority (nice
 parser = argparse.ArgumentParser(description='Program command line arguments')
 parser.add_argument('--port', default=1045, type=int, help='UDP port to send data to')
 parser.add_argument('--ip', default="192.168.7.2", type=str, help='IP address to send data to')
-parser.add_argument('--data_path', default="../Data/joesdata.mat", type=str, help='prerecorded data to use')
+parser.add_argument('--data_path', default="../Data/rawdat_track104_00.mat", type=str, help='prerecorded data to use')
 parser.add_argument('--fw', default=1240, type=int, help='Firmware version to simulate')
 parser.add_argument('--loop', action='store_true', help='Enable looping over the data')
 parser.add_argument('--stretch', action='store_true', help='normalize data values min and max range of unsigned 16 bit int')
@@ -228,10 +228,12 @@ while(True):
     ### Sleep for an arbitrary time (debugging)
     #sleep(2*MICRO_INCR)
     #time.sleep(1)
-    
+   
+    """
     if flag == 8000 and not args.loop and not args.cos_shift:
         print('Reached flag ',flag,time.time() - absStartTime)
         break
+    """
     flag += 1
 
 

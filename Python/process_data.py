@@ -3,6 +3,25 @@ import time
 import datetime
 from datetime import timedelta
 
+def tdoa2doa(H, c, tdoa):
+    #tdoa = tdoa.T  # transpose TDOA matrix
+
+    # calculate doa
+    doa, residuals, rank, s = np.linalg.lstsq(H, tdoa * c, rcond=None)
+    #print("norm: ", np.sqrt(sum(doa ** 2)))
+    #print("doa ", doa)
+    doa = doa / np.sqrt(sum(doa ** 2))
+    doa = doa.T
+
+    # calculate Ang
+    el = 180 - np.degrees(np.arccos(doa[2]))
+    az = np.degrees(np.arctan2(doa[1], doa[0]))
+
+    # Create a single vector containing el, az, and the DOA vector
+    result_vector = np.array([el, az, doa[0], doa[1], doa[2]])
+
+    return result_vector
+
 def ThresholdDetect(data, times, SAMPLE_RATE, threshold):
     maxPeak = np.max(data)
     maxPeakIndex = np.argmax(data)
@@ -112,6 +131,28 @@ def WritePulseAmplitudes(times, amplitudes, outputFile):
     with open(outputFile, 'a') as file:
         for index in range(len(times)):
             file.write(f"{times[index]}, {amplitudes[index]}\n")
+
+def WritePulseDOAs(times, amplitudes, outputFile):
+    """
+    Write pulse peak times and their corresponding amplitudes (as a matrix) to a file.
+
+    Args:
+        times (numpy.ndarray): Array of pulse peak times.
+        amplitudes (numpy.ndarray): Matrix of pulse amplitudes, where each row corresponds to a time.
+        outputFile (str): Path to the output file.
+
+    Returns:
+        None
+    """
+    # Ensure amplitudes is a 2D NumPy array (matrix)
+    amplitudes = np.asarray(amplitudes)
+    
+    # Open the file in append mode and write each time with the corresponding row of amplitudes
+    with open(outputFile, 'a') as file:
+        for index in range(len(times)):
+            amplitude_row = ', '.join(map(str, amplitudes[index]))
+            file.write(f"{times[index]}, {amplitude_row}\n")
+
 
 def SaveDataSegment(time, dataSegment, ch1, ch2, ch3, ch4):
     timestampString = time.strftime("%Y-%m-%d %H:%M:%S.%f")
