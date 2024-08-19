@@ -46,7 +46,14 @@ def GCC_PHAT(channel_matrix, fs, NUM_CHAN, max_tau=None, interp=16):
             # Generalized Cross Correlation Phase Transform
             SIG = np.fft.rfft(sig, n=n)
             REFSIG = np.fft.rfft(refsig, n=n)
+            
+            # Zero the DC component
+            SIG[0] = 0
+            REFSIG[0] = 0
+
             R = SIG * np.conj(REFSIG)
+            R[R == 0] = 1
+
             
             #beforeIFFT = time.time()
             cc = np.fft.irfft(R / np.abs(R), n=(interp * n))
@@ -76,8 +83,9 @@ def CrossCorr(channel_matrix, fs, max_tau=None, interp=16):
     '''
     
     tau_matrix = np.zeros((4,4))
+    tau_vector = []
     
-    
+    pairing = 0
     for sig_ind in range(len(channel_matrix)-1):
         for ref_ind in range(sig_ind+1,len(channel_matrix)):
             sig = np.abs(channel_matrix[sig_ind])
@@ -101,8 +109,10 @@ def CrossCorr(channel_matrix, fs, max_tau=None, interp=16):
             tdoa = time_axis[max_index]
             
             tau_matrix[ref_ind,sig_ind] = tdoa
+            tau_vector.append(tdoa)
+            pairing +=1
             
-    return tau_matrix
+    return np.array(tau_vector)
 
 def DOA_EstimateVerticalArray(TDOAs,soundSpeed,chanSpacing):
     """

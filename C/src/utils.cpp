@@ -141,13 +141,13 @@ std::vector<float> ReadFIRFilterFile(const std::string& fileName) {
     std::string line;
     std::vector<float> filterValues;
     while (std::getline(inputFile, line)){
-        std::vector<float> values;
+        //std::vector<float> values;
         std::stringstream stringStream(line);
         std::string token;
         
         while(std::getline(stringStream,token, ',')){
             try {
-                float value = std::stod(token);
+                float value = std::stof(token);
                 filterValues.push_back(value);
             } catch(const std::invalid_argument& e) {
                 std::stringstream errMsg; // compose message to dispatch
@@ -187,6 +187,54 @@ bool WithProbability(double probability){
     double randomValue = dis(gen);
     return randomValue < probability;
 }
+
+std::vector<std::vector<float>> LoadHydrophonePositions(const std::string& filename){
+    std::ifstream inputFile(filename);
+    
+    if (!inputFile.is_open()) {
+        throw std::runtime_error("Could not open file: " + filename);
+    }
+
+    std::cout << "Reading file positions" << std::endl;
+    
+    std::string line;
+    std::vector<std::vector<float>> positions;
+    std::string token;
+
+    while(std::getline(inputFile, line)){
+        std::vector<float> coordinate;
+        std::stringstream ss(line);    
+        float pos;
+        while(std::getline(ss, token, ',')) {
+            coordinate.push_back(std::stof(token));
+        }
+        positions.push_back(coordinate);
+    }
+    std::cout << "printing positions: " << std::endl;
+    
+    /*
+    for (const auto& coord : positions){
+        for (const auto& val : coord){
+            std::cout << val << " ";
+        }
+        std::cout << std::endl;
+    }
+    */
+
+    std::vector<std::vector<float>> relativePositions;
+    for (int i = 0; i < positions.size(); i++){
+        for (int j = i + 1; j < positions.size(); j++){
+            std::vector<float> newPos;
+            for (int k = 0; k < positions[0].size(); k++){
+                newPos.push_back(positions[j][k] - positions[k][k]);
+            }
+            relativePositions.push_back(newPos);
+        }
+    }
+
+    return relativePositions;
+}
+
 
 void WritePulseAmplitudes(std::span<float> clickPeakAmps, std::span<TimePoint> timestamps, const std::string& filename) {
     /**

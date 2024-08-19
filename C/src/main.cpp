@@ -206,6 +206,15 @@ void DataProcessor(Session &sess, Experiment &exp)
         // Fill the matrices with zeros 
         channelData.setZero();
         savedFFTs.setZero();
+        
+        std::vector<std::vector<float>> H = LoadHydrophonePositions(exp.receiverPositions);
+        std::cout << "H:" << std::endl;
+        for (const auto& coord : H){
+            for (const auto& val : coord){
+                std::cout << val << " ";
+            }
+            std::cout << std::endl;
+        }
 
         // set the frequency of file writes
         BufferWriter bufferWriter;
@@ -298,23 +307,8 @@ void DataProcessor(Session &sess, Experiment &exp)
 
             detectionCounter++;
 
-            auto beforeFFTWF = std::chrono::steady_clock::now();
-            fftwf_execute(exp.myFFTPlan);
-            auto afterFFTWF = std::chrono::steady_clock::now();
-            std::chrono::duration<double> durationFFTWF = afterFFTWF - beforeFFTWF;
-            std::cout << "FFT time: " << durationFFTWF.count() << std::endl;
-
-            auto beforeFFTW = std::chrono::steady_clock::now();
-            for (int i = 0; i < exp.NUM_CHAN; i++)
-            {
-                savedFFTs.col(i) = savedFFTs.col(i).array() * filterFreq.array();
-            }
-            auto afterFFTW = std::chrono::steady_clock::now();
-            std::chrono::duration<double> durationFFTW = afterFFTW - beforeFFTW;
-            // std::cout << "FFT filter time: " << durationFFTW.count() << std::endl;
-
             auto beforeGCCW = std::chrono::steady_clock::now();
-            Eigen::VectorXf resultMatrix = GCC_PHAT_FFTW(savedFFTs, exp.inverseFFT, exp.interp, paddedLength, exp.NUM_CHAN, exp.SAMPLE_RATE);
+            Eigen::VectorXf resultMatrix = GCC_PHAT_FFTW(savedFFTs, exp.myFFTPlan, exp.inverseFFT, filterFreq, exp.interp, paddedLength, exp.NUM_CHAN, exp.SAMPLE_RATE);
             auto afterGCCW = std::chrono::steady_clock::now();
             std::chrono::duration<double> durationGCCW = afterGCCW - beforeGCCW;
             std::cout << "GCC time: " << durationGCCW.count() << std::endl;

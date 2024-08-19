@@ -148,11 +148,12 @@ def WritePulseDOAs(times, amplitudes, outputFile):
     amplitudes = np.asarray(amplitudes)
     
     # Open the file in append mode and write each time with the corresponding row of amplitudes
+    precision=5
+    width = 10
     with open(outputFile, 'a') as file:
         for index in range(len(times)):
-            amplitude_row = ', '.join(map(str, amplitudes[index]))
-            file.write(f"{times[index]}, {amplitude_row}\n")
-
+            amplitude_row = ', '.join(f"{value: {width}.{precision}f}" for value in amplitudes[index])
+            file.write(f"{index+1:2} {times[index]}, {amplitude_row}\n")
 
 def SaveDataSegment(time, dataSegment, ch1, ch2, ch3, ch4):
     timestampString = time.strftime("%Y-%m-%d %H:%M:%S.%f")

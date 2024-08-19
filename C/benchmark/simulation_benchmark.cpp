@@ -34,7 +34,7 @@ vector<float> simulatedFilterWeightsFloat = {
         -6.21824599e-04, -3.51028225e-04,  3.26087846e-04,  5.00045521e-04,
         1.74828306e-18
 };
-
+/*
 static void BM_DataProcessSimulation(benchmark::State& state) {
     // init and randomize
     auto receivedData = std::vector<uint8_t>(3968, 0);
@@ -133,6 +133,7 @@ static void BM_DataProcessSimulation(benchmark::State& state) {
                 );
     }
 }
+*/
 
-BENCHMARK(BM_DataProcessSimulation);
+//BENCHMARK(BM_DataProcessSimulation);
 

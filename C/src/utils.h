@@ -14,6 +14,7 @@ std::vector<float> ReadFIRFilterFile(const std::string& fileName);
 bool ProcessFile(Experiment& exp, const std::string& fileName); 
 void InitiateOutputFile(std::string& outputFile, std::tm& timeStruct, int64_t microSec, std::string& feature);
 void PrintTimes(const std::span<TimePoint> timestamps);
+std::vector<std::vector<float>> LoadHydrophonePositions(const std::string& filename);
 void RestartListener(Session& sess);
 void ClearQueue(std::queue<std::vector<uint8_t>>& q);
 bool WithProbability(double probability);

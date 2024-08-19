@@ -184,8 +184,8 @@ def DataProcessor():
         ### MOVE THIS CODE OUT!!!!!
         H = LoadHydrophonePositions('../Data/SOCAL_H_72_HS_harp4chPar_recPos.txt')
         #H = LoadHydrophonePositions('../Data/VLA_recPos.txt')
-        #print("H:")
-        #print(H)
+        print("H:")
+        print(H)
         #print(np.sum(H**2, axis=1))
         #return
         practiceTDOAs = pd.read_csv('../Data/tdoa_104.csv', delimiter='\s+', header=None)
@@ -265,6 +265,11 @@ def DataProcessor():
 
             with dataSegmentLock:
                 ch1, ch2, ch3, ch4 = PreprocessSegment(dataSegment, NUM_PACKS_DETECT, NUM_CHAN, SAMPS_PER_CHANNEL)
+                #print(np.mean(ch1),np.mean(ch2),np.mean(ch3),np.mean(ch4))
+                #ch1 = ch1 - np.mean(ch1)
+                #ch2 = ch2 - np.mean(ch2)
+                #ch3 = ch3- np.mean(ch3)
+                #ch4 = ch4 - np.mean(ch4)
             with dataTimesLock:
                 #values = SegmentPulses(ch1, dataTimes, SAMPLE_RATE, 2500, False) # Set true to save segmented pulses
                 ch1 = lfilter(taps, 1.0, ch1)
@@ -297,7 +302,8 @@ def DataProcessor():
             dataMatrixFiltered = np.vstack(np.array([ch1, ch2, ch3, ch4]))
             
             #gccStart = time.time()
-            tdoaEstimates = GCC_PHAT(dataMatrixFiltered, SAMPLE_RATE, NUM_CHAN, max_tau=None, interp=1)
+            tdoaEstimates = CrossCorr(dataMatrixFiltered, SAMPLE_RATE, max_tau=None, interp=1)
+            print(tdoaEstimates)
             WritePulseDOAs(clickTimes, [tdoaEstimates], output_fileTDOAs)
             #print("P GCC: ", time.time() - gccStart)
             #print('here')

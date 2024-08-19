@@ -1,6 +1,8 @@
 #include "TDOA_estimation.h"
 
-Eigen::VectorXf GCC_PHAT_FFTW(Eigen::MatrixXcf& savedFFTs, fftwf_plan& inverseFFT, const int& interp, int& paddedLength, unsigned int& NUM_CHAN, const unsigned int& SAMPLE_RATE) {
+Eigen::VectorXf GCC_PHAT_FFTW(Eigen::MatrixXcf& savedFFTs, fftwf_plan& forwardFFT, fftwf_plan& inverseFFT, 
+                              Eigen::VectorXcf& filterFreqs, const int interp, int& paddedLength, 
+                              unsigned int& NUM_CHAN, const unsigned int& SAMPLE_RATE) {
     /**
     * @brief Computes the Generalized Cross-Correlation with Phase Transform (GCC-PHAT) between pairs of signals.
     *
@@ -22,6 +24,23 @@ Eigen::VectorXf GCC_PHAT_FFTW(Eigen::MatrixXcf& savedFFTs, fftwf_plan& inverseFF
 
     static Eigen::VectorXcf crossSpectraMagnitudeNorm(fftLength);
     static Eigen::VectorXf crossCorr(paddedLength);
+
+
+    auto beforeFFTWF = std::chrono::steady_clock::now();
+    fftwf_execute(forwardFFT);
+    auto afterFFTWF = std::chrono::steady_clock::now();
+    std::chrono::duration<double> durationFFTWF = afterFFTWF - beforeFFTWF;
+    std::cout << "FFT time: " << durationFFTWF.count() << std::endl;
+
+    auto beforeFFTW = std::chrono::steady_clock::now();
+    for (int i = 0; i < NUM_CHAN; i++){
+        savedFFTs.col(i) = savedFFTs.col(i).array() * filterFreqs.array();
+    }
+    auto afterFFTW = std::chrono::steady_clock::now();
+    std::chrono::duration<double> durationFFTW = afterFFTW - beforeFFTW;
+    // std::cout << "FFT filter time: " << durationFFTW.count() << std::endl;
+
+
 
     if (inverseFFT == nullptr) {
         inverseFFT = fftwf_plan_dft_c2r_1d(paddedLength, reinterpret_cast<fftwf_complex*>(crossSpectraMagnitudeNorm.data()), crossCorr.data(), FFTW_MEASURE);

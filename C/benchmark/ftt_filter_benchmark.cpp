@@ -130,7 +130,7 @@ static void BM_Filter(benchmark::State& state) {
         }
     }
 }
-
+/*
 static void BM_GCC(benchmark::State& state) {
     auto exp = Experiment();
     int channelSize = (int)(0.01 * 100000);
@@ -210,7 +210,7 @@ static void BM_GCC(benchmark::State& state) {
     }
 
 }
-
+*/
 BENCHMARK(BM_FFT);
 BENCHMARK(BM_Filter);
-BENCHMARK(BM_GCC);
+//BENCHMARK(BM_GCC);
