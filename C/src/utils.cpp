@@ -250,7 +250,7 @@ void WriteArray(const std::span<Eigen::VectorXf> array, const std::span<TimePoin
             
             outfile << time_since_epoch.count() << std::setw(20);
             for (int i = 0; i < array[row].size(); ++i) {
-                outfile << array[row][i] << " ";
+                outfile << std::fixed << std::setprecision(5) << std::right << array[row][i] << " ";
             }
             outfile << std::endl;
         }

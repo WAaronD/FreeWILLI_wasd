@@ -102,8 +102,8 @@ void UdpListener(Session &sess, unsigned int PACKET_SIZE)
                 endPacketTime = std::chrono::steady_clock::now();
                 durationPacketTime = endPacketTime - startPacketTime;
                 std::stringstream msg; // compose message to dispatch
-                msg << "Num packets received is " << packetCounter << " " << durationPacketTime.count() / printInterval
-                    << " " << queueSize << " " << packetCounter - queueSize << " " << detectionCounter << std::endl;
+                msg << "Packets rec: " << packetCounter << " duration: " << std::fixed << std::setprecision(6) << durationPacketTime.count() / printInterval
+                    << " queue size: " << queueSize << " processed packets: " << packetCounter - queueSize << " detections: " << detectionCounter << std::endl;
                 std::cout << msg.str(); // using one instance of "<<" makes the operation atomic
                 startPacketTime = std::chrono::steady_clock::now();
             }
