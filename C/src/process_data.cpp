@@ -2,6 +2,34 @@
 
 using TimePoint = std::chrono::system_clock::time_point;
 
+
+// Function to perform frequency domain FIR filtering
+void FrequencyDomainFIRFiltering(
+    const Eigen::MatrixXf& channelData,           // Zero-padded time-domain data
+    const Eigen::VectorXcf& filterFreq,           // Frequency domain filter (FIR taps in freq domain)
+    fftwf_plan& FFTPlan,                           // FFT plan
+    fftwf_plan& inverseFFTPlan,                    // Inverse FFT plan
+    Eigen::MatrixXcf& savedFFTs,                  // Output of FFT transformed time-domain data
+    Eigen::MatrixXf& invFFT)                      // Output of inverse FFT transformed data
+{
+    int paddedLength = channelData.rows();
+    int numChannels = channelData.cols();
+
+    // Perform FFT on the input time-domain data
+    fftwf_execute(FFTPlan);
+
+    // Apply the frequency domain filter to each channel
+    for (int i = 0; i < numChannels; i++){
+        savedFFTs.col(i) = savedFFTs.col(i).array() * filterFreq.array();
+    }
+
+    // Perform the inverse FFT to transform the filtered data back to the time domain
+    fftwf_execute(inverseFFTPlan);
+
+    // Normalize the inverse FFT output
+    invFFT /= paddedLength;
+}
+
 void ConvertData(std::vector<float>& dataSegment, std::span<uint8_t> dataBytes, unsigned int& DATA_SIZE, unsigned int& HEAD_SIZE) {
     /**
      * @brief Converts raw data bytes to double values and stores them in the provided data segment.

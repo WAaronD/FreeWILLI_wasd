@@ -34,11 +34,12 @@ struct Experiment {
 
     const std::string filterWeights = "filters/highpass_taps@101_cutoff@20k_window@hamming_fs@100k.txt";
     const std::string receiverPositions = "../Data/SOCAL_H_72_HS_harp4chPar_recPos.txt";
+    //const std::string receiverPositions = "../Data/VLA_recPos.txt";
     
     const float speedOfSound = 1482.965459;
-    float energyDetThresh = 28.0; // energy detector threshold - 2500.0 is default 
+    float energyDetThresh = 28.0f; // energy detector threshold - 2500.0 is default 
     
-    std::vector<float> chanSpacing = {1.0, 2.0, 3.0, 1.0, 2.0, 1.0};
+    //std::vector<float> chanSpacing = {1.0, 2.0, 3.0, 1.0, 2.0, 1.0};
     
     void(*ProcessFncPtr)(std::span<float>, Eigen::MatrixXf&, unsigned int)= nullptr;
 

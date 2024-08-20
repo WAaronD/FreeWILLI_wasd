@@ -188,53 +188,65 @@ bool WithProbability(double probability){
     return randomValue < probability;
 }
 
-std::vector<std::vector<float>> LoadHydrophonePositions(const std::string& filename){
+Eigen::MatrixXd LoadHydrophonePositions(const std::string& filename) {
     std::ifstream inputFile(filename);
-    
+
     if (!inputFile.is_open()) {
         throw std::runtime_error("Could not open file: " + filename);
     }
 
     std::cout << "Reading file positions" << std::endl;
-    
+
+    std::vector<std::vector<double>> temp_positions;
     std::string line;
-    std::vector<std::vector<float>> positions;
     std::string token;
 
-    while(std::getline(inputFile, line)){
-        std::vector<float> coordinate;
-        std::stringstream ss(line);    
-        float pos;
-        while(std::getline(ss, token, ',')) {
-            coordinate.push_back(std::stof(token));
+    // First, read the data into a temporary vector of vectors to determine dimensions
+    int numRows = 0;
+    int numCols = 0;
+    while (std::getline(inputFile, line)) {
+        std::stringstream ss(line);
+        std::vector<double> row_data;
+        while (std::getline(ss, token, ',')) {
+            row_data.push_back(std::stod(token));  // Convert token to double
         }
-        positions.push_back(coordinate);
-    }
-    std::cout << "printing positions: " << std::endl;
-    
-    /*
-    for (const auto& coord : positions){
-        for (const auto& val : coord){
-            std::cout << val << " ";
+        if (numCols == 0) {
+            numCols = row_data.size();  // Set number of columns based on the first row
         }
-        std::cout << std::endl;
+        temp_positions.push_back(row_data);
+        numRows++;
     }
-    */
 
-    std::vector<std::vector<float>> relativePositions;
-    for (int i = 0; i < positions.size(); i++){
-        for (int j = i + 1; j < positions.size(); j++){
-            std::vector<float> newPos;
-            for (int k = 0; k < positions[0].size(); k++){
-                newPos.push_back(positions[j][k] - positions[k][k]);
+    // Now create the Eigen matrix with determined dimensions
+    Eigen::MatrixXd positions(numRows, numCols);
+
+    // Populate the Eigen matrix with the data from the temp_positions vector
+    for (int i = 0; i < numRows; ++i) {
+        for (int j = 0; j < numCols; ++j) {
+            positions(i, j) = temp_positions[i][j];
+        }
+    }
+
+    // Print positions for debugging
+    std::cout << "Printing positions: " << std::endl;
+    std::cout << positions << std::endl;
+
+    // Initialize relativePositions with the correct size
+    int numRelativePositions = numRows * (numRows - 1) / 2;
+    Eigen::MatrixXd relativePositions(numRelativePositions, numCols);
+
+    int index = 0;
+    for (int i = 0; i < numRows; i++) {
+        for (int j = i + 1; j < numRows; j++) {
+            for (int k = 0; k < numCols; k++) {
+                relativePositions(index, k) = positions(j, k) - positions(i, k);
             }
-            relativePositions.push_back(newPos);
+            index++;
         }
     }
 
     return relativePositions;
 }
-
 
 void WritePulseAmplitudes(std::span<float> clickPeakAmps, std::span<TimePoint> timestamps, const std::string& filename) {
     /**
@@ -270,6 +282,30 @@ void WritePulseAmplitudes(std::span<float> clickPeakAmps, std::span<TimePoint> t
     }
     outfile.close();
 }
+
+void printFirstFiveValues(const Eigen::MatrixXf& savedFFTs, const Eigen::MatrixXf& invFFT) {
+    int numRows = 5; //savedFFTs.rows();
+    int numCols = 4; //std::min(5, static_cast<int>(savedFFTs.cols()));  // Ensure we only access up to 5 elements
+
+    std::cout << "First 5 values from each row of savedFFTs:" << std::endl;
+    for (int i = 0; i < numRows; ++i) {
+        std::cout << "Row " << i + 1 << ": ";
+        for (int j = 0; j < numCols; ++j) {
+            std::cout << savedFFTs(i, j) << " ";
+        }
+        std::cout << std::endl;
+    }
+
+    std::cout << "\nFirst 5 values from each row of invFFT:" << std::endl;
+    for (int i = 0; i < numRows; ++i) {
+        std::cout << "Row " << i + 1 << ": ";
+        for (int j = 0; j < numCols; ++j) {
+            std::cout << invFFT(i, j) << " ";
+        }
+        std::cout << std::endl;
+    }
+}
+
 
 void WriteArray(const std::span<Eigen::VectorXf> array, const std::span<TimePoint> timestamps, const std::string& filename) {
     /**

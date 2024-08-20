@@ -1,5 +1,47 @@
 #include "TDOA_estimation.h"
 
+Eigen::VectorXf CrossCorr(const Eigen::MatrixXf& channel_matrix, float fs, float max_tau = -1.0f, int interp = 16) {
+    int num_channels = channel_matrix.cols();
+    int signal_length = channel_matrix.rows();
+
+    Eigen::MatrixXf tau_matrix = Eigen::MatrixXf::Zero(num_channels, num_channels);
+    Eigen::VectorXf tau_vector((num_channels * (num_channels - 1)) / 2);
+
+    int pairing = 0;
+    for (int sig_ind = 0; sig_ind < num_channels - 1; ++sig_ind) {
+        for (int ref_ind = sig_ind + 1; ref_ind < num_channels; ++ref_ind) {
+            // Get the absolute values of the signals
+            Eigen::VectorXf sig = channel_matrix.col(sig_ind).array().abs();
+            Eigen::VectorXf refsig = channel_matrix.col(ref_ind).array().abs();
+
+            // Cross-correlation of the two signals
+            Eigen::VectorXf cross_corr = Eigen::VectorXf::Zero(2 * signal_length - 1);
+            for (int i = 0; i < signal_length; ++i) {
+                cross_corr.segment(i, signal_length) += sig(i) * refsig;
+            }
+
+            // Time axis for the cross-correlation
+            Eigen::VectorXf time_axis(2 * signal_length - 1);
+            std::iota(time_axis.data(), time_axis.data() + time_axis.size(), -signal_length + 1);
+            time_axis /= fs;
+
+            // Find the index of the maximum value in the cross-correlation
+            int max_index = 0;
+            cross_corr.cwiseAbs().maxCoeff(&max_index);
+
+            // Calculate the TDOA in seconds
+            float tdoa = time_axis(max_index);
+            tau_matrix(ref_ind, sig_ind) = tdoa;
+            tau_vector(pairing) = tdoa;
+            pairing++;
+        }
+    }
+
+    return tau_vector;
+}
+
+
+
 Eigen::VectorXf GCC_PHAT_FFTW(Eigen::MatrixXcf& savedFFTs, fftwf_plan& forwardFFT, fftwf_plan& inverseFFT, 
                               Eigen::VectorXcf& filterFreqs, const int interp, int& paddedLength, 
                               unsigned int& NUM_CHAN, const unsigned int& SAMPLE_RATE) {
@@ -32,14 +74,16 @@ Eigen::VectorXf GCC_PHAT_FFTW(Eigen::MatrixXcf& savedFFTs, fftwf_plan& forwardFF
     std::chrono::duration<double> durationFFTWF = afterFFTWF - beforeFFTWF;
     std::cout << "FFT time: " << durationFFTWF.count() << std::endl;
 
+    
     auto beforeFFTW = std::chrono::steady_clock::now();
     for (int i = 0; i < NUM_CHAN; i++){
         savedFFTs.col(i) = savedFFTs.col(i).array() * filterFreqs.array();
     }
+    
     auto afterFFTW = std::chrono::steady_clock::now();
     std::chrono::duration<double> durationFFTW = afterFFTW - beforeFFTW;
     // std::cout << "FFT filter time: " << durationFFTW.count() << std::endl;
-
+    
 
 
     if (inverseFFT == nullptr) {
@@ -90,6 +134,30 @@ Eigen::VectorXf GCC_PHAT_FFTW(Eigen::MatrixXcf& savedFFTs, fftwf_plan& forwardFF
     return tauVector;
 }
 
+Eigen::VectorXf tdoa2doa(const Eigen::MatrixXd& H, double c, const Eigen::VectorXf& tdoa) {
+    // Convert tdoa to VectorXd
+    Eigen::VectorXd tdoa_d = tdoa.cast<double>();
+
+    // Solve for DOA using least squares
+    Eigen::VectorXd scaled_tdoa = tdoa_d * c;
+    Eigen::VectorXd doa = H.colPivHouseholderQr().solve(scaled_tdoa);
+
+    // Normalize the DOA vector
+    doa /= doa.norm();
+
+    // Calculate elevation and azimuth
+    float el = static_cast<float>(180.0 - std::acos(doa(2)) * 180.0 / M_PI);
+    float az = static_cast<float>(std::atan2(doa(1), doa(0)) * 180.0 / M_PI);
+
+    // Create a result vector containing el, az, and the DOA vector components
+    Eigen::VectorXf result_vector(5);
+    result_vector << el, az, static_cast<float>(doa(0)), static_cast<float>(doa(1)), static_cast<float>(doa(2));
+    
+    return result_vector;
+}
+
+
+
 
 Eigen::VectorXf DOA_EstimateVerticalArray(Eigen::VectorXf& TDOAs, const double& soundSpeed, std::span<float> chanSpacing) {
     /**
@@ -124,71 +192,3 @@ Eigen::VectorXf DOA_EstimateVerticalArray(Eigen::VectorXf& TDOAs, const double& 
     // Convert angle to degrees
     return vals.array().acos() * 180.0f / 3.1415f;
 }
-
-/*
-void ApplyKalman(KF& kalman){
-
-
-  // Number of samples
-  arma::uword Nsamp = 120;
-  arma::uword N     = 6; // Nr of states
-  arma::uword M     = 2; // Nr of measurements
-  arma::uword L     = 1; // Nr of inputs
-  // Instatiate a Kalman Filter
-  KF kalman(N, M, L);
-  // Initialisation and setup of system
-  double P0 = 100;
-  double Q0 = 0.00003;
-  double R0 = 25;
-  // Meas interval
-  double dT = 0.1;
-  arma::mat x = {0, 10, 1, 50, -0.08, -9};
-  kalman.set_state_vec(0.9 * x.t());
-  // [X,Y,Vx,Vy,Ax,Ay] use position, velocity and acceleration as states
-  arma::mat A = {{1, 0, dT, 0, dT * dT / 2, 0},
-                 {0, 1, 0, dT, 0, dT * dT / 2},
-                 {0, 0, 1, 0, dT, 0},
-                 {0, 0, 0, 1, 0, dT},
-                 {0, 0, 0, 0, 1, 0},
-                 {0, 0, 0, 0, 0, 1}};
-  kalman.set_trans_mat(A);
-  arma::mat H = {{1, 0, 0, 0, 0, 0}, {0, 1, 0, 0, 0, 0}};
-  kalman.set_meas_mat(H);
-  arma::mat P = P0 * arma::eye(N, N);
-  kalman.set_err_cov(P);
-  arma::mat Q     = arma::zeros(N, N);
-  
-  Q(N - 2, N - 2) = 1;
-  Q(N - 1, N - 1) = 1;
-  Q               = Q0 * Q;
-  kalman.set_proc_noise(Q);
-  arma::mat R = R0 * arma::eye(M, M);
-  kalman.set_meas_noise(R);
-  // Create simulation data
-  arma::mat z(M, Nsamp, arma::fill::zeros);
-  arma::mat z0(M, Nsamp, arma::fill::zeros);
-  arma::mat xx(N, 1, arma::fill::zeros);
-  xx = x.t();
-  for (arma::uword n = 1; n < Nsamp; n++)
-  {
-    xx        = A * xx + 0.1 * Q * arma::randn(N, 1);
-    z0.col(n) = H * xx; //
-  }
-  z.row(0) = z0.row(0) + 0.001 * R0 * arma::randn(1, Nsamp);
-  z.row(1) = z0.row(1) + 0.8 * R0 * arma::randn(1, Nsamp);
-  arma::mat x_log(N, Nsamp);
-  arma::mat e_log(M, Nsamp);
-  arma::cube P_log(N, N, Nsamp);
-  arma::mat xs_log(M, Nsamp);
-  arma::cube Ps_log(N, N, Nsamp);
-  // Kalman filter loop
-  for (arma::uword n = 0; n < Nsamp; n++)
-  {
-    kalman.predict();
-    kalman.update(z.col(n));
-    x_log.col(n)   = kalman.get_state_vec();
-    e_log.col(n)   = kalman.get_err();
-    P_log.slice(n) = kalman.get_err_cov();
-  }
-}
-*/
