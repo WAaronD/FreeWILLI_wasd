@@ -2,63 +2,58 @@
 
 using TimePoint = std::chrono::system_clock::time_point;
 
-
 // Function to perform frequency domain FIR filtering
 void FrequencyDomainFIRFiltering(
-    const Eigen::MatrixXf& channelData,           // Zero-padded time-domain data
-    const Eigen::VectorXcf& filterFreq,           // Frequency domain filter (FIR taps in freq domain)
-    fftwf_plan& FFTPlan,                           // FFT plan
-    fftwf_plan& inverseFFTPlan,                    // Inverse FFT plan
-    Eigen::MatrixXcf& savedFFTs,                  // Output of FFT transformed time-domain data
-    Eigen::MatrixXf& invFFT)                      // Output of inverse FFT transformed data
+    const Eigen::MatrixXf &channelData, // Zero-padded time-domain data
+    const Eigen::VectorXcf &filterFreq, // Frequency domain filter (FIR taps in freq domain)
+    fftwf_plan &FFTPlan,                // FFT plan
+    Eigen::MatrixXcf &savedFFTs)        // Output of FFT transformed time-domain data
 {
     int paddedLength = channelData.rows();
     int numChannels = channelData.cols();
+    // std::cout << "numChannels: " << numChannels << std::endl;
 
     // Perform FFT on the input time-domain data
     fftwf_execute(FFTPlan);
 
     // Apply the frequency domain filter to each channel
-    for (int i = 0; i < numChannels; i++){
+    for (int i = 0; i < numChannels; i++)
+    {
         savedFFTs.col(i) = savedFFTs.col(i).array() * filterFreq.array();
     }
-
-    // Perform the inverse FFT to transform the filtered data back to the time domain
-    fftwf_execute(inverseFFTPlan);
-
-    // Normalize the inverse FFT output
-    invFFT /= paddedLength;
 }
 
-void ConvertData(std::vector<float>& dataSegment, std::span<uint8_t> dataBytes, unsigned int& DATA_SIZE, unsigned int& HEAD_SIZE) {
+void ConvertData(std::vector<float> &dataSegment, std::span<uint8_t> dataBytes, unsigned int &DATA_SIZE, unsigned int &HEAD_SIZE)
+{
     /**
      * @brief Converts raw data bytes to double values and stores them in the provided data segment.
-     * 
-     * This function converts raw data bytes to double values using a specific format and stores them 
-     * in the provided data segment vector. The conversion involves combining two bytes into a single 
-     * double value and then adjusting it to account for an offset. If the converted value contains NaN (Not a Number), 
+     *
+     * This function converts raw data bytes to double values using a specific format and stores them
+     * in the provided data segment vector. The conversion involves combining two bytes into a single
+     * double value and then adjusting it to account for an offset. If the converted value contains NaN (Not a Number),
      * an exception is thrown.
-     * 
+     *
      * @param dataSegment A reference to a vector of doubles where the converted data values will be stored.
      * @param dataBytes A reference to a vector of unsigned 8-bit integers representing the raw data bytes to be converted.
      * @param DATA_SIZE The size of the data segment to be converted.
      * @param HEAD_SIZE The size of the header portion (timestamps) to skip at the beginning).
      */
-    
-     for (size_t i = 0; i < DATA_SIZE; i += 2) {
-        float value = static_cast<float>(static_cast<uint16_t>(dataBytes[HEAD_SIZE+i]) << 8) +
-                       static_cast<float>(dataBytes[i + HEAD_SIZE + 1]);
+
+    for (size_t i = 0; i < DATA_SIZE; i += 2)
+    {
+        float value = static_cast<float>(static_cast<uint16_t>(dataBytes[HEAD_SIZE + i]) << 8) +
+                      static_cast<float>(dataBytes[i + HEAD_SIZE + 1]);
         value -= 32768.0;
         dataSegment.push_back(value);
     }
 }
 
+void GenerateTimestamps(std::vector<TimePoint> &dataTimes, std::span<uint8_t> dataBytes, unsigned int MICRO_INCR, bool &previousTimeSet, std::chrono::time_point<std::chrono::system_clock> &previousTime, std::string &detectionOutputFile, std::string &tdoaOutputFile, std::string &doaOutputFile)
+{
 
-void GenerateTimestamps(std::vector<TimePoint>& dataTimes, std::span<uint8_t> dataBytes, unsigned int MICRO_INCR, bool& previousTimeSet, std::chrono::time_point<std::chrono::system_clock>& previousTime, std::string& detectionOutputFile, std::string& tdoaOutputFile, std::string& doaOutputFile) {
-
-    std::tm timeStruct{};                                     // Initialize a std::tm structure to hold the date and time components
-    timeStruct.tm_year = (int)dataBytes[0] + 2000 - 1900;     // Offset for year since 2000.. tm_year is years since 1900 
-    timeStruct.tm_mon = (int)dataBytes[1] - 1;                // Months are 0-indexed
+    std::tm timeStruct{};                                 // Initialize a std::tm structure to hold the date and time components
+    timeStruct.tm_year = (int)dataBytes[0] + 2000 - 1900; // Offset for year since 2000.. tm_year is years since 1900
+    timeStruct.tm_mon = (int)dataBytes[1] - 1;            // Months are 0-indexed
     timeStruct.tm_mday = (int)dataBytes[2];
     timeStruct.tm_hour = (int)dataBytes[3];
     timeStruct.tm_min = (int)dataBytes[4];
@@ -66,40 +61,39 @@ void GenerateTimestamps(std::vector<TimePoint>& dataTimes, std::span<uint8_t> da
 
     // Calculate microseconds from the given bytes by shifting and combining them
     int64_t microSec = (static_cast<int64_t>(dataBytes[6]) << 24) +
-             (static_cast<int64_t>(dataBytes[7]) << 16) +
-             (static_cast<int64_t>(dataBytes[8]) << 8) +
-             static_cast<int64_t>(dataBytes[9]);
-                    
-    
+                       (static_cast<int64_t>(dataBytes[7]) << 16) +
+                       (static_cast<int64_t>(dataBytes[8]) << 8) +
+                       static_cast<int64_t>(dataBytes[9]);
+
     // Use std::mktime to convert std::tm to std::time_t
     std::time_t timeResult = std::mktime(&timeStruct);
 
     // Check if mktime failed
-    if (timeResult == std::time_t(-1)) {
+    if (timeResult == std::time_t(-1))
+    {
         throw std::runtime_error("Error: failure in mktime \n");
     }
 
-    auto currentTime = std::chrono::system_clock::from_time_t(timeResult);  // convert std::time_t to std::chrono::system_clock::time_point
+    auto currentTime = std::chrono::system_clock::from_time_t(timeResult); // convert std::time_t to std::chrono::system_clock::time_point
     currentTime += std::chrono::microseconds(microSec);
     dataTimes.push_back(currentTime);
 
     // Calculate the elapsed time in microseconds since the previous time point
     auto elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(currentTime - previousTime).count();
 
-                
-
     // Check if the previous time was set and if the elapsed time is not equal to the expected increment
-    if (previousTimeSet && (elapsedTime != MICRO_INCR)){
+    if (previousTimeSet && (elapsedTime != MICRO_INCR))
+    {
         std::stringstream msg; // compose message to dispatch
-        msg <<  "Error: Time not incremented by " <<  MICRO_INCR << " " << elapsedTime << std::endl;
+        msg << "Error: Time not incremented by " << MICRO_INCR << " " << elapsedTime << std::endl;
         throw std::runtime_error(msg.str());
     }
 
-
     previousTime = currentTime;
     previousTimeSet = true;
-    
-    if ((detectionOutputFile).empty()){
+
+    if ((detectionOutputFile).empty())
+    {
         std::string feature = "detection";
         InitiateOutputFile(detectionOutputFile, timeStruct, microSec, feature);
         feature = "tdoa";
@@ -109,28 +103,28 @@ void GenerateTimestamps(std::vector<TimePoint>& dataTimes, std::span<uint8_t> da
     }
 }
 
-
-
-DetectionResult ThresholdDetect(const Eigen::VectorXf& data, const std::span<TimePoint> times, const double& threshold, const unsigned int& SAMPLE_RATE) {
+DetectionResult ThresholdDetect(const Eigen::VectorXf &data, const std::span<TimePoint> times, const double &threshold, const unsigned int &SAMPLE_RATE)
+{
     /**
-    * @brief Detects peaks in the input data above a specified threshold.
-    *
-    * This function analyzes the input data to detect peaks that exceed the specified threshold.
-    * If a peak is found, its index, amplitude, and corresponding time are recorded in a DetectionResult structure.
-    *
-    * @param data A reference to an Eigen vector containing the input data.
-    * @param times A vector of TimePoint objects representing the timestamps corresponding to the input data.
-    * @param threshold The threshold value above which peaks are detected.
-    *
-    * @return A DetectionResult structure containing information about the detected peaks.
-    */
-    
+     * @brief Detects peaks in the input data above a specified threshold.
+     *
+     * This function analyzes the input data to detect peaks that exceed the specified threshold.
+     * If a peak is found, its index, amplitude, and corresponding time are recorded in a DetectionResult structure.
+     *
+     * @param data A reference to an Eigen vector containing the input data.
+     * @param times A vector of TimePoint objects representing the timestamps corresponding to the input data.
+     * @param threshold The threshold value above which peaks are detected.
+     *
+     * @return A DetectionResult structure containing information about the detected peaks.
+     */
+
     DetectionResult result{};
 
     int peakIndex = 0;
     float peakAmplitude = data.maxCoeff(&peakIndex);
 
-    if (peakAmplitude >= threshold) {
+    if (peakAmplitude >= threshold)
+    {
         result.minPeakIndex = peakIndex;
         result.maxPeakIndex = peakIndex;
         result.peakAmplitude = peakAmplitude;
@@ -141,25 +135,57 @@ DetectionResult ThresholdDetect(const Eigen::VectorXf& data, const std::span<Tim
     return result;
 }
 
+DetectionResult ThresholdDetectFD(const Eigen::VectorXcf &data, const std::span<TimePoint> times, const double &threshold, const unsigned int &SAMPLE_RATE)
+{
+    /**
+     * @brief Detects peaks in the input data above a specified threshold.
+     *
+     * This function analyzes the input data to detect peaks that exceed the specified threshold.
+     * If a peak is found, its index, amplitude, and corresponding time are recorded in a DetectionResult structure.
+     *
+     * @param data A reference to an Eigen vector containing the input data.
+     * @param times A vector of TimePoint objects representing the timestamps corresponding to the input data.
+     * @param threshold The threshold value above which peaks are detected.
+     *
+     * @return A DetectionResult structure containing information about the detected peaks.
+     */
+
+    DetectionResult result{};
+
+    int peakIndex = 0;
+    float peakAmplitude = data.array().abs().sum() / data.size(); // data.array().abs2().rowwise().sum(); // data.maxCoeff(&peakIndex);
+
+    if (peakAmplitude >= threshold)
+    {
+        std::cout << "peakamp: " << peakAmplitude << std::endl;
+        result.minPeakIndex = peakIndex;
+        result.maxPeakIndex = peakIndex;
+        result.peakAmplitude = peakAmplitude;
+        unsigned int microseconds = peakIndex * (1e6 / SAMPLE_RATE);
+        auto maxPeakTime = times[0] + std::chrono::microseconds(microseconds);
+        result.peakTimes = maxPeakTime;
+    }
+    return result;
+}
 /*
 void ProcessSegment(arma::Col<double>& data, vector<TimePoint>& times, const string& outputFile) {
     arma::Col<double> dataAbsolute = arma::abs(data);
-    
+
     // define the filter for click regions
     arma::Col<double> smoothFilter(1.0, 256, arma::fill::ones); // Filter of size 256 with all ones
     smoothFilter /= 256.0;
-    
+
     // Convolve abs_data with the filter
     arma::Col<double> dataSmoothed = arma::conv(dataAbsolute, smoothFilter, "same");
-    
+
     // Thresholding low amplitude values
     dataSmoothed.elem(arma::find(dataSmoothed < 80.0)).fill(0.0);
-    
+
     // Create a mask for click regions (ones filter)
     arma::Col<double> segmentationFilter(1.0,256,arma::fill::ones);
     arma::Col<double> dataMasked = arma::conv(dataSmoothed, segmentationFilter, "same");
     dataMasked.elem(arma::find(dataMasked > 0.0)).fill(1.0);
-    
+
 
     // Find click region indices based on differences
     arma::Col<double> diff = arma::diff(dataMasked);
@@ -182,10 +208,10 @@ void ProcessSegment(arma::Col<double>& data, vector<TimePoint>& times, const str
                 // Calculate the index (avoid potential iterator subtraction issues)
                 int peakIndex = arma::index_max(clickSegment);
                 double peakAmplitude = arma::max(clickSegment);
-                
+
                 // Calculate click time based on sampling rate and peak index
                 long long seconds = ((start_point + peakIndex) * 10); // divide (...) by 1e5 then times 1e6
-                
+
                 std::chrono::time_point<std::chrono::system_clock> peakAmplitudeTime = times[0] + std::chrono::microseconds(seconds);
                 clickPeakAmps.push_back(peakAmplitude);
                 timestamps.push_back(peakAmplitudeTime);
@@ -203,8 +229,8 @@ void ProcessSegmentStacked(vector<double>& data, vector<TimePoint>& times, const
 
     arma::Col<int16_t> ch1;
     int channelSize = data.size() / NUM_CHAN;
-    ch1.set_size(channelSize);                    // Reserve space in the arma::Col (optional but can improve performance) 
-    
+    ch1.set_size(channelSize);                    // Reserve space in the arma::Col (optional but can improve performance)
+
     // Iterate over the data in steps of 100
     for (size_t i = 0; i < NUM_PACKS_DETECT; ++i) {
         // Calculate the starting index of the current segment
@@ -233,24 +259,27 @@ void ProcessSegmentStacked(vector<double>& data, vector<TimePoint>& times, const
 }
 
 */
-void ProcessSegmentInterleaved(std::span<float> data, Eigen::MatrixXf& channels, unsigned int NUM_CHAN) {
+void ProcessSegmentInterleaved(std::span<float> data, Eigen::MatrixXf &channels, unsigned int NUM_CHAN)
+{
     /**
-    * @brief Processes interleaved data into separate channels. Each channel's data is saved into a corresponding Eigen matrix.
-    * 
-    * @param data A reference to a container of floats containing interleaved data from multiple channels.
-    * @param channels A reference to an Eigen matrix to hold the separate channel data. Each row corresponds to a channel.
-    * @param NUM_CHAN The number of channels.
-    */
-    
+     * @brief Processes interleaved data into separate channels. Each channel's data is saved into a corresponding Eigen matrix.
+     *
+     * @param data A reference to a container of floats containing interleaved data from multiple channels.
+     * @param channels A reference to an Eigen matrix to hold the separate channel data. Each row corresponds to a channel.
+     * @param NUM_CHAN The number of channels.
+     */
+
     // Calculate the number of samples per channel
     size_t numSamples = data.size() / NUM_CHAN;
-    
+
     // Ensure the channels matrix has the correct dimensions
-    //channels.resize(numSamples, NUM_CHAN);
+    // channels.resize(numSamples, NUM_CHAN);
 
     // Iterate through the data container and save every NUM_CHANth element into the corresponding row of the channels matrix
-    for (unsigned int ch = 0; ch < NUM_CHAN; ++ch) {
-        for (size_t i = 0; i < numSamples; ++i) {
+    for (unsigned int ch = 0; ch < NUM_CHAN; ++ch)
+    {
+        for (size_t i = 0; i < numSamples; ++i)
+        {
             channels(i, ch) = data[i * NUM_CHAN + ch];
         }
     }

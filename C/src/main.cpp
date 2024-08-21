@@ -169,8 +169,8 @@ void DataProcessor(Session &sess, Experiment &exp)
         // Matrices for (transformed) channel data
         static Eigen::MatrixXf channelData(paddedLength, exp.NUM_CHAN);
         static Eigen::MatrixXcf savedFFTs(fftOutputSize, exp.NUM_CHAN); // save the FFT transformed channels
-        static Eigen::MatrixXf invFFT(paddedLength, exp.NUM_CHAN); // Real output after inverse FFT
- 
+        // static Eigen::MatrixXf invFFT(paddedLength, exp.NUM_CHAN);      // Real output after inverse FFT
+
         /* Zero-pad filter weights to the length of the signal                     */
         std::vector<float> paddedFilterWeights(paddedLength, 0.0f);
         std::copy(filterWeightsFloat.begin(), filterWeightsFloat.end(), paddedFilterWeights.begin());
@@ -185,45 +185,25 @@ void DataProcessor(Session &sess, Experiment &exp)
         std::vector<uint8_t> dataBytes;
 
         // Create the FFTW plan with the correct strides
-        exp.myFFTPlan = fftwf_plan_many_dft_r2c(1,               // Rank of the transform (1D)
-                                                       &paddedLength,   // Pointer to the size of the transform
-                                                       4,     // Number of transforms (channels)
-                                                       channelData.data(), // Input data pointer
-                                                       nullptr,         // No embedding (we're not doing multi-dimensional transforms)
-                                                       1,           // Stride between successive elements in input
-                                                       paddedLength,         // Stride between successive channels in input
-                                                       reinterpret_cast<fftwf_complex*>(savedFFTs.data()), // Output data pointer
-                                                       nullptr,         // No embedding
-                                                       1,           // Stride between successive elements in output
-                                                       fftOutputSize,         // Stride between successive channels in output
-                                                       FFTW_MEASURE);   // Flag to measure and optimize the plan
-        // Create the inverse FFTW plan
-        fftwf_plan inverseFFTPlan = fftwf_plan_many_dft_c2r(
-                                                        1,                          // Rank of the transform (1D)
-                                                        &paddedLength,              // Pointer to the size of the transform
-                                                        4,                          // Number of transforms (channels)
-                                                        reinterpret_cast<fftwf_complex*>(savedFFTs.data()), // Input data pointer (complex)
-                                                        nullptr,                    // No embedding
-                                                        1,                          // Stride between successive elements in input
-                                                        fftOutputSize,              // Stride between successive channels in input
-                                                        invFFT.data(),              // Output data pointer (real)
-                                                        nullptr,                    // No embedding
-                                                        1,                          // Stride between successive elements in output
-                                                        paddedLength,               // Stride between successive channels in output
-                                                        FFTW_MEASURE);              // Flag to measure and optimize the plan
+        exp.myFFTPlan = fftwf_plan_many_dft_r2c(1,                                                   // Rank of the transform (1D)
+                                                &paddedLength,                                       // Pointer to the size of the transform
+                                                4,                                                   // Number of transforms (channels)
+                                                channelData.data(),                                  // Input data pointer
+                                                nullptr,                                             // No embedding (we're not doing multi-dimensional transforms)
+                                                1,                                                   // Stride between successive elements in input
+                                                paddedLength,                                        // Stride between successive channels in input
+                                                reinterpret_cast<fftwf_complex *>(savedFFTs.data()), // Output data pointer
+                                                nullptr,                                             // No embedding
+                                                1,                                                   // Stride between successive elements in output
+                                                fftOutputSize,                                       // Stride between successive channels in output
+                                                FFTW_MEASURE);                                       // Flag to measure and optimize the plan
 
-        // Fill the matrices with zeros 
+        // Fill the matrices with zeros
         channelData.setZero();
         savedFFTs.setZero();
-        invFFT.setZero();
-        
+
         Eigen::MatrixXd H = LoadHydrophonePositions(exp.receiverPositions);
-        for (int i = 0; i < H.rows(); ++i) {
-            for (int j = 0; j < H.cols(); ++j) {
-                std::cout << H(i, j) << " ";
-            }
-            std::cout << std::endl;
-        }
+
         // set the frequency of file writes
         BufferWriter bufferWriter;
         bufferWriter._flushInterval = 1000ms;
@@ -302,21 +282,15 @@ void DataProcessor(Session &sess, Experiment &exp)
             auto afterPtr = std::chrono::steady_clock::now();
             std::chrono::duration<double> durationPtr = afterPtr - beforePtr;
 
-            
             FrequencyDomainFIRFiltering(
-                channelData,           // Zero-padded time-domain data
-                filterFreq,           // Frequency domain filter (FIR taps in freq domain)
-                exp.myFFTPlan,                           // FFT plan
-                inverseFFTPlan,                    // Inverse FFT plan
-                savedFFTs,                  // Output of FFT transformed time-domain data
-                invFFT);                      // Output of inverse FFT transformed data
-            
+                channelData,   // Zero-padded time-domain data
+                filterFreq,    // Frequency domain filter (FIR taps in freq domain)
+                exp.myFFTPlan, // FFT plan
+                savedFFTs);    // Output of FFT transformed time-domain data
 
-            //printFirstFiveValues(channelData, invFFT);
-            //std::cout << "past printing" << std::endl;
-            //std::exit(0);
-            DetectionResult detResult = ThresholdDetect(invFFT.col(0), sess.dataTimes, exp.energyDetThresh, exp.SAMPLE_RATE);
-            
+            // DetectionResult detResult = ThresholdDetect(invFFT.col(0), sess.dataTimes, exp.energyDetThresh, exp.SAMPLE_RATE);
+            DetectionResult detResult = ThresholdDetectFD(savedFFTs.col(0), sess.dataTimes, exp.energyDetThresh, exp.SAMPLE_RATE);
+
             if (detResult.maxPeakIndex < 0)
             {             // if no pulse was detected (maxPeakIndex remains -1) stop processing
                 continue; // get next dataSegment; return to loop
@@ -329,18 +303,17 @@ void DataProcessor(Session &sess, Experiment &exp)
             detectionCounter++;
 
             auto beforeGCCW = std::chrono::steady_clock::now();
-            
-            //NEED TO CLEAN UP GGC_PHAT_FFTW funtion
+
             Eigen::VectorXf resultMatrix = GCC_PHAT_FFTW(savedFFTs, exp.myFFTPlan, exp.inverseFFT, filterFreq, exp.interp, paddedLength, exp.NUM_CHAN, exp.SAMPLE_RATE);
 
-            //Eigen::VectorXf resultMatrix = CrossCorr(invFFT, exp.SAMPLE_RATE, 0.0f, 0);
+            // Eigen::VectorXf resultMatrix = CrossCorr(invFFT, exp.SAMPLE_RATE, 0.0f, 0);
             auto afterGCCW = std::chrono::steady_clock::now();
             std::chrono::duration<double> durationGCCW = afterGCCW - beforeGCCW;
             std::cout << "GCC time: " << durationGCCW.count() << std::endl;
 
-            //Eigen::VectorXf DOAs = DOA_EstimateVerticalArray(resultMatrix, exp.speedOfSound, exp.chanSpacing);
-            Eigen::VectorXf DOAs = tdoa2doa(H, exp.speedOfSound, resultMatrix);
-            //Eigen::VectorXf DOAs = DOA_EstimateVerticalArray(resultMatrix, 1500.0, exp.chanSpacing);
+            // Eigen::VectorXf DOAs = DOA_EstimateVerticalArray(resultMatrix, exp.speedOfSound, exp.chanSpacing);
+            Eigen::VectorXf DOAs = TDOA_To_DOA_GeneralArray(H, exp.speedOfSound, resultMatrix);
+            // Eigen::VectorXf DOAs = TDOA_To_DOA_VerticalArray(resultMatrix, 1500.0, exp.chanSpacing);
             std::cout << "DOAs: " << DOAs.transpose() << std::endl;
 
             // Write to buffers
