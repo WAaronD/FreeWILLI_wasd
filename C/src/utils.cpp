@@ -2,20 +2,22 @@
 
 using TimePoint = std::chrono::system_clock::time_point;
 
-void PrintTimes(const std::span<TimePoint> timestamps) {
+void PrintTimes(const std::span<TimePoint> timestamps)
+{
     /**
-    * @brief Prints the timestamps provided in the input vector.
-    *
-    * This function prints the timestamps provided in the input vector
-    * in the format "YYYY-MM-DD HH:MM:SS:Microseconds".
-    *
-    * @param timestamps A vector of TimePoint objects representing the timestamps to be printed.
-    *                   TimePoint is a type alias for a time point based on std::chrono::system_clock.
-    */
-    
-    for (auto& timestamp : timestamps) {
+     * @brief Prints the timestamps provided in the input vector.
+     *
+     * This function prints the timestamps provided in the input vector
+     * in the format "YYYY-MM-DD HH:MM:SS:Microseconds".
+     *
+     * @param timestamps A vector of TimePoint objects representing the timestamps to be printed.
+     *                   TimePoint is a type alias for a time point based on std::chrono::system_clock.
+     */
+
+    for (auto &timestamp : timestamps)
+    {
         std::time_t timeRepresentation = std::chrono::system_clock::to_time_t(timestamp);
-        std::tm timeData = *std::localtime(&timeRepresentation); 
+        std::tm timeData = *std::localtime(&timeRepresentation);
         auto microSeconds = std::chrono::duration_cast<std::chrono::microseconds>(timestamp.time_since_epoch()).count() % 1000000;
         std::stringstream msg; // compose message to dispatch
         msg << "Timestamp: "
@@ -26,29 +28,31 @@ void PrintTimes(const std::span<TimePoint> timestamps) {
             << timeData.tm_min << ':'
             << timeData.tm_sec << ':'
             << microSeconds << std::endl;
-        
+
         std::cout << msg.str();
     }
 }
 
-void RestartListener(Session& sess){
-     /**
+void RestartListener(Session &sess)
+{
+    /**
      * @brief (Re)starts the udp listener. It closes the existing socket connection and creates a new one.
-     * Additionally, it clears the buffer (dataBuffer) and the segment to be processed (dataSegment) 
+     * Additionally, it clears the buffer (dataBuffer) and the segment to be processed (dataSegment)
      * as well as the vector containing the timestamps (dataTimes).
      *
      * @param sess A reference to the Session object representing the listener session.
      */
-    
+
     std::cout << "restarting listener: \n";
 
-    if (close(sess.datagramSocket) == -1) {
+    if (close(sess.datagramSocket) == -1)
+    {
         throw std::runtime_error("Failed to close socket \n");
     }
 
-
     sess.datagramSocket = socket(AF_INET, SOCK_DGRAM, 0);
-    if (sess.datagramSocket == -1) {
+    if (sess.datagramSocket == -1)
+    {
         throw std::runtime_error("Error creating socket \n");
     }
 
@@ -57,18 +61,21 @@ void RestartListener(Session& sess){
     serverAddr.sin_addr.s_addr = inet_addr(sess.UDP_IP.c_str());
     serverAddr.sin_port = htons(sess.UDP_PORT);
 
-    if (sess.UDP_IP == "192.168.100.220"){
+    if (sess.UDP_IP == "192.168.100.220")
+    {
         std::cout << "Sending wake up data to IP address to data logger \n";
-        const char* m1 = "Open";
+        const char *m1 = "Open";
         unsigned char m2[96] = {0};
         unsigned char message[100];
-        std::memcpy(message, m1,4);
+        std::memcpy(message, m1, 4);
         std::memcpy(message + 4, m2, 96);
-        if (sendto(sess.datagramSocket, message, sizeof(message), 0, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0){
+        if (sendto(sess.datagramSocket, message, sizeof(message), 0, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0)
+        {
             throw std::runtime_error("Error sending wake-up data packet to data logger \n");
         }
     }
-    else if (bind(sess.datagramSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == -1) {
+    else if (bind(sess.datagramSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == -1)
+    {
         throw std::runtime_error("Error binding socket \n");
     }
 
@@ -77,79 +84,108 @@ void RestartListener(Session& sess){
     sess.dataTimes.clear();
 }
 
-bool ProcessFile(Experiment& exp, const std::string& fileName) {
+bool ProcessFile(Experiment &exp, const std::string &fileName)
+{
     /**
-    * @brief Processes a configuration file and initializes global variables accordingly.
-    *
-    * @param fileName The name (or path) of the configuration file to process.
-    */
-    
+     * @brief Processes a configuration file and initializes global variables accordingly.
+     *
+     * @param fileName The name (or path) of the configuration file to process.
+     */
+
     std::ifstream inputFile(fileName);
-    if (!inputFile.is_open()) {
+    if (!inputFile.is_open())
+    {
         return 1;
     }
     inputFile >> exp.HEAD_SIZE >> exp.MICRO_INCR >> exp.NUM_CHAN >> exp.SAMPS_PER_CHANNEL >> exp.BYTES_PER_SAMP;
-    exp.DATA_SIZE = exp.SAMPS_PER_CHANNEL * exp.NUM_CHAN * exp.BYTES_PER_SAMP; 
-    
+    exp.DATA_SIZE = exp.SAMPS_PER_CHANNEL * exp.NUM_CHAN * exp.BYTES_PER_SAMP;
+
     exp.PACKET_SIZE = exp.HEAD_SIZE + exp.DATA_SIZE;
     exp.REQUIRED_BYTES = exp.DATA_SIZE + exp.HEAD_SIZE;
     exp.DATA_BYTES_PER_CHANNEL = exp.SAMPS_PER_CHANNEL * exp.BYTES_PER_SAMP;
     return 0;
 }
 
-void InitiateOutputFile(std::string& outputFile, std::tm& timeStruct, int64_t microSec, std::string& feature){
+void InitiateOutputFile(std::string &outputFile, std::tm &timeStruct, int64_t microSec, std::string &feature, int NUM_CHAN)
+{
 
-    outputFile = "deployment_files/"  + std::to_string(timeStruct.tm_year + 1900) + '-' + std::to_string(timeStruct.tm_mon + 1) + '-' + 
-                     std::to_string(timeStruct.tm_mday) + '-' + std::to_string(timeStruct.tm_hour) + '-' + std::to_string(timeStruct.tm_min) + '-' +
-                     std::to_string(timeStruct.tm_sec) + '-' + std::to_string(microSec) + '_' + feature;
-    
+    outputFile = "deployment_files/" + std::to_string(timeStruct.tm_year + 1900) + '-' + std::to_string(timeStruct.tm_mon + 1) + '-' +
+                 std::to_string(timeStruct.tm_mday) + '-' + std::to_string(timeStruct.tm_hour) + '-' + std::to_string(timeStruct.tm_min) + '-' +
+                 std::to_string(timeStruct.tm_sec) + '-' + std::to_string(microSec) + '_' + feature;
+
     std::stringstream msg; // compose message to dispatch
     msg << "created and writting to file: " << outputFile << std::endl;
     std::cout << msg.str();
-    
+
     // Open the file in write mode and clear its contents if it exists, create a new file otherwise
     std::ofstream file(outputFile, std::ofstream::out | std::ofstream::trunc);
-    if (file.is_open()) {
-        file << "Timestamp (microseconds)" << std::setw(20) << "Peak Amplitude" << std::endl;
+    if (file.is_open())
+    {
+        file << "usec since Unix Start" << std::setw(20) << "Energy     " << "El.      " << "Az.     ";
+
+        for (int sig = 1; sig < NUM_CHAN; ++sig)
+        {
+            for (int ref = sig + 1; ref < NUM_CHAN + 1; ++ref)
+            {
+                file << "TDOA" + std::to_string(sig * 10 + ref) << "  ";
+            }
+        }
+
+        for (int sig = 1; sig < NUM_CHAN; ++sig)
+        {
+            for (int ref = sig + 1; ref < NUM_CHAN + 1; ++ref)
+            {
+                file << "Xcorr" + std::to_string(sig * 10 + ref) << "   ";
+            }
+        }
+
+        file << std::endl;
         file.close();
-    } 
-    else {
+    }
+    else
+    {
         std::stringstream throwMsg; // compose message to dispatch
         throwMsg << "Error: Unable to open file for writing: " << outputFile << std::endl;
         throw std::runtime_error(throwMsg.str());
     }
 }
 
-std::vector<float> ReadFIRFilterFile(const std::string& fileName) {
-     /**
+std::vector<float> ReadFIRFilterFile(const std::string &fileName)
+{
+    /**
      * @brief Reads a file containing the FIR filter taps and returns the values as an Armadillo column vector.
      *
      * @param fileName The name (or path) of the file to read.
      *                 The file should contain comma-separated numeric values on each line.
-     * @return arma::Col<double> An Armadillo column vector containing the numeric values 
+     * @return arma::Col<double> An Armadillo column vector containing the numeric values
      *                           read from the file.
      * @throws std::runtime_error If the file cannot be opened.
      */
 
-
     std::ifstream inputFile(fileName);
-    if (!inputFile.is_open()) {
+    if (!inputFile.is_open())
+    {
         std::stringstream msg; // compose message to dispatch
         msg << "Error: Unable to open filter file '" << fileName << "'." << std::endl;
         throw std::ios_base::failure(msg.str());
     }
     std::string line;
     std::vector<float> filterValues;
-    while (std::getline(inputFile, line)){
-        //std::vector<float> values;
+    while (std::getline(inputFile, line))
+    {
+        // std::vector<float> values;
         std::stringstream stringStream(line);
         std::string token;
-        
-        while(std::getline(stringStream,token, ',')){
-            try {
+
+        while (std::getline(stringStream, token, ','))
+        {
+            try
+            {
                 float value = std::stof(token);
                 filterValues.push_back(value);
-            } catch(const std::invalid_argument& e) {
+            }
+            catch (const std::invalid_argument &e)
+            {
                 std::stringstream errMsg; // compose message to dispatch
                 errMsg << "Invalid numeric value: " << token << std::endl;
                 std::cerr << errMsg.str();
@@ -159,26 +195,28 @@ std::vector<float> ReadFIRFilterFile(const std::string& fileName) {
     return filterValues;
 }
 
-void ClearQueue(std::queue<std::vector<uint8_t>>& fullQueue) {
+void ClearQueue(std::queue<std::vector<uint8_t>> &fullQueue)
+{
     /**
-    * @brief This function effectively clears the given queue by swapping it with an
-    * empty queue, thus removing all its elements.
-    *
-    * @param q The queue to be cleared. This queue holds vectors of uint8_t.
-    */
-    
+     * @brief This function effectively clears the given queue by swapping it with an
+     * empty queue, thus removing all its elements.
+     *
+     * @param q The queue to be cleared. This queue holds vectors of uint8_t.
+     */
+
     std::queue<std::vector<uint8_t>> empty;
     std::swap(fullQueue, empty);
 }
 
-bool WithProbability(double probability){
+bool WithProbability(double probability)
+{
     /**
-    * @brief Generates a boolean value based on the given probability.
-    * This fucntion is used for testing.
-    * 
-    * @param probability The probability (between 0.0 and 1.0) of returning true.
-    * @return bool Returns true with the specified probability, otherwise returns false.
-    */
+     * @brief Generates a boolean value based on the given probability.
+     * This fucntion is used for testing.
+     *
+     * @param probability The probability (between 0.0 and 1.0) of returning true.
+     * @return bool Returns true with the specified probability, otherwise returns false.
+     */
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -188,10 +226,12 @@ bool WithProbability(double probability){
     return randomValue < probability;
 }
 
-Eigen::MatrixXd LoadHydrophonePositions(const std::string& filename) {
+Eigen::MatrixXd LoadHydrophonePositions(const std::string &filename)
+{
     std::ifstream inputFile(filename);
 
-    if (!inputFile.is_open()) {
+    if (!inputFile.is_open())
+    {
         throw std::runtime_error("Could not open file: " + filename);
     }
 
@@ -204,14 +244,17 @@ Eigen::MatrixXd LoadHydrophonePositions(const std::string& filename) {
     // First, read the data into a temporary vector of vectors to determine dimensions
     int numRows = 0;
     int numCols = 0;
-    while (std::getline(inputFile, line)) {
+    while (std::getline(inputFile, line))
+    {
         std::stringstream ss(line);
         std::vector<double> row_data;
-        while (std::getline(ss, token, ',')) {
-            row_data.push_back(std::stod(token));  // Convert token to double
+        while (std::getline(ss, token, ','))
+        {
+            row_data.push_back(std::stod(token)); // Convert token to double
         }
-        if (numCols == 0) {
-            numCols = row_data.size();  // Set number of columns based on the first row
+        if (numCols == 0)
+        {
+            numCols = row_data.size(); // Set number of columns based on the first row
         }
         temp_positions.push_back(row_data);
         numRows++;
@@ -221,8 +264,10 @@ Eigen::MatrixXd LoadHydrophonePositions(const std::string& filename) {
     Eigen::MatrixXd positions(numRows, numCols);
 
     // Populate the Eigen matrix with the data from the temp_positions vector
-    for (int i = 0; i < numRows; ++i) {
-        for (int j = 0; j < numCols; ++j) {
+    for (int i = 0; i < numRows; ++i)
+    {
+        for (int j = 0; j < numCols; ++j)
+        {
             positions(i, j) = temp_positions[i][j];
         }
     }
@@ -236,9 +281,12 @@ Eigen::MatrixXd LoadHydrophonePositions(const std::string& filename) {
     Eigen::MatrixXd relativePositions(numRelativePositions, numCols);
 
     int index = 0;
-    for (int i = 0; i < numRows; i++) {
-        for (int j = i + 1; j < numRows; j++) {
-            for (int k = 0; k < numCols; k++) {
+    for (int i = 0; i < numRows; i++)
+    {
+        for (int j = i + 1; j < numRows; j++)
+        {
+            for (int k = 0; k < numCols; k++)
+            {
                 relativePositions(index, k) = positions(j, k) - positions(i, k);
             }
             index++;
@@ -248,34 +296,37 @@ Eigen::MatrixXd LoadHydrophonePositions(const std::string& filename) {
     return relativePositions;
 }
 
-void WritePulseAmplitudes(std::span<float> clickPeakAmps, std::span<TimePoint> timestamps, const std::string& filename) {
+void WritePulseAmplitudes(std::span<float> clickPeakAmps, std::span<TimePoint> timestamps, const std::string &filename)
+{
     /**
-    * @brief Writes pulse amplitudes and corresponding timestamps to a file.
-    *
-    * @param clickPeakAmps A reference to a vector of doubles containing pulse amplitudes.
-    * @param timestamps A reference to a vector of TimePoint objects representing the timestamps corresponding to the pulse amplitudes.
-    * @param filename A string specifying the output file path or name.
-    */
-    
+     * @brief Writes pulse amplitudes and corresponding timestamps to a file.
+     *
+     * @param clickPeakAmps A reference to a vector of doubles containing pulse amplitudes.
+     * @param timestamps A reference to a vector of TimePoint objects representing the timestamps corresponding to the pulse amplitudes.
+     * @param filename A string specifying the output file path or name.
+     */
 
-    //std::cout << "clickPeakAmps.size(): " << clickPeakAmps.size() << std::endl;
+    // std::cout << "clickPeakAmps.size(): " << clickPeakAmps.size() << std::endl;
     std::ofstream outfile(filename, std::ios::app);
-    if (outfile.is_open()) {
+    if (outfile.is_open())
+    {
         // Check if vectors have the same size
-        if (clickPeakAmps.size() != timestamps.size()) {
+        if (clickPeakAmps.size() != timestamps.size())
+        {
             std::cerr << "Error: Click amplitude and timestamp vectors have different sizes. \n";
             return;
         }
 
         // Write data rows
-        for (size_t i = 0; i < clickPeakAmps.size(); ++i) {
+        for (size_t i = 0; i < clickPeakAmps.size(); ++i)
+        {
             auto time_point = timestamps[i];
             auto time_since_epoch = std::chrono::duration_cast<std::chrono::microseconds>(time_point.time_since_epoch());
             outfile << time_since_epoch.count() << std::setw(20) << clickPeakAmps[i] << std::endl;
         }
-
-    } 
-    else {
+    }
+    else
+    {
         std::stringstream msg; // compose message to dispatch
         msg << "Error: Could not open file " << filename << std::endl;
         std::cerr << msg.str();
@@ -283,41 +334,47 @@ void WritePulseAmplitudes(std::span<float> clickPeakAmps, std::span<TimePoint> t
     outfile.close();
 }
 
-void printFirstFiveValues(const Eigen::MatrixXf& savedFFTs, const Eigen::MatrixXf& invFFT) {
-    int numRows = 5; //savedFFTs.rows();
-    int numCols = 4; //std::min(5, static_cast<int>(savedFFTs.cols()));  // Ensure we only access up to 5 elements
+void printFirstFiveValues(const Eigen::MatrixXf &savedFFTs, const Eigen::MatrixXf &invFFT)
+{
+    int numRows = 5; // savedFFTs.rows();
+    int numCols = 4; // std::min(5, static_cast<int>(savedFFTs.cols()));  // Ensure we only access up to 5 elements
 
     std::cout << "First 5 values from each row of savedFFTs:" << std::endl;
-    for (int i = 0; i < numRows; ++i) {
+    for (int i = 0; i < numRows; ++i)
+    {
         std::cout << "Row " << i + 1 << ": ";
-        for (int j = 0; j < numCols; ++j) {
+        for (int j = 0; j < numCols; ++j)
+        {
             std::cout << savedFFTs(i, j) << " ";
         }
         std::cout << std::endl;
     }
 
     std::cout << "\nFirst 5 values from each row of invFFT:" << std::endl;
-    for (int i = 0; i < numRows; ++i) {
+    for (int i = 0; i < numRows; ++i)
+    {
         std::cout << "Row " << i + 1 << ": ";
-        for (int j = 0; j < numCols; ++j) {
+        for (int j = 0; j < numCols; ++j)
+        {
             std::cout << invFFT(i, j) << " ";
         }
         std::cout << std::endl;
     }
 }
 
-
-void WriteArray(const std::span<Eigen::VectorXf> array, const std::span<TimePoint> timestamps, const std::string& filename) {
+void WriteArray(const std::span<Eigen::VectorXf> array, const std::span<TimePoint> timestamps, const std::string &filename)
+{
     /**
-    * @brief Writes pulse amplitudes and corresponding timestamps to a file.
-    *
-    * @param array A reference to an Eigen vector of doubles containing pulse amplitudes.
-    * @param timestamps A reference to a vector of TimePoint objects representing the timestamps corresponding to the pulse amplitudes.
-    * @param filename A string specifying the output file path or name.
-    */
-    
+     * @brief Writes pulse amplitudes and corresponding timestamps to a file.
+     *
+     * @param array A reference to an Eigen vector of doubles containing pulse amplitudes.
+     * @param timestamps A reference to a vector of TimePoint objects representing the timestamps corresponding to the pulse amplitudes.
+     * @param filename A string specifying the output file path or name.
+     */
+
     std::ofstream outfile(filename, std::ios::app);
-    if (outfile.is_open()) {
+    if (outfile.is_open())
+    {
         // Check if vectors have the same size (uncomment if needed)
         /*
         if (array.size() != timestamps.size()) {
@@ -325,21 +382,24 @@ void WriteArray(const std::span<Eigen::VectorXf> array, const std::span<TimePoin
             return;
         }
         */
-        
+
         // Write data rows
-        
-        for (int row = 0; row < array.size(); row++){
+
+        for (int row = 0; row < array.size(); row++)
+        {
             auto time_point = timestamps[row];
             auto time_since_epoch = std::chrono::duration_cast<std::chrono::microseconds>(time_point.time_since_epoch());
-            
+
             outfile << time_since_epoch.count() << std::setw(20);
-            for (int i = 0; i < array[row].size(); ++i) {
+            for (int i = 0; i < array[row].size(); ++i)
+            {
                 outfile << std::fixed << std::setprecision(5) << std::right << array[row][i] << " ";
             }
             outfile << std::endl;
         }
-
-    } else {
+    }
+    else
+    {
         std::stringstream msg; // compose message to dispatch
         msg << "Error: Could not open file " << filename << std::endl;
         std::cerr << msg.str();
@@ -347,19 +407,23 @@ void WriteArray(const std::span<Eigen::VectorXf> array, const std::span<TimePoin
     outfile.close();
 }
 
-void WriteDataToCerr(std::span<TimePoint> dataTimes, std::vector<std::vector<uint8_t>> dataBytesSaved){
+void WriteDataToCerr(std::span<TimePoint> dataTimes, std::vector<std::vector<uint8_t>> dataBytesSaved)
+{
     std::stringstream msg; // compose message to dispatch
     msg << "Timestmaps of data causing error: \n";
-    for (const auto timestamp : dataTimes){
-        auto convertedTime = std::chrono::duration_cast<std::chrono::microseconds>(timestamp.time_since_epoch()).count(); 
+    for (const auto timestamp : dataTimes)
+    {
+        auto convertedTime = std::chrono::duration_cast<std::chrono::microseconds>(timestamp.time_since_epoch()).count();
         msg << convertedTime << std::endl;
     }
     msg << std::endl;
-    
+
     msg << "Errored bytes of last packets: " << std::endl;
-    for (const auto& byteArray : dataBytesSaved){
+    for (const auto &byteArray : dataBytesSaved)
+    {
         msg << std::endl;
-        for (const auto data : byteArray){
+        for (const auto data : byteArray)
+        {
             msg << std::setw(2) << std::setfill('0') << static_cast<int>(data);
         }
         msg << std::endl;

@@ -1,8 +1,9 @@
 #include "TDOA_estimation.h"
 
-Eigen::VectorXf GCC_PHAT_FFTW(Eigen::MatrixXcf &savedFFTs, fftwf_plan &forwardFFT, fftwf_plan &inverseFFT,
-                              Eigen::VectorXcf &filterFreqs, const int interp, int &paddedLength,
-                              unsigned int &NUM_CHAN, const unsigned int &SAMPLE_RATE)
+auto GCC_PHAT_FFTW(Eigen::MatrixXcf &savedFFTs, fftwf_plan &forwardFFT, fftwf_plan &inverseFFT,
+                   Eigen::VectorXcf &filterFreqs, const int interp, int &paddedLength,
+                   unsigned int &NUM_CHAN, const unsigned int &SAMPLE_RATE)
+    -> std::tuple<Eigen::VectorXf, Eigen::VectorXf>
 {
     /**
      * @brief Computes the Generalized Cross-Correlation with Phase Transform (GCC-PHAT) between pairs of signals.
@@ -20,6 +21,7 @@ Eigen::VectorXf GCC_PHAT_FFTW(Eigen::MatrixXcf &savedFFTs, fftwf_plan &forwardFF
     int fftLength = savedFFTs.col(0).size();
     int numTDOAs = NUM_CHAN * (NUM_CHAN - 1) / 2;
     Eigen::VectorXf tauVector(numTDOAs);
+    Eigen::VectorXf XCorrPeaks(numTDOAs);
     Eigen::VectorXcf SIG1(fftLength);
     Eigen::VectorXcf SIG2(fftLength);
 
@@ -70,15 +72,17 @@ Eigen::VectorXf GCC_PHAT_FFTW(Eigen::MatrixXcf &savedFFTs, fftwf_plan &forwardFF
             crossCorrInverted << back, front;
 
             Eigen::Index maxIndex;
-            crossCorrInverted.maxCoeff(&maxIndex);
+            float maxValue = crossCorrInverted.maxCoeff(&maxIndex);
 
             double shift = static_cast<double>(maxIndex) - maxShift;
             double timeDelta = shift / (interp * SAMPLE_RATE);
             tauVector(pairCounter) = timeDelta;
+            XCorrPeaks(pairCounter) = maxValue;
+
             pairCounter++;
         }
     }
-    return tauVector;
+    return std::make_tuple(tauVector, XCorrPeaks);
 }
 
 Eigen::VectorXf CrossCorr(const Eigen::MatrixXf &channel_matrix, float fs, float max_tau = -1.0f, int interp = 16)
@@ -142,8 +146,8 @@ Eigen::VectorXf TDOA_To_DOA_GeneralArray(const Eigen::MatrixXd &H, double c, con
     float az = static_cast<float>(std::atan2(doa(1), doa(0)) * 180.0 / M_PI);
 
     // Create a result vector containing el, az, and the DOA vector components
-    Eigen::VectorXf result_vector(5);
-    result_vector << el, az, static_cast<float>(doa(0)), static_cast<float>(doa(1)), static_cast<float>(doa(2));
+    Eigen::VectorXf result_vector(2);
+    result_vector << el, az;
 
     return result_vector;
 }

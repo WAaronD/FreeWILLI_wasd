@@ -28,9 +28,6 @@ struct Experiment
     const float TIME_WINDOW = 0.01; // fraction of a second to consider
 
     std::string detectionOutputFile = ""; // Define at runtime
-    std::string tdoaOutputFile = "";
-    std::string doaOutputFile = "";
-
     std::chrono::seconds programRuntime;
     TimePoint programStartTime; // placeholder value
 
@@ -67,6 +64,7 @@ struct Session
     std::vector<TimePoint> peakTimesBuffer;
     std::vector<Eigen::VectorXf> resultMatrixBuffer;
     std::vector<Eigen::VectorXf> DOAsBuffer;
+    std::vector<Eigen::VectorXf> Buffer;
 
     std::string UDP_IP; // IP address of data logger or simulator
 };

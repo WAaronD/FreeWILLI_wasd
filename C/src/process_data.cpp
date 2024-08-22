@@ -48,7 +48,9 @@ void ConvertData(std::vector<float> &dataSegment, std::span<uint8_t> dataBytes, 
     }
 }
 
-void GenerateTimestamps(std::vector<TimePoint> &dataTimes, std::span<uint8_t> dataBytes, unsigned int MICRO_INCR, bool &previousTimeSet, std::chrono::time_point<std::chrono::system_clock> &previousTime, std::string &detectionOutputFile, std::string &tdoaOutputFile, std::string &doaOutputFile)
+void GenerateTimestamps(std::vector<TimePoint> &dataTimes, std::span<uint8_t> dataBytes, unsigned int MICRO_INCR,
+                        bool &previousTimeSet, std::chrono::time_point<std::chrono::system_clock> &previousTime,
+                        std::string &detectionOutputFile, int NUM_CHAN)
 {
 
     std::tm timeStruct{};                                 // Initialize a std::tm structure to hold the date and time components
@@ -95,11 +97,7 @@ void GenerateTimestamps(std::vector<TimePoint> &dataTimes, std::span<uint8_t> da
     if ((detectionOutputFile).empty())
     {
         std::string feature = "detection";
-        InitiateOutputFile(detectionOutputFile, timeStruct, microSec, feature);
-        feature = "tdoa";
-        InitiateOutputFile(tdoaOutputFile, timeStruct, microSec, feature);
-        feature = "doa";
-        InitiateOutputFile(doaOutputFile, timeStruct, microSec, feature);
+        InitiateOutputFile(detectionOutputFile, timeStruct, microSec, feature, NUM_CHAN);
     }
 }
 
