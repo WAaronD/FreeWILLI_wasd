@@ -159,9 +159,9 @@ def LoadChannelOne(DATA_PATH, DATA_SCALE, filePath):
 
 def Load4ChannelDataset(filePath):
     print("Loading data from file: ",filePath)
-    dataMatrix = loadmat(filePath)['DATA'].T
+    dataMatrix = loadmat(filePath)['DATA']
     print("Shape of loaded data: ", dataMatrix.shape)
-    assert dataMatrix.shape[0] == 4
+    assert dataMatrix.shape[1] == 4
     return dataMatrix
 
 def DuplicateAndShiftChannels(dataMatrix, offset, NUM_CHAN):
@@ -188,8 +188,8 @@ def DuplicateAndShiftChannels(dataMatrix, offset, NUM_CHAN):
 
 
 def InterleaveData(dataMatrix):
-    dataFlattened = dataMatrix.reshape(-1, order='F')   # Interleave the values of the rows uniformly
-    return dataFlattened, np.where(dataFlattened > 200)[0][0] # return the flattened matrix as well as index of first high amplitude value
+    dataFlattened = dataMatrix.T.reshape(-1, order='F')   # Interleave the values of the rows uniformly
+    return dataFlattened#, np.where(dataFlattened > 200)[0][0] # return the flattened matrix as well as index of first high amplitude value
 
 
 #def StackData(dataMatrix, NUM_CHAN, SAMPS_PER_CHANNEL):

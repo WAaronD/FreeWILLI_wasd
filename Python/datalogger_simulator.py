@@ -119,7 +119,7 @@ else:
     dataMatrixShifted = np.copy(dataMatrix)
 
 if args.fw == 1240:
-    dataFlattened, highAmplitudeIndex = InterleaveData(dataMatrixShifted)
+    dataFlattened = InterleaveData(dataMatrixShifted)
 else:
     print("Error: only interleaving method for firmware version 1240 is implemented")
     sys.exit()

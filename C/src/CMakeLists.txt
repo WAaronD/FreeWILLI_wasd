@@ -1,4 +1,4 @@
-add_library(MainLib STATIC process_data.cpp TDOA_estimation.cpp utils.cpp)
+add_library(MainLib STATIC process_data.cpp TDOA_estimation.cpp utils.cpp listener_thread.cpp processor_thread.cpp)
 
 add_executable(HarpListen main.cpp)
 

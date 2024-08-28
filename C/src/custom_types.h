@@ -52,7 +52,8 @@ struct Session
 {
     int datagramSocket = socket(AF_INET, SOCK_DGRAM, 0); // udp socket
     int UDP_PORT;                                        // Listening port
-    std::atomic<bool> errorOccurred = false;             // set true if error occurs in thread
+    unsigned int detectionCounter = 0;
+    std::atomic<bool> errorOccurred = false; // set true if error occurs in thread
 
     std::queue<std::vector<uint8_t>> dataBuffer;
     std::vector<std::vector<uint8_t>> dataBytesSaved;

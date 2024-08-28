@@ -81,5 +81,6 @@
         "typeinfo": "cpp",
         "variant": "cpp",
         "__nullptr": "cpp"
-    }
+    },
+    "C_Cpp.dimInactiveRegions": true
 }

@@ -232,10 +232,12 @@ Eigen::MatrixXd LoadHydrophonePositions(const std::string &filename)
 
     if (!inputFile.is_open())
     {
-        throw std::runtime_error("Could not open file: " + filename);
+        std::stringstream msg; // compose message to dispatch
+        msg << "Error: Unable to open filter file '" << filename << "'." << std::endl;
+        throw std::ios_base::failure(msg.str());
     }
 
-    std::cout << "Reading file positions" << std::endl;
+    std::cout << "Reading hydrophone positions..." << std::endl;
 
     std::vector<std::vector<double>> temp_positions;
     std::string line;
@@ -273,8 +275,8 @@ Eigen::MatrixXd LoadHydrophonePositions(const std::string &filename)
     }
 
     // Print positions for debugging
-    std::cout << "Printing positions: " << std::endl;
-    std::cout << positions << std::endl;
+    // std::cout << "Printing positions: " << std::endl;
+    // std::cout << positions << std::endl;
 
     // Initialize relativePositions with the correct size
     int numRelativePositions = numRows * (numRows - 1) / 2;

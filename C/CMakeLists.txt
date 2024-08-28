@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22.1)
+cmake_minimum_required(VERSION 3.29.7)
 
 project(HarpListen VERSION 1.0)
 
