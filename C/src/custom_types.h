@@ -61,10 +61,10 @@ struct Session
     std::vector<std::chrono::system_clock::time_point> dataTimes;
     std::mutex dataBufferLock; // For thread-safe buffer access
 
-    std::vector<float> peakAmplitudeBuffer;
+    //std::vector<float> peakAmplitudeBuffer;
+    //std::vector<Eigen::VectorXf> resultMatrixBuffer;
+    //std::vector<Eigen::VectorXf> DOAsBuffer;
     std::vector<TimePoint> peakTimesBuffer;
-    std::vector<Eigen::VectorXf> resultMatrixBuffer;
-    std::vector<Eigen::VectorXf> DOAsBuffer;
     std::vector<Eigen::VectorXf> Buffer;
 
     std::string UDP_IP; // IP address of data logger or simulator

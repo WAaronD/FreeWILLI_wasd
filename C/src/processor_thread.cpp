@@ -83,10 +83,13 @@ void DataProcessor(Session &sess, Experiment &exp)
         savedFFTs.setZero();
 
         Eigen::MatrixXd H = LoadHydrophonePositions(exp.receiverPositions);
+        
+        // Precompute QR decomposition once
+        auto qrDecompH = precomputedQR(H);
 
         // set the frequency of file writes
         BufferWriter bufferWriter;
-        bufferWriter._flushInterval = 1000ms;
+        bufferWriter._flushInterval = 30s;
         bufferWriter._bufferSizeThreshold = 1000; // Adjust as needed
         bufferWriter._lastFlushTime = std::chrono::steady_clock::now();
 
@@ -103,11 +106,15 @@ void DataProcessor(Session &sess, Experiment &exp)
                 auto startLoop = std::chrono::system_clock::now();
 
                 // Check if program has run for specified time
+            //std::cout << "time since last flush" <<  timeSinceLastWrite.count() << std::endl;
+            //if (sess.peakTimesBuffer.size() >= bufferWriter._bufferSizeThreshold || bufferWriter._flushInterval <= timeSinceLastWrite)
+                
                 auto elapsedTime = startLoop - exp.programStartTime;
-                if (elapsedTime >= exp.programRuntime)
+                auto timeSinceLastWrite = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - bufferWriter._lastFlushTime);
+                if (elapsedTime >= exp.programRuntime|| bufferWriter._flushInterval <= timeSinceLastWrite)
                 {
                     std::cout << "Terminating program from inside DataProcessor... duration reached" << std::endl;
-                    std::cout << "Flushing buffers of length: " << sess.peakAmplitudeBuffer.size() << std::endl;
+                    std::cout << "Flushing buffers of length: " << sess.peakTimesBuffer.size() << std::endl;
                     bufferWriter.write(sess, exp);
                     std::exit(0);
                 }
@@ -193,22 +200,28 @@ void DataProcessor(Session &sess, Experiment &exp)
             std::cout << "GCC time: " << durationGCCW.count() << std::endl;
 
             // Eigen::VectorXf DOAs = DOA_EstimateVerticalArray(resultMatrix, exp.speedOfSound, exp.chanSpacing);
-            Eigen::VectorXf DOAs = TDOA_To_DOA_GeneralArray(H, exp.speedOfSound, tdoaVector);
+            auto beforeDOA = std::chrono::steady_clock::now();
+            Eigen::VectorXf DOAs = TDOA_To_DOA_GeneralArray(qrDecompH, exp.speedOfSound, tdoaVector);
+            auto afterDOA = std::chrono::steady_clock::now();
+            std::chrono::duration<double> durationDOA = afterDOA - beforeDOA;
+            std::cout << "DOA time: " << durationDOA.count() << std::endl;
             // Eigen::VectorXf DOAs = TDOA_To_DOA_VerticalArray(resultMatrix, 1500.0, exp.chanSpacing);
             std::cout << "DOAs: " << DOAs.transpose() << std::endl;
 
             // Write to buffers
             Eigen::VectorXf combined(1 + DOAs.size() + tdoaVector.size() + XCorrAmps.size()); // + 1 for amplitude
             combined << detResult.peakAmplitude, DOAs, tdoaVector, XCorrAmps;
-            sess.peakAmplitudeBuffer.push_back(detResult.peakAmplitude);
+            //sess.peakAmplitudeBuffer.push_back(detResult.peakAmplitude);
             sess.peakTimesBuffer.push_back(detResult.peakTimes);
-            sess.resultMatrixBuffer.push_back(tdoaVector);
-            sess.DOAsBuffer.push_back(DOAs);
+            //sess.resultMatrixBuffer.push_back(tdoaVector);
+            //sess.DOAsBuffer.push_back(DOAs);
             sess.Buffer.push_back(combined);
 
-            if (sess.peakAmplitudeBuffer.size() >= bufferWriter._bufferSizeThreshold)
+            auto timeSinceLastWrite = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - bufferWriter._lastFlushTime);
+            //std::cout << "time since last flush" <<  timeSinceLastWrite.count() << std::endl;
+            if (sess.peakTimesBuffer.size() >= bufferWriter._bufferSizeThreshold || bufferWriter._flushInterval <= timeSinceLastWrite)
             {
-                std::cout << "Flushing buffers of length: " << sess.peakAmplitudeBuffer.size() << std::endl;
+                std::cout << "Flushing buffers of length: " << sess.peakTimesBuffer.size() << std::endl;
                 bufferWriter.write(sess, exp);
             }
         }

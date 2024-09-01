@@ -129,14 +129,19 @@ Eigen::VectorXf CrossCorr(const Eigen::MatrixXf &channel_matrix, float fs, float
     return tau_vector;
 }
 
-Eigen::VectorXf TDOA_To_DOA_GeneralArray(const Eigen::MatrixXd &H, double c, const Eigen::VectorXf &tdoa)
+// Precompute the QR decomposition
+Eigen::ColPivHouseholderQR<Eigen::MatrixXd> precomputedQR(const Eigen::MatrixXd &H) {
+    return H.colPivHouseholderQr();
+}
+
+Eigen::VectorXf TDOA_To_DOA_GeneralArray(const Eigen::ColPivHouseholderQR<Eigen::MatrixXd> &qr, double c, const Eigen::VectorXf &tdoa)
 {
     // Convert tdoa to VectorXd
     Eigen::VectorXd tdoa_d = tdoa.cast<double>();
 
     // Solve for DOA using least squares
     Eigen::VectorXd scaled_tdoa = tdoa_d * c;
-    Eigen::VectorXd doa = H.colPivHouseholderQr().solve(scaled_tdoa);
+    Eigen::VectorXd doa = qr.solve(scaled_tdoa);
 
     // Normalize the DOA vector
     doa /= doa.norm();

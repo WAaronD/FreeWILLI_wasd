@@ -29,6 +29,8 @@ private:
     void ClearBuffers(Session &sess)
     {
         sess.Buffer.clear();
+        sess.peakTimesBuffer.clear();
+        _lastFlushTime = std::chrono::steady_clock::now();
     }
 
 public:

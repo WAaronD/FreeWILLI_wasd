@@ -16,7 +16,7 @@ SetHighPriority(15)  # Set this process to run the program at high priority (nic
 parser = argparse.ArgumentParser(description='Program command line arguments')
 parser.add_argument('--port', default=1045, type=int, help='UDP port to send data to')
 parser.add_argument('--ip', default="192.168.7.2", type=str, help='IP address to send data to')
-parser.add_argument('--data_dir', default="../Data/Test/", type=str, help='Directory containing .npy data files')
+parser.add_argument('--data_dir', default="../Data/track132_5minchunks/", type=str, help='Directory containing .npy data files')
 parser.add_argument('--fw', default=1240, type=int, help='Firmware version to simulate')
 parser.add_argument('--loop', action='store_true', help='Enable looping over the data')
 parser.add_argument('--stretch', action='store_true', help='Normalize data values to min and max range of unsigned 16-bit int')
@@ -52,7 +52,9 @@ npy_files = sorted([os.path.join(args.data_dir, f) for f in os.listdir(args.data
 
 # Function to process each file
 def process_npy_file(npy_file):
+    print("Loading file: ",npy_file )
     dataMatrix = np.load(npy_file, mmap_mode='r')  # Load the .npy file with memory mapping
+    #print("dataMatrix size: ", dataMatrix.shape())
     
     if args.tdoa_sim is not False:
         dataMatrixShifted = DuplicateAndShiftChannels(np.copy(dataMatrix), args.tdoa_sim, NUM_CHAN)
@@ -68,11 +70,11 @@ def process_npy_file(npy_file):
         print("Error: only interleaving method for firmware version 1240 is implemented")
         sys.exit()
 
-    del dataMatrixShifted
+    #del dataMatrixShifted
     dataFlattenedScaled = ScaleData(dataFlattened, DATA_SCALE, args.stretch)
-    del dataFlattened
+    #del dataFlattened
     dataBytes = ConvertToBytes(dataFlattenedScaled)
-    del dataFlattenedScaled
+    #del dataFlattenedScaled
 
     return dataBytes
 
@@ -124,7 +126,6 @@ for npy_file in npy_files:
         second = int(dateTime.second)
         microseconds = int(dateTime.microsecond)
 
-        dateTime = dateTime + timedelta(microseconds=int(MICRO_INCR))  # Increment the time for the next packet
 
         timePack = struct.pack("BBBBBB", *np.array([year, month, day, hour, minute, second]))
         microPack = microseconds.to_bytes(4, byteorder='big')
@@ -158,6 +159,7 @@ for npy_file in npy_files:
             firstRead = 0
             print("Transfer time: ", time.time() - startTime)
 
+        dateTime = dateTime + timedelta(microseconds=int(MICRO_INCR))  # Increment the time for the next packet
         runTime = time.time() - startTime
         sleepTime = (MICRO_INCR) * 1e-6 - runTime
         Sleep(sleepTime)
