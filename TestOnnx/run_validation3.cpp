@@ -27,7 +27,7 @@ void normalize_data(std::vector<float>& data, const std::vector<float>& mean, co
 }
 
 // Function to load val_spectra from JSON
-std::vector<std::vector<float>> load_val_spectra(const std::string& file_path) {
+auto load_val_spectra(const std::string& file_path) -> std::vector<std::vector<float>> {
     std::ifstream file(file_path);
     if (!file.is_open()) {
         std::cerr << "Error opening val_spectra file." << std::endl;
@@ -102,64 +102,46 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Flatten the val_spectra data (if it is 2D)
-    std::vector<float> input_tensor_values;
-    for (const auto& row : val_spectra) {
-        input_tensor_values.insert(input_tensor_values.end(), row.begin(), row.end());
-    }
+    // Loop through the first 10 validation samples and process them one by one
+    for (int sample_idx = 0; sample_idx < 10; ++sample_idx) {
+        std::cout << "Processing sample " << sample_idx + 1 << "..." << std::endl;
 
-    // Normalize the real validation data using the scaler parameters
-    normalize_data(input_tensor_values, mean, scale);
+        // Select one sample at a time
+        std::vector<float> input_tensor_values = val_spectra[sample_idx];
 
-    // Prepare input tensor shape based on input dimensions from the model
-    std::vector<int64_t> input_shape = input_node_dims;
+        // Normalize the real validation data using the scaler parameters
+        normalize_data(input_tensor_values, mean, scale);
 
-    // Create the input tensor with real validation data
-    Ort::MemoryInfo memory_info = Ort::MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault);
-    Ort::Value input_tensor = Ort::Value::CreateTensor<float>(memory_info, input_tensor_values.data(), input_tensor_values.size(), input_shape.data(), input_shape.size());
-    
-    std::cout << "input tensor size: " << input_tensor_values.size() << std::endl;
-    
-    // Output node names (assuming one output node)
-    const char* output_node_names[] = {"output"};
+        // Prepare input tensor shape for a single sample
+        std::vector<int64_t> input_shape = input_node_dims;  // Keep the original shape
+        input_shape[0] = 1;  // Set batch size to 1
 
-    // Measure inference time for N runs
-    int N = 100;
-    auto startTime = std::chrono::high_resolution_clock::now();
-    for (int i = 0; i < N; i++) {
+        // Create the input tensor with the single validation sample
+        Ort::MemoryInfo memory_info = Ort::MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault);
+        Ort::Value input_tensor = Ort::Value::CreateTensor<float>(memory_info, input_tensor_values.data(), input_tensor_values.size(), input_shape.data(), input_shape.size());
+
+        // Output node names (assuming one output node)
+        const char* output_node_names[] = {"output"};
+
+        // Perform inference on the single validation sample
         auto output_tensors = session.Run(Ort::RunOptions{nullptr}, input_node_names.data(), &input_tensor, 1, output_node_names, 1);
+
+        // Get the output tensor data
+        float* output_data = output_tensors[0].GetTensorMutableData<float>();
+
+        // Get the output tensor shape to determine the number of classes
+        auto output_tensor_info = output_tensors[0].GetTensorTypeAndShapeInfo();
+        std::vector<int64_t> output_shape = output_tensor_info.GetShape();
+        int num_classes = output_shape[1]; // Assuming output shape is [batch_size, num_classes]
+
+        // Print predictions for the current sample
+        std::cout << "Predictions (7 probability values for each class) for sample " << sample_idx + 1 << ": [ ";
+        for (int j = 0; j < num_classes; ++j) {
+            std::cout << output_data[j];
+            if (j < num_classes - 1) std::cout << ", ";
+        }
+        std::cout << " ]" << std::endl;
     }
-    auto endTime = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration<double>(endTime - startTime);
-    std::cout << "Inference time: " << duration.count() << " seconds for " << N << " runs." << std::endl;
-
-    // Perform a final run to retrieve the output
-    auto output_tensors = session.Run(Ort::RunOptions{nullptr}, input_node_names.data(), &input_tensor, 1, output_node_names, 1);
-    std::cout << "output tensor size: " << output_tensors.size() << std::endl;
-
-    // Get and print the output tensor shape
-    auto output_tensor_info = output_tensors[0].GetTensorTypeAndShapeInfo();
-    std::vector<int64_t> output_shape = output_tensor_info.GetShape();
-
-    std::cout << "Output tensor shape: [";
-    for (size_t i = 0; i < output_shape.size(); i++) {
-        std::cout << output_shape[i];
-        if (i < output_shape.size() - 1) std::cout << ", ";
-    }
-    std::cout << "]" << std::endl;
-
-
-    // Get the output tensor data
-    float* output_data = output_tensors[0].GetTensorMutableData<float>();
-
-    // Print predictions for the first 10 validation samples
-    std::cout << "Predictions for the first 10 validation samples:" << std::endl;
-    for (int i = 0; i < 100; ++i) {
-        std::cout << "Sample " << i + 1 << ": " << output_data[i] << std::endl;
-    }
-
-
-    std::cout << "ONNX Runtime test completed successfully with real validation data." << std::endl;
 
     return 0;
 }
