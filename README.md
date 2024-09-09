@@ -1,18 +1,30 @@
-# Embedded_miniHarp
+# HarpListen
 
-|-- Docs : includes any relevant documentation
-|-- HARP_UDP : includes all the code that was originally provided by Sean and Allen
-|-- Python
-| |-- clicks_data.txt : output file for logging detected impulses
-| |-- datalogger_simulator.py : Runs the data logger simulator.
-| |-- datalogger_reader.py : Reads and processes data from both the data logger simulator and the actual data logger.
-| |-- multi_datalogger_reader.py : Multithreaded version of datalogger_reader.py.
-| |-- process_data.py : Contains functions for processing data, such as classification and localization.
-| |-- utils.py : Includes various utility functions utilized by datalogger_simulator.py.
-| |-- Experimentation/
-| | |-- sleep_function_experiments.ipynb : Scratch code experimenting with various sleep functions.
-| | |-- sleep_script.py : Scratch code for further experimentation with different sleep functions.
-| | |-- synthetic_data_experiments.py : Code for experimenting with methods to generate synthetic data.
-| |-- Firmware_config/
-| | |-- firmware_1240.py : defines all constants determined by firmware version 1250
-| | |-- firmware_1550.py : defines all constants determined by firmware version 1550
+## Description
+
+**HarpListen** is a real-time program designed to receive and process UDP packets efficiently. The program sets up a UDP listener that captures packets from a specified IP address and port, storing the received data in a shared buffer for subsequent processing. By leveraging multi-threading, HarpListen ensures that data reception and processing occur concurrently, enabling efficient real-time handling of incoming data.
+
+### Key Components
+
+- **UDP Listener**: Captures incoming UDP packets, stores the received data in a buffer, and prints statistics about the received packets.
+- **Data Processor**: Retrieves data from the buffer, applies filters, and performs analysis to detect and estimate specific signal characteristics.
+- **Session and Experiment Classes**: Manage session-specific and experiment-specific details, including configuration settings, data buffers, and synchronization mechanisms.
+- **Multi-threading**: Employs separate threads for listening to UDP packets and processing data, ensuring that both tasks are handled efficiently and in real-time.
+
+### Features
+
+- Dynamic configuration based on specified firmware versions, with adjustments to processing parameters as needed.
+- Logging of processed data to an output file for further analysis.
+- Automatic error recovery by restarting the listener and processing threads to maintain continuous operation.
+
+### Requirements
+
+- **FFTW3**: Required for performing fast Fourier transforms (FFTs).
+- **Eigen**: Used for linear algebra operations, such as matrix manipulations and decompositions.
+
+## Example Usage
+
+To run the program with a datalogger simulator:
+
+```bash
+./HarpListen 192.168.7.2 1045 1240 2500 2

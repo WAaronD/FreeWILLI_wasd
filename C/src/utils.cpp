@@ -1,6 +1,73 @@
 #include "utils.h"
+#include "process_data.h"
 
 using TimePoint = std::chrono::system_clock::time_point;
+
+void PrintMode() 
+{
+#ifdef DEBUG
+    std::cout << "Running Debug Mode" << std::endl;
+#else
+    std::cout << "Running Release Mode" << std::endl;
+#endif
+}
+
+void InitializeSession(Session& sess, Experiment& exp, int argc, char* argv[]) 
+{
+    /**
+     * @brief Initializes the Session and Experiment structures with command-line arguments.
+     *
+     * @param sess Reference to the Session structure to be initialized.
+     * @param exp Reference to the Experiment structure to be initialized.
+     * @param argc Number of command-line arguments passed to the program.
+     * @param argv Array of command-line argument strings.
+     *
+     * @note argv[1] is expected to be the IP address, argv[2] the port, argv[4] the energy 
+     * detection threshold, and argv[5] the program runtime in seconds.
+     */
+    sess.UDP_IP = argv[1]; // IP address of data logger or simulator
+    if (sess.UDP_IP == "self") {
+        sess.UDP_IP = "127.0.0.1";
+    }
+    sess.UDP_PORT = std::stoi(argv[2]);
+    exp.energyDetThresh = std::stod(argv[4]);
+    exp.programRuntime = std::chrono::seconds(std::stoi(argv[5]));
+    std::cout << "Listening to IP address " << sess.UDP_IP << " and port " << sess.UDP_PORT << std::endl;
+}
+
+bool ConfigureExperiment(Experiment& exp, int firmwareVersion) 
+{
+    /**
+     * @brief Configures the Experiment structure based on the firmware version.
+     *
+     * This function loads the configuration file corresponding to the specified firmware version,
+     * initializes function pointers and calculates experiment parameters based on the loaded configuration.
+     *
+     * @param exp Reference to the Experiment structure to be configured.
+     * @param firmwareVersion The firmware version used to determine the configuration file.
+     * @return true if the configuration file is successfully processed, false otherwise.
+     */
+    std::cout << "Firmware version: " << firmwareVersion << std::endl;
+    const std::string path = "config_files/" + std::to_string(firmwareVersion) + "_config.txt";
+    if (ProcessFile(exp, path)) {
+        std::cout << "Error: Unable to open config file: " << path << std::endl;
+        return false;
+    }
+    exp.ProcessFncPtr = ProcessSegmentInterleaved;
+    exp.NUM_PACKS_DETECT = static_cast<int>(exp.TIME_WINDOW * 100000 / exp.SAMPS_PER_CHANNEL);
+    exp.DATA_SEGMENT_LENGTH = exp.NUM_PACKS_DETECT * exp.SAMPS_PER_CHANNEL * exp.NUM_CHAN;
+
+    std::cout << "HEAD_SIZE: " << exp.HEAD_SIZE << std::endl;
+    std::cout << "SAMPS_PER_CHAN: " << exp.SAMPS_PER_CHANNEL << std::endl;
+    std::cout << "BYTES_PER_SAMP: " << exp.BYTES_PER_SAMP << std::endl;
+    std::cout << "Bytes per packet:       " << exp.REQUIRED_BYTES << std::endl;
+    std::cout << "Time between packets:   " << exp.MICRO_INCR << std::endl;
+    std::cout << "Number of channels:     " << exp.NUM_CHAN << std::endl;
+    std::cout << "Data bytes per channel: " << exp.DATA_BYTES_PER_CHANNEL << std::endl;
+    std::cout << "Detecting over a time window of " << exp.TIME_WINDOW << " seconds, using " << exp.NUM_PACKS_DETECT << " packets" << std::endl;
+
+    return true;
+}
 
 void PrintTimes(const std::span<TimePoint> timestamps)
 {
@@ -108,6 +175,21 @@ bool ProcessFile(Experiment &exp, const std::string &fileName)
 
 void InitiateOutputFile(std::string &outputFile, std::tm &timeStruct, int64_t microSec, std::string &feature, int NUM_CHAN)
 {
+    /**
+     * @brief Initializes the output file for writing experiment results.
+     *
+     * This function generates the output file name based on the provided time structure, microsecond timestamp,
+     * and feature string. It then opens the file in write mode, clears its contents if it exists, and writes
+     * the header for the experiment data. If the file cannot be opened, the function throws a runtime error.
+     *
+     * @param outputFile Reference to a string where the generated output file name will be stored.
+     * @param timeStruct A structure containing the time information used to generate the file name.
+     * @param microSec The microsecond part of the timestamp used in the file name.
+     * @param feature A string representing the feature to include in the file name.
+     * @param NUM_CHAN The number of channels, used to generate the header columns for TDOA and Xcorr.
+     * 
+     * @throws std::runtime_error if the file cannot be opened for writing.
+     */
 
     outputFile = "deployment_files/" + std::to_string(timeStruct.tm_year + 1900) + '-' + std::to_string(timeStruct.tm_mon + 1) + '-' +
                  std::to_string(timeStruct.tm_mday) + '-' + std::to_string(timeStruct.tm_hour) + '-' + std::to_string(timeStruct.tm_min) + '-' +
@@ -150,7 +232,7 @@ void InitiateOutputFile(std::string &outputFile, std::tm &timeStruct, int64_t mi
     }
 }
 
-std::vector<float> ReadFIRFilterFile(const std::string &fileName)
+auto ReadFIRFilterFile(const std::string &fileName) -> std::vector<float>
 {
     /**
      * @brief Reads a file containing the FIR filter taps and returns the values as an Armadillo column vector.
@@ -228,6 +310,14 @@ bool WithProbability(double probability)
 
 Eigen::MatrixXd LoadHydrophonePositions(const std::string &filename)
 {
+    /**
+     * @brief Loads hydrophone positions from a CSV file and calculates relative positions.
+     *
+     * @param filename The name (or path) of the CSV file containing the hydrophone positions.
+     * @return Eigen::MatrixXd A matrix containing the relative positions between hydrophones.
+     * 
+     * @throws std::ios_base::failure if the file cannot be opened.
+     */
     std::ifstream inputFile(filename);
 
     if (!inputFile.is_open())
@@ -336,7 +426,7 @@ void WritePulseAmplitudes(std::span<float> clickPeakAmps, std::span<TimePoint> t
     outfile.close();
 }
 
-void printFirstFiveValues(const Eigen::MatrixXf &savedFFTs, const Eigen::MatrixXf &invFFT)
+void PrintFirstFiveValues(const Eigen::MatrixXf &savedFFTs, const Eigen::MatrixXf &invFFT)
 {
     int numRows = 5; // savedFFTs.rows();
     int numCols = 4; // std::min(5, static_cast<int>(savedFFTs.cols()));  // Ensure we only access up to 5 elements

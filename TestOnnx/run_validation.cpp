@@ -1,6 +1,42 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <onnxruntime_cxx_api.h>
+#include <nlohmann/json.hpp>  // Use a JSON library to load JSON data
+
+// Function to load scaler parameters (mean and std deviation)
+void load_scaler_params(std::vector<float>& mean, std::vector<float>& scale, const std::string& file_path) {
+    std::ifstream file(file_path);
+    if (!file.is_open()) {
+        std::cerr << "Error opening scaler params file." << std::endl;
+        return;
+    }
+    nlohmann::json scaler_json;
+    file >> scaler_json;
+
+    mean = scaler_json["mean"].get<std::vector<float>>();
+    scale = scaler_json["scale"].get<std::vector<float>>();
+}
+
+// Function to normalize data using mean and std deviation
+void normalize_data(std::vector<float>& data, const std::vector<float>& mean, const std::vector<float>& scale) {
+    for (size_t i = 0; i < data.size(); ++i) {
+        data[i] = (data[i] - mean[i]) / scale[i];
+    }
+}
+
+// Function to load val_spectra from JSON
+std::vector<std::vector<float>> load_val_spectra(const std::string& file_path) {
+    std::ifstream file(file_path);
+    if (!file.is_open()) {
+        std::cerr << "Error opening val_spectra file." << std::endl;
+        return {};
+    }
+    nlohmann::json spectra_json;
+    file >> spectra_json;
+
+    return spectra_json["val_spectra"].get<std::vector<std::vector<float>>>();
+}
 
 int main(int argc, char* argv[]) {
     // Initialize ONNX Runtime
@@ -49,8 +85,42 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    // Prepare input tensor data (matching input shape)
-    std::vector<float> input_tensor_values(input_node_dims[1], 0.5f);  // Example data
+    // Load scaler parameters (mean and scale) from JSON
+    std::vector<float> mean, scale;
+    load_scaler_params(mean, scale, "scaler_params.json");
+
+    // Load the val_spectra data from JSON
+    std::vector<std::vector<float>> val_spectra = load_val_spectra("val_spectra.json");
+    
+    // Print all the values of the first sample before normalization
+    std::cout << "First sample before normalization: ";
+    for (size_t i = 0; i < val_spectra[0].size(); ++i) {
+        std::cout << val_spectra[0][i] << " ";
+    }
+    std::cout << std::endl;
+
+    
+    // Check that val_spectra data is valid
+    if (val_spectra.empty()) {
+        std::cerr << "Error: val_spectra data is empty." << std::endl;
+        return 1;
+    }
+
+    // Flatten the val_spectra data (if it is 2D) and normalize it
+    std::vector<float> input_tensor_values;
+    for (const auto& row : val_spectra) {
+        input_tensor_values.insert(input_tensor_values.end(), row.begin(), row.end());
+    }
+    normalize_data(input_tensor_values, mean, scale);
+    
+    // Print all the values of the first sample after normalization
+    std::cout << "First sample after normalization: ";
+    for (size_t i = 0; i < val_spectra[0].size(); ++i) {
+        std::cout << input_tensor_values[i] << " ";
+    }
+    std::cout << std::endl;
+
+    // Prepare input tensor shape
     std::vector<int64_t> input_shape = input_node_dims;
 
     // Create the input tensor
@@ -74,7 +144,8 @@ int main(int argc, char* argv[]) {
     }
     std::cout << "]" << std::endl;
 
-    std::cout << "ONNX Runtime test completed successfully." << std::endl;
+    std::cout << "ONNX Runtime test completed successfully with real data." << std::endl;
 
     return 0;
 }
+

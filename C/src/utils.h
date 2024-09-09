@@ -3,25 +3,35 @@
 This file contains all function prototypes for utils.cpp
 
 */
-
 #pragma once
 
 #include "custom_types.h"
 
+// Type aliases
 using TimePoint = std::chrono::system_clock::time_point;
 
-std::vector<float> ReadFIRFilterFile(const std::string &fileName);
+// File I/O functions
+auto ReadFIRFilterFile(const std::string &fileName) -> std::vector<float>;
 bool ProcessFile(Experiment &exp, const std::string &fileName);
 void InitiateOutputFile(std::string &outputFile, std::tm &timeStruct, int64_t microSec, std::string &feature, int NUM_CHAN);
-void PrintTimes(const std::span<TimePoint> timestamps);
-Eigen::MatrixXd LoadHydrophonePositions(const std::string &filename);
-void RestartListener(Session &sess);
-void ClearQueue(std::queue<std::vector<uint8_t>> &q);
-void printFirstFiveValues(const Eigen::MatrixXf &savedFFTs, const Eigen::MatrixXf &invFFT);
-bool WithProbability(double probability);
 void WritePulseAmplitudes(std::span<float> click_amps, std::span<TimePoint> timestamps, const std::string &filename);
 void WriteArray(const std::span<Eigen::VectorXf> array, const std::span<TimePoint> timestamps, const std::string &filename);
 void WriteDataToCerr(std::span<TimePoint> dataTimes, std::vector<std::vector<uint8_t>> dataBytesSaved);
+
+// Data handling functions
+auto LoadHydrophonePositions(const std::string &filename) -> Eigen::MatrixXd;
+void ClearQueue(std::queue<std::vector<uint8_t>> &q);
+bool WithProbability(double probability);
+
+// Debug and print functions
+void PrintTimes(const std::span<TimePoint> timestamps);
+void PrintFirstFiveValues(const Eigen::MatrixXf &savedFFTs, const Eigen::MatrixXf &invFFT);
+void PrintMode();
+
+// Session and experiment management
+void RestartListener(Session &sess);
+void InitializeSession(Session& sess, Experiment& exp, int argc, char* argv[]);
+bool ConfigureExperiment(Experiment& exp, int firmwareVersion);
 
 class BufferWriter
 {
