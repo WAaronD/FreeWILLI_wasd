@@ -11,3 +11,4 @@ deployment_files/*
 /C/bin/*
 /C/debug/*
 out/
+TestOnnx/val_spectra.json
