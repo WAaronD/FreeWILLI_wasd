@@ -157,6 +157,7 @@ int main(int argc, char* argv[]) {
 
     // Load the validation data from JSON
     std::vector<std::vector<float>> val_spectra = load_val_spectra("val_spectra.json");
+    std::cout << "Num samples: " << val_spectra.size() << " length of sample: " << val_spectra[0].size() << std::endl; 
 
     // Check that val_spectra data is valid
     if (val_spectra.empty()) {
@@ -164,9 +165,13 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    // Prepare input tensor shape for a single sample (batch size = 1)
+    std::vector<int64_t> input_shape = input_node_dims;
+    input_shape[0] = 1;
+    
     // Loop through the first 10 validation samples and process them one by one
-    for (int sample_idx = 0; sample_idx < 38000; ++sample_idx) {
-        std::cout << "Processing sample " << sample_idx + 1 << "..." << std::endl;
+    for (int sample_idx = 0; sample_idx < val_spectra.size(); ++sample_idx) {
+        //std::cout << "Processing sample " << sample_idx + 1 << "..." << std::endl;
 
         // Select one sample at a time
         std::vector<float> input_tensor_values = val_spectra[sample_idx];
@@ -174,15 +179,12 @@ int main(int argc, char* argv[]) {
         // Normalize the real validation data using the scaler parameters
         normalize_data(input_tensor_values, mean, scale);
 
-        // Prepare input tensor shape for a single sample (batch size = 1)
-        std::vector<int64_t> input_shape = input_node_dims;
-        input_shape[0] = 1;
 
         // Run inference on the single sample
         std::vector<float> predictions = run_inference(session, cstr_vec, input_tensor_values, input_shape);
 
         // Print the predictions for the current sample
-        print_predictions(predictions, sample_idx);
+        //print_predictions(predictions, sample_idx);
         write_max_prediction_to_file(predictions, output_file);
 
     }

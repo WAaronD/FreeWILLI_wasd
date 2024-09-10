@@ -12,7 +12,7 @@ void PrintMode()
 #endif
 }
 
-void InitializeSession(Session& sess, Experiment& exp, int argc, char* argv[]) 
+void InitializeSession(Session& sess, Experiment& exp, char* argv[]) 
 {
     /**
      * @brief Initializes the Session and Experiment structures with command-line arguments.
@@ -477,7 +477,7 @@ void WriteArray(const std::span<Eigen::VectorXf> array, const std::span<TimePoin
 
         // Write data rows
 
-        for (int row = 0; row < array.size(); row++)
+        for (size_t row = 0; row < array.size(); row++)
         {
             auto time_point = timestamps[row];
             auto time_since_epoch = std::chrono::duration_cast<std::chrono::microseconds>(time_point.time_since_epoch());

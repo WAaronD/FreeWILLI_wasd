@@ -192,7 +192,7 @@ void DataProcessor(Session &sess, Experiment &exp)
 
             auto beforeGCCW = std::chrono::steady_clock::now();
 
-            std::tuple<Eigen::VectorXf, Eigen::VectorXf> tdoasAndXCorrAmps = GCC_PHAT_FFTW(savedFFTs, exp.myFFTPlan, exp.inverseFFT, filterFreq, exp.interp, paddedLength, exp.NUM_CHAN, exp.SAMPLE_RATE);
+            std::tuple<Eigen::VectorXf, Eigen::VectorXf> tdoasAndXCorrAmps = GCC_PHAT_FFTW(savedFFTs, exp.inverseFFT, exp.interp, paddedLength, exp.NUM_CHAN, exp.SAMPLE_RATE);
             Eigen::VectorXf tdoaVector = std::get<0>(tdoasAndXCorrAmps);
             Eigen::VectorXf XCorrAmps = std::get<1>(tdoasAndXCorrAmps);
             auto afterGCCW = std::chrono::steady_clock::now();

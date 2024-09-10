@@ -12,7 +12,7 @@ static void BM_TDOA_Estimation(benchmark::State &state)
     std::vector<float> chanSpacing = {1.0f, 2.0f, 3.0f, 1.0f, 2.0f, 1.0f};
     Eigen::VectorXf TDOAs(6);
 
-    for (int i = 0; i < chanSpacing.size(); i++)
+    for (size_t i = 0; i < chanSpacing.size(); i++)
     {
         TDOAs(i) = chanSpacing[i] * 0.0001f;
     }

@@ -1,7 +1,7 @@
 #include "TDOA_estimation.h"
 
-auto GCC_PHAT_FFTW(Eigen::MatrixXcf &savedFFTs, fftwf_plan &forwardFFT, fftwf_plan &inverseFFT,
-                   Eigen::VectorXcf &filterFreqs, const int interp, int &paddedLength,
+auto GCC_PHAT_FFTW(Eigen::MatrixXcf &savedFFTs, fftwf_plan &inverseFFT,
+                   const int interp, int &paddedLength,
                    unsigned int &NUM_CHAN, const unsigned int &SAMPLE_RATE)
     -> std::tuple<Eigen::VectorXf, Eigen::VectorXf>
 {

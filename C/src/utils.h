@@ -30,7 +30,7 @@ void PrintMode();
 
 // Session and experiment management
 void RestartListener(Session &sess);
-void InitializeSession(Session& sess, Experiment& exp, int argc, char* argv[]);
+void InitializeSession(Session& sess, Experiment& exp, char* argv[]);
 bool ConfigureExperiment(Experiment& exp, int firmwareVersion);
 
 class BufferWriter

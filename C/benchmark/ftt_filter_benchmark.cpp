@@ -37,7 +37,7 @@ vector<float> filterWeightsFloat = {
 static void BM_FFT(benchmark::State& state) {
         int channelSize = (int)(0.01 * 100000);
         int NUM_CHAN = 4;
-        unsigned long paddedLength = filterWeightsFloat.size() + channelSize - 1;
+        int paddedLength = filterWeightsFloat.size() + channelSize - 1;
 
         // randomly generating signal data
         Eigen::MatrixXf data(paddedLength, NUM_CHAN);
@@ -82,7 +82,7 @@ static void BM_FFT(benchmark::State& state) {
 static void BM_Filter(benchmark::State& state) {
     int channelSize = (int)(0.01 * 100000);
     int NUM_CHAN = 4;
-    unsigned long paddedLength = filterWeightsFloat.size() + channelSize - 1;
+    int paddedLength = filterWeightsFloat.size() + channelSize - 1;
     unsigned long fftOutputSize = paddedLength / 2 + 1;
 
     // randomly generating signal data

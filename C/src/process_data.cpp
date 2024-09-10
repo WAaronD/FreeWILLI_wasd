@@ -9,7 +9,6 @@ void FrequencyDomainFIRFiltering(
     fftwf_plan &FFTPlan,                // FFT plan
     Eigen::MatrixXcf &savedFFTs)        // Output of FFT transformed time-domain data
 {
-    int paddedLength = channelData.rows();
     int numChannels = channelData.cols();
     // std::cout << "numChannels: " << numChannels << std::endl;
 

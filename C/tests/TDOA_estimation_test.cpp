@@ -49,7 +49,7 @@ TEST(TDOA_To_DOA_VerticalArray, ValidDataMidRegion)
     std::vector<float> chanSpacing = {1.0f, 2.0f, 3.0f, 1.0f, 2.0f, 1.0f};
     Eigen::VectorXf TDOAs(6);
 
-    for (int i = 0; i < chanSpacing.size(); i++)
+    for (size_t i = 0; i < chanSpacing.size(); i++)
     {
         TDOAs(i) = chanSpacing[i] * 0.0001f;
     }
@@ -76,7 +76,7 @@ TEST(TDOA_To_DOA_VerticalArray, ValidDataBoundaries)
     std::vector<float> chanSpacing = {1.0, 2.0, 3.0, 1.0, 2.0, 1.0};
     Eigen::VectorXf TDOAs(chanSpacing.size());
 
-    for (int i = 0; i < chanSpacing.size(); i++)
+    for (size_t i = 0; i < chanSpacing.size(); i++)
     {
         TDOAs(i) = chanSpacing[i] * 0.00066666f;
     }

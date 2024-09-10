@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
     Session sess;
     Experiment exp;
 
-    InitializeSession(sess, exp, argc, argv);
+    InitializeSession(sess, exp, argv);
     
     if (!ConfigureExperiment(exp, std::stoi(argv[3]))) {
         return 1;

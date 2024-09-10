@@ -48,8 +48,8 @@ static void BM_Threshold(benchmark::State& state) {
     }
 
     // Declare time checking variables
-    bool previousTimeSet = false;
-    auto previousTime = std::chrono::time_point<std::chrono::system_clock>::min();
+    //bool previousTimeSet = false;
+    //auto previousTime = std::chrono::time_point<std::chrono::system_clock>::min();
 
     // Generate the data bytes
     static Eigen::MatrixXf channelData(1092, 1);
