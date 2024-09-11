@@ -7,7 +7,7 @@
 
 // #include "udp_listener.h"
 int packetCounter = 0; // this should only be used inside the UDPListener function, as it is not protected by a mutex
-void UdpListener(Session &sess, unsigned int PACKET_SIZE)
+void UdpListener(Session &sess, SocketManager &socketManager, const int PACKET_SIZE)
 {
     /**
      * @brief Listens for UDP packets and processes them, storing data in a buffer.
@@ -29,7 +29,7 @@ void UdpListener(Session &sess, unsigned int PACKET_SIZE)
         int bytesReceived;
         const int printInterval = 500;
         const int receiveSize = PACKET_SIZE + 1; // + 1 to detect if more data than expected is being received
-        size_t queueSize;
+        int queueSize;
         auto startPacketTime = std::chrono::steady_clock::now();
         auto endPacketTime = startPacketTime;
         std::chrono::duration<double> durationPacketTime; // stores the average amount of time (seconds) between successive UDP packets, averaged over 'printInterval' packets
@@ -38,18 +38,14 @@ void UdpListener(Session &sess, unsigned int PACKET_SIZE)
         while (!sess.errorOccurred)
         {
 
-            bytesReceived = recvfrom(sess.datagramSocket, dataBytes.data(), receiveSize, 0, (struct sockaddr *)&addr, &addrLength);
+            bytesReceived = recvfrom(socketManager.datagramSocket, dataBytes.data(), receiveSize, 0, (struct sockaddr *)&addr, &addrLength);
 
             if (bytesReceived == -1)
                 throw std::runtime_error("Error in recvfrom: bytesReceived is -1");
 
             dataBytes.resize(bytesReceived); // Adjust size based on actual bytes received
-
-            sess.dataBufferLock.lock(); // give this thread exclusive rights to modify the shared dataBytes variable
-            sess.dataBuffer.push(dataBytes);
-            queueSize = sess.dataBuffer.size();
-            sess.dataBufferLock.unlock(); // relinquish exclusive rights
-
+            queueSize = sess.pushDataToBuffer(dataBytes);
+            
             packetCounter += 1;
             if (packetCounter % printInterval == 0)
             {

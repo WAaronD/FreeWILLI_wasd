@@ -18,31 +18,34 @@ Example usage:
 #include "processor_thread.h"
 
 
-
 int main(int argc, char *argv[]) 
 {
     PrintMode(); // print debug or release
 
-    Session sess;
-    Experiment exp;
-
-    InitializeSession(sess, exp, argv);
+    // Instantiate classes for configuration and socket handling
+    ExperimentConfig expConfig;
+    SocketManager socketManager;
     
-    if (!ConfigureExperiment(exp, std::stoi(argv[3]))) {
-        return 1;
-    }
-
+    // Main processing loop
     while (true) 
     {
-        RestartListener(sess);
-        exp.programStartTime = std::chrono::system_clock::now();
+        Session sess;
+        ExperimentRuntime expRuntime;
+        // Initialize the session and experiment
+        InitializeSession(socketManager, expRuntime, argv);
+        RestartListener(socketManager); // Reset the listener state
+        
+        expRuntime.programStartTime = std::chrono::system_clock::now(); // Start experiment timer
 
-        std::thread listenerThread(UdpListener, std::ref(sess), exp.PACKET_SIZE);
-        std::thread processorThread(DataProcessor, std::ref(sess), std::ref(exp));
+        // Create threads for listening to UDP packets and processing data
+        std::thread listenerThread(UdpListener, std::ref(sess), std::ref(socketManager), expConfig.PACKET_SIZE);
+        std::thread processorThread(DataProcessor, std::ref(sess), std::ref(expConfig), std::ref(expRuntime));
 
+        // Wait for threads to finish
         listenerThread.join();
         processorThread.join();
 
+        // Handle any errors during execution
         if (sess.errorOccurred) 
         {
             std::cout << "Restarting threads..." << std::endl;
@@ -52,12 +55,9 @@ int main(int argc, char *argv[])
             std::cout << "Unknown problem occurred" << std::endl;
         }
 
-        fftwf_destroy_plan(exp.myFFTPlan);
-        exp.myFFTPlan = nullptr;
-        fftwf_destroy_plan(exp.inverseFFT);
-        exp.inverseFFT = nullptr;
-
-        sess.errorOccurred = false;
+        // Reset error state for the next iteration
+        // sess.errorOccurred = false;
     }
+
     return 0;
 }

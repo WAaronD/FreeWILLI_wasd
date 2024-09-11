@@ -2,7 +2,7 @@
 
 auto GCC_PHAT_FFTW(Eigen::MatrixXcf &savedFFTs, fftwf_plan &inverseFFT,
                    const int interp, int &paddedLength,
-                   unsigned int &NUM_CHAN, const unsigned int &SAMPLE_RATE)
+                   const int &NUM_CHAN, const int &SAMPLE_RATE)
     -> std::tuple<Eigen::VectorXf, Eigen::VectorXf>
 {
     /**
@@ -85,6 +85,7 @@ auto GCC_PHAT_FFTW(Eigen::MatrixXcf &savedFFTs, fftwf_plan &inverseFFT,
     return std::make_tuple(tauVector, XCorrPeaks);
 }
 
+/*
 Eigen::VectorXf CrossCorr(const Eigen::MatrixXf &channel_matrix, float fs, float max_tau = -1.0f, int interp = 16)
 {
     int num_channels = channel_matrix.cols();
@@ -128,19 +129,20 @@ Eigen::VectorXf CrossCorr(const Eigen::MatrixXf &channel_matrix, float fs, float
 
     return tau_vector;
 }
+*/
 
 // Precompute the QR decomposition
 Eigen::ColPivHouseholderQR<Eigen::MatrixXd> precomputedQR(const Eigen::MatrixXd &H) {
     return H.colPivHouseholderQr();
 }
 
-Eigen::VectorXf TDOA_To_DOA_GeneralArray(const Eigen::ColPivHouseholderQR<Eigen::MatrixXd> &qr, double c, const Eigen::VectorXf &tdoa)
+Eigen::VectorXf TDOA_To_DOA_GeneralArray(const Eigen::ColPivHouseholderQR<Eigen::MatrixXd> &qr, const float speedOfSound, const Eigen::VectorXf &tdoa)
 {
     // Convert tdoa to VectorXd
     Eigen::VectorXd tdoa_d = tdoa.cast<double>();
 
     // Solve for DOA using least squares
-    Eigen::VectorXd scaled_tdoa = tdoa_d * c;
+    Eigen::VectorXd scaled_tdoa = tdoa_d * speedOfSound;
     Eigen::VectorXd doa = qr.solve(scaled_tdoa);
 
     // Normalize the DOA vector
@@ -157,7 +159,7 @@ Eigen::VectorXf TDOA_To_DOA_GeneralArray(const Eigen::ColPivHouseholderQR<Eigen:
     return result_vector;
 }
 
-Eigen::VectorXf TDOA_To_DOA_VerticalArray(Eigen::VectorXf &TDOAs, const double &soundSpeed, std::span<float> chanSpacing)
+Eigen::VectorXf TDOA_To_DOA_VerticalArray(Eigen::VectorXf &TDOAs, const float &soundSpeed, std::span<float> chanSpacing)
 {
     /**
      * @brief Estimates the vertical direction of arrival (DOA) using time difference of arrivals (TDOAs)

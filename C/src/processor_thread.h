@@ -9,4 +9,4 @@ This file contains all function prototypes for processor_thread.cpp
 
 #include "custom_types.h"
 
-void DataProcessor(Session &sess, Experiment &exp);
+void DataProcessor(Session &sess, ExperimentConfig &expConfig, ExperimentRuntime &expRuntime);

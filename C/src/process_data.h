@@ -7,6 +7,8 @@ This file contains all function prototypes for process_data.cpp
 #pragma once
 
 #include "custom_types.h"
+//struct DetectionResult;
+
 
 using TimePoint = std::chrono::system_clock::time_point;
 
@@ -16,10 +18,12 @@ void FrequencyDomainFIRFiltering(
     fftwf_plan &FFTPlan,                // FFT plan
     Eigen::MatrixXcf &savedFFTs);       // Output of FFT transformed time-domain data
 
-void ConvertData(std::vector<float> &dataSegment, std::span<uint8_t> dataBytes, unsigned int &DATA_SIZE, unsigned int &HEAD_SIZE);
-void GenerateTimestamps(std::vector<TimePoint> &dataTimes, std::span<uint8_t> dataBytes, unsigned int MICRO_INCR,
+void ConvertData(std::vector<float> &dataSegment, std::span<uint8_t> dataBytes, const int &DATA_SIZE, const int &HEAD_SIZE);
+void GenerateTimestamps(std::vector<TimePoint> &dataTimes, std::span<uint8_t> dataBytes, const int MICRO_INCR,
                         bool &previousTimeSet, std::chrono::time_point<std::chrono::system_clock> &previousTime,
-                        std::string &detectionOutputFile, int NUM_CHAN);
-DetectionResult ThresholdDetect(const Eigen::VectorXf &data, const std::span<TimePoint> times, const double &threshold, const unsigned int &SAMPLE_RATE);
-DetectionResult ThresholdDetectFD(const Eigen::VectorXcf &data, const std::span<TimePoint> times, const double &threshold, const unsigned int &SAMPLE_RATE);
-void ProcessSegmentInterleaved(std::span<float> data, Eigen::MatrixXf &channelData, unsigned int NUM_CHAN);
+                        std::string &detectionOutputFile, const int NUM_CHAN);
+
+DetectionResult ThresholdDetect(const Eigen::VectorXf &data, const std::span<TimePoint> times, const float &threshold, const int &SAMPLE_RATE);
+DetectionResult ThresholdDetectFD(const Eigen::VectorXcf &data, const std::span<TimePoint> times, const float &threshold, const int &SAMPLE_RATE);
+
+void ProcessSegmentInterleaved(std::span<float> data, Eigen::MatrixXf &channelData, const int NUM_CHAN);

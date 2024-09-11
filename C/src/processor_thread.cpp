@@ -4,9 +4,8 @@
 #include "utils.h"
 #include "pch.h"
 
-using namespace std::chrono_literals;
 
-void DataProcessor(Session &sess, Experiment &exp)
+void DataProcessor(Session &sess, ExperimentConfig &expConfig, ExperimentRuntime &expRuntime)
 {
     /**
      * @brief Processes data segments from a shared buffer, performs filtering and analysis.
@@ -16,7 +15,7 @@ void DataProcessor(Session &sess, Experiment &exp)
      * the processed data into a segment (`dataSegment`). The processed data is then further analyzed
      * to detect pulses, apply filters, and estimate time differences and directions of arrival.
      *
-     * @param exp Reference to an Experiment object containing configuration details like data segment length,
+     * @param expConfig Reference to an Experiment object containing configuration details like data segment length,
      *            number of channels, filter weights, and other processing parameters.
      * @param sess Reference to a Session object containing session-specific details and state, such as the
      *             data buffer, segment buffer, and various locks for synchronization.
@@ -29,26 +28,26 @@ void DataProcessor(Session &sess, Experiment &exp)
     {
 
         // the number of samples per channel within a dataSegment
-        int channelSize = exp.DATA_SEGMENT_LENGTH / exp.NUM_CHAN;
+        int channelSize = expConfig.DATA_SEGMENT_LENGTH / expConfig.NUM_CHAN;
 
         // Read filter weights from file
-        std::vector<float> filterWeightsFloat = ReadFIRFilterFile(exp.filterWeights);
+        std::vector<float> filterWeightsFloat = ReadFIRFilterFile(expConfig.filterWeights);
 
         // Declare time checking variables
         bool previousTimeSet = false;
         auto previousTime = std::chrono::time_point<std::chrono::system_clock>::min();
 
         // pre-allocate memory for vectors
-        sess.dataSegment.reserve(exp.DATA_SEGMENT_LENGTH);
-        sess.dataTimes.reserve(exp.NUM_PACKS_DETECT);
+        sess.dataSegment.reserve(expConfig.DATA_SEGMENT_LENGTH);
+        sess.dataTimes.reserve(expConfig.NUM_PACKS_DETECT);
 
         int paddedLength = filterWeightsFloat.size() + channelSize - 1;
         int fftOutputSize = (paddedLength / 2) + 1;
         std::cout << "Padded size: " << paddedLength << std::endl;
 
         // Matrices for (transformed) channel data
-        static Eigen::MatrixXf channelData(paddedLength, exp.NUM_CHAN);
-        static Eigen::MatrixXcf savedFFTs(fftOutputSize, exp.NUM_CHAN); // save the FFT transformed channels
+        static Eigen::MatrixXf channelData(paddedLength, expConfig.NUM_CHAN);
+        static Eigen::MatrixXcf savedFFTs(fftOutputSize, expConfig.NUM_CHAN); // save the FFT transformed channels
         // static Eigen::MatrixXf invFFT(paddedLength, exp.NUM_CHAN);      // Real output after inverse FFT
 
         /* Zero-pad filter weights to the length of the signal                     */
@@ -65,7 +64,7 @@ void DataProcessor(Session &sess, Experiment &exp)
         std::vector<uint8_t> dataBytes;
 
         // Create the FFTW plan with the correct strides
-        exp.myFFTPlan = fftwf_plan_many_dft_r2c(1,                                                   // Rank of the transform (1D)
+        expRuntime.forwardFFT = fftwf_plan_many_dft_r2c(1,                                                   // Rank of the transform (1D)
                                                 &paddedLength,                                       // Pointer to the size of the transform
                                                 4,                                                   // Number of transforms (channels)
                                                 channelData.data(),                                  // Input data pointer
@@ -82,7 +81,7 @@ void DataProcessor(Session &sess, Experiment &exp)
         channelData.setZero();
         savedFFTs.setZero();
 
-        Eigen::MatrixXd H = LoadHydrophonePositions(exp.receiverPositions);
+        Eigen::MatrixXd H = LoadHydrophonePositions(expConfig.receiverPositions);
         
         // Precompute QR decomposition once
         auto qrDecompH = precomputedQR(H);
@@ -100,66 +99,52 @@ void DataProcessor(Session &sess, Experiment &exp)
             sess.dataSegment.clear();
             sess.dataBytesSaved.clear();
 
-            while (sess.dataSegment.size() < exp.DATA_SEGMENT_LENGTH)
+            while (sess.dataSegment.size() < expConfig.DATA_SEGMENT_LENGTH)
             {
 
                 auto startLoop = std::chrono::system_clock::now();
 
                 // Check if program has run for specified time
-                auto elapsedTime = startLoop - exp.programStartTime;
+                auto elapsedTime = startLoop - expRuntime.programStartTime;
                 auto timeSinceLastWrite = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - bufferWriter._lastFlushTime);
                 
                 bool timeToWrite = bufferWriter._flushInterval <= timeSinceLastWrite;
-                bool timeToExit = elapsedTime >= exp.programRuntime;
+                bool timeToExit = elapsedTime >= expRuntime.programRuntime;
                 bool bufferIsFull = sess.peakTimesBuffer.size() >= bufferWriter._bufferSizeThreshold;
                 
                 if (bufferIsFull || timeToExit|| timeToWrite)
                 {
                     std::cout << "Terminating program from inside DataProcessor... duration reached" << std::endl;
                     std::cout << "Flushing buffers of length: " << sess.peakTimesBuffer.size() << std::endl;
-                    bufferWriter.write(sess, exp);
+                    bufferWriter.write(sess, expRuntime);
                     if (timeToExit){
                         std::exit(0);
                     }
                 }
 
-                sess.dataBufferLock.lock(); // give this thread exclusive rights to modify the shared dataBytes variable
-                size_t queueSize = sess.dataBuffer.size();
-                if (queueSize < 1)
-                {
-                    sess.dataBufferLock.unlock(); // relinquish the lock before sleeping
-                    // std::cout << "Sleeping: " << std::endl;
-                    std::this_thread::sleep_for(15ms);
-                    continue;
-                }
-                else
-                {
-                    dataBytes = sess.dataBuffer.front();
-                    sess.dataBuffer.pop();
-                    sess.dataBufferLock.unlock();
-                }
+                dataBytes = sess.popDataFromBuffer(); // this function will send the thread to sleep until data is available 
 
                 sess.dataBytesSaved.push_back(dataBytes); // save bytes in case they need to be saved to a file in case of error
 
                 // Convert byte data to floats
                 auto startCDTime = std::chrono::steady_clock::now();
-                ConvertData(sess.dataSegment, dataBytes, exp.DATA_SIZE, exp.HEAD_SIZE); // bytes data is decoded and appended to sess.dataSegment
+                ConvertData(sess.dataSegment, dataBytes, expConfig.DATA_SIZE, expConfig.HEAD_SIZE); // bytes data is decoded and appended to sess.dataSegment
                 auto endCDTime = std::chrono::steady_clock::now();
                 std::chrono::duration<double> durationCD = endCDTime - startCDTime;
                 // std::cout << "Convert data: " << durationCD.count() << std::endl;
 
                 auto startTimestamps = std::chrono::steady_clock::now();
-                GenerateTimestamps(sess.dataTimes, dataBytes, exp.MICRO_INCR,
-                                   previousTimeSet, previousTime, exp.detectionOutputFile, exp.NUM_CHAN);
+                GenerateTimestamps(sess.dataTimes, dataBytes, expConfig.MICRO_INCR,
+                                   previousTimeSet, previousTime, expRuntime.detectionOutputFile, expConfig.NUM_CHAN);
                 auto endTimestamps = std::chrono::steady_clock::now();
                 std::chrono::duration<double> durationGenerate = endTimestamps - startTimestamps;
                 // std::cout << "durationGenerate: " << durationGenerate.count() << std::endl;
 
                 // Check if the amount of bytes in packet is what is expected
-                if (dataBytes.size() != exp.PACKET_SIZE)
+                if (dataBytes.size() != expConfig.PACKET_SIZE)
                 {
                     std::stringstream msg; // compose message to dispatch
-                    msg << "Error: incorrect number of bytes in packet: " << "PACKET_SIZE: " << exp.PACKET_SIZE << " dataBytes size: " << dataBytes.size() << std::endl;
+                    msg << "Error: incorrect number of bytes in packet: " << "PACKET_SIZE: " << expConfig.PACKET_SIZE << " dataBytes size: " << dataBytes.size() << std::endl;
                     throw std::runtime_error(msg.str());
                 }
             }
@@ -170,18 +155,19 @@ void DataProcessor(Session &sess, Experiment &exp)
              */
 
             auto beforePtr = std::chrono::steady_clock::now();
-            exp.ProcessFncPtr(sess.dataSegment, channelData, exp.NUM_CHAN);
+            expConfig.ProcessFncPtr(sess.dataSegment, channelData, expConfig.NUM_CHAN);
             auto afterPtr = std::chrono::steady_clock::now();
             std::chrono::duration<double> durationPtr = afterPtr - beforePtr;
 
             FrequencyDomainFIRFiltering(
                 channelData,   // Zero-padded time-domain data
                 filterFreq,    // Frequency domain filter (FIR taps in freq domain)
-                exp.myFFTPlan, // FFT plan
+                expRuntime.forwardFFT, // FFT plan
                 savedFFTs);    // Output of FFT transformed time-domain data
 
-            // DetectionResult detResult = ThresholdDetect(invFFT.col(0), sess.dataTimes, exp.energyDetThresh, exp.SAMPLE_RATE);
-            DetectionResult detResult = ThresholdDetectFD(savedFFTs.col(0), sess.dataTimes, exp.energyDetThresh, exp.SAMPLE_RATE);
+            // DetectionResult detResult = ThresholdDetect(invFFT.col(0), sess.dataTimes, expConfig.energyDetThresh, expConfig.SAMPLE_RATE);
+            DetectionResult detResult = ThresholdDetectFD(savedFFTs.col(0), sess.dataTimes, 
+                                                          expRuntime.energyDetThresh, expConfig.SAMPLE_RATE);
 
             if (detResult.maxPeakIndex < 0)
             {             // if no pulse was detected (maxPeakIndex remains -1) stop processing
@@ -196,20 +182,20 @@ void DataProcessor(Session &sess, Experiment &exp)
 
             auto beforeGCCW = std::chrono::steady_clock::now();
 
-            std::tuple<Eigen::VectorXf, Eigen::VectorXf> tdoasAndXCorrAmps = GCC_PHAT_FFTW(savedFFTs, exp.inverseFFT, exp.interp, paddedLength, exp.NUM_CHAN, exp.SAMPLE_RATE);
+            std::tuple<Eigen::VectorXf, Eigen::VectorXf> tdoasAndXCorrAmps = GCC_PHAT_FFTW(savedFFTs, expRuntime.inverseFFT, expConfig.interp, paddedLength, expConfig.NUM_CHAN, expConfig.SAMPLE_RATE);
             Eigen::VectorXf tdoaVector = std::get<0>(tdoasAndXCorrAmps);
             Eigen::VectorXf XCorrAmps = std::get<1>(tdoasAndXCorrAmps);
             auto afterGCCW = std::chrono::steady_clock::now();
             std::chrono::duration<double> durationGCCW = afterGCCW - beforeGCCW;
             std::cout << "GCC time: " << durationGCCW.count() << std::endl;
 
-            // Eigen::VectorXf DOAs = DOA_EstimateVerticalArray(resultMatrix, exp.speedOfSound, exp.chanSpacing);
+            // Eigen::VectorXf DOAs = DOA_EstimateVerticalArray(resultMatrix, expConfig.speedOfSound, expConfig.chanSpacing);
             auto beforeDOA = std::chrono::steady_clock::now();
-            Eigen::VectorXf DOAs = TDOA_To_DOA_GeneralArray(qrDecompH, exp.speedOfSound, tdoaVector);
+            Eigen::VectorXf DOAs = TDOA_To_DOA_GeneralArray(qrDecompH, expConfig.speedOfSound, tdoaVector);
             auto afterDOA = std::chrono::steady_clock::now();
             std::chrono::duration<double> durationDOA = afterDOA - beforeDOA;
             std::cout << "DOA time: " << durationDOA.count() << std::endl;
-            // Eigen::VectorXf DOAs = TDOA_To_DOA_VerticalArray(resultMatrix, 1500.0, exp.chanSpacing);
+            // Eigen::VectorXf DOAs = TDOA_To_DOA_VerticalArray(resultMatrix, 1500.0, expConfig.chanSpacing);
             std::cout << "DOAs: " << DOAs.transpose() << std::endl;
 
             // Write to buffers

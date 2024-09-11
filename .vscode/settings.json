@@ -80,7 +80,8 @@
         "cfenv": "cpp",
         "typeinfo": "cpp",
         "variant": "cpp",
-        "__nullptr": "cpp"
+        "__nullptr": "cpp",
+        "valarray": "cpp"
     },
     "C_Cpp.dimInactiveRegions": true
 }

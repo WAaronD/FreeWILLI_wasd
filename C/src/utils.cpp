@@ -12,15 +12,15 @@ void PrintMode()
 #endif
 }
 
-void InitializeSession(Session& sess, Experiment& exp, char* argv[]) 
+void InitializeSession(SocketManager& sess, ExperimentRuntime& expRuntime, char* argv[]) 
 {
     /**
      * @brief Initializes the Session and Experiment structures with command-line arguments.
      *
-     * @param sess Reference to the Session structure to be initialized.
-     * @param exp Reference to the Experiment structure to be initialized.
-     * @param argc Number of command-line arguments passed to the program.
-     * @param argv Array of command-line argument strings.
+     * @param sess       Reference to the Session structure to be initialized.
+     * @param expRuntime Reference to the Experiment structure to be initialized.
+     * @param argc       Number of command-line arguments passed to the program.
+     * @param argv       Array of command-line argument strings.
      *
      * @note argv[1] is expected to be the IP address, argv[2] the port, argv[4] the energy 
      * detection threshold, and argv[5] the program runtime in seconds.
@@ -30,32 +30,30 @@ void InitializeSession(Session& sess, Experiment& exp, char* argv[])
         sess.UDP_IP = "127.0.0.1";
     }
     sess.UDP_PORT = std::stoi(argv[2]);
-    exp.energyDetThresh = std::stod(argv[4]);
-    exp.programRuntime = std::chrono::seconds(std::stoi(argv[5]));
+    expRuntime.energyDetThresh = std::stof(argv[4]);
+    expRuntime.programRuntime = std::chrono::seconds(std::stoi(argv[5]));
     std::cout << "Listening to IP address " << sess.UDP_IP << " and port " << sess.UDP_PORT << std::endl;
 }
 
-bool ConfigureExperiment(Experiment& exp, int firmwareVersion) 
+/*
+bool ConfigureExperiment(ExperimentConfig& expConfig, int firmwareVersion) 
 {
-    /**
      * @brief Configures the Experiment structure based on the firmware version.
      *
      * This function loads the configuration file corresponding to the specified firmware version,
      * initializes function pointers and calculates experiment parameters based on the loaded configuration.
      *
-     * @param exp Reference to the Experiment structure to be configured.
+     * @param expConfig       Reference to the Experiment structure to be configured.
      * @param firmwareVersion The firmware version used to determine the configuration file.
-     * @return true if the configuration file is successfully processed, false otherwise.
-     */
+     * @return                True if the configuration file is successfully processed, false otherwise.
     std::cout << "Firmware version: " << firmwareVersion << std::endl;
     const std::string path = "config_files/" + std::to_string(firmwareVersion) + "_config.txt";
-    if (ProcessFile(exp, path)) {
+    if (ProcessFile(expConfig, path)) {
         std::cout << "Error: Unable to open config file: " << path << std::endl;
         return false;
     }
-    exp.ProcessFncPtr = ProcessSegmentInterleaved;
-    exp.NUM_PACKS_DETECT = static_cast<int>(exp.TIME_WINDOW * 100000 / exp.SAMPS_PER_CHANNEL);
-    exp.DATA_SEGMENT_LENGTH = exp.NUM_PACKS_DETECT * exp.SAMPS_PER_CHANNEL * exp.NUM_CHAN;
+    expConfig.NUM_PACKS_DETECT = static_cast<int>(expConfig.TIME_WINDOW * 100000 / expConfig.SAMPS_PER_CHANNEL);
+    expConfig.DATA_SEGMENT_LENGTH = expConfig.NUM_PACKS_DETECT * expConfig.SAMPS_PER_CHANNEL * expConfig.NUM_CHAN;
 
     std::cout << "HEAD_SIZE: " << exp.HEAD_SIZE << std::endl;
     std::cout << "SAMPS_PER_CHAN: " << exp.SAMPS_PER_CHANNEL << std::endl;
@@ -68,6 +66,7 @@ bool ConfigureExperiment(Experiment& exp, int firmwareVersion)
 
     return true;
 }
+*/
 
 void PrintTimes(const std::span<TimePoint> timestamps)
 {
@@ -100,7 +99,7 @@ void PrintTimes(const std::span<TimePoint> timestamps)
     }
 }
 
-void RestartListener(Session &sess)
+void RestartListener(SocketManager &sess)
 {
     /**
      * @brief (Re)starts the udp listener. It closes the existing socket connection and creates a new one.
@@ -146,32 +145,30 @@ void RestartListener(Session &sess)
         throw std::runtime_error("Error binding socket \n");
     }
 
-    ClearQueue(sess.dataBuffer);
-    sess.dataSegment.clear();
-    sess.dataTimes.clear();
 }
 
-bool ProcessFile(Experiment &exp, const std::string &fileName)
+/*
+bool ProcessFile(ExperimentConfig &expConfig, const std::string &fileName)
 {
-    /**
      * @brief Processes a configuration file and initializes global variables accordingly.
      *
      * @param fileName The name (or path) of the configuration file to process.
-     */
 
     std::ifstream inputFile(fileName);
     if (!inputFile.is_open())
     {
         return 1;
     }
-    inputFile >> exp.HEAD_SIZE >> exp.MICRO_INCR >> exp.NUM_CHAN >> exp.SAMPS_PER_CHANNEL >> exp.BYTES_PER_SAMP;
-    exp.DATA_SIZE = exp.SAMPS_PER_CHANNEL * exp.NUM_CHAN * exp.BYTES_PER_SAMP;
+    inputFile >> expConfig.HEAD_SIZE >> expConfig.MICRO_INCR >> expConfig.NUM_CHAN >> expConfig.SAMPS_PER_CHANNEL >> expConfig.BYTES_PER_SAMP;
+    expConfig.DATA_SIZE = expConfig.SAMPS_PER_CHANNEL * expConfig.NUM_CHAN * expConfig.BYTES_PER_SAMP;
 
-    exp.PACKET_SIZE = exp.HEAD_SIZE + exp.DATA_SIZE;
-    exp.REQUIRED_BYTES = exp.DATA_SIZE + exp.HEAD_SIZE;
-    exp.DATA_BYTES_PER_CHANNEL = exp.SAMPS_PER_CHANNEL * exp.BYTES_PER_SAMP;
+    expConfig.PACKET_SIZE = expConfig.HEAD_SIZE + expConfig.DATA_SIZE;
+    expConfig.REQUIRED_BYTES = expConfig.DATA_SIZE + expConfig.HEAD_SIZE;
+    expConfig.DATA_BYTES_PER_CHANNEL = expConfig.SAMPS_PER_CHANNEL * expConfig.BYTES_PER_SAMP;
     return 0;
 }
+*/
+
 
 void InitiateOutputFile(std::string &outputFile, std::tm &timeStruct, int64_t microSec, std::string &feature, int NUM_CHAN)
 {
@@ -232,7 +229,7 @@ void InitiateOutputFile(std::string &outputFile, std::tm &timeStruct, int64_t mi
     }
 }
 
-auto ReadFIRFilterFile(const std::string &fileName) -> std::vector<float>
+auto ReadFIRFilterFile(const char* fileName) -> std::vector<float>
 {
     /**
      * @brief Reads a file containing the FIR filter taps and returns the values as an Armadillo column vector.
@@ -308,7 +305,7 @@ bool WithProbability(double probability)
     return randomValue < probability;
 }
 
-Eigen::MatrixXd LoadHydrophonePositions(const std::string &filename)
+Eigen::MatrixXd LoadHydrophonePositions(const char* filename)
 {
     /**
      * @brief Loads hydrophone positions from a CSV file and calculates relative positions.

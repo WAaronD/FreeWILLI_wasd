@@ -6,14 +6,14 @@ using TimePoint = std::chrono::system_clock::time_point;
 void FrequencyDomainFIRFiltering(
     const Eigen::MatrixXf &channelData, // Zero-padded time-domain data
     const Eigen::VectorXcf &filterFreq, // Frequency domain filter (FIR taps in freq domain)
-    fftwf_plan &FFTPlan,                // FFT plan
+    fftwf_plan &forwardFFT,                // FFT plan
     Eigen::MatrixXcf &savedFFTs)        // Output of FFT transformed time-domain data
 {
     int numChannels = channelData.cols();
     // std::cout << "numChannels: " << numChannels << std::endl;
 
     // Perform FFT on the input time-domain data
-    fftwf_execute(FFTPlan);
+    fftwf_execute(forwardFFT);
 
     // Apply the frequency domain filter to each channel
     for (int i = 0; i < numChannels; i++)
@@ -22,7 +22,7 @@ void FrequencyDomainFIRFiltering(
     }
 }
 
-void ConvertData(std::vector<float> &dataSegment, std::span<uint8_t> dataBytes, unsigned int &DATA_SIZE, unsigned int &HEAD_SIZE)
+void ConvertData(std::vector<float> &dataSegment, std::span<uint8_t> dataBytes, const int &DATA_SIZE, const int &HEAD_SIZE)
 {
     /**
      * @brief Converts raw data bytes to double values and stores them in the provided data segment.
@@ -47,9 +47,9 @@ void ConvertData(std::vector<float> &dataSegment, std::span<uint8_t> dataBytes, 
     }
 }
 
-void GenerateTimestamps(std::vector<TimePoint> &dataTimes, std::span<uint8_t> dataBytes, unsigned int MICRO_INCR,
+void GenerateTimestamps(std::vector<TimePoint> &dataTimes, std::span<uint8_t> dataBytes, const int MICRO_INCR,
                         bool &previousTimeSet, std::chrono::time_point<std::chrono::system_clock> &previousTime,
-                        std::string &detectionOutputFile, int NUM_CHAN)
+                        std::string &detectionOutputFile, const int NUM_CHAN)
 {
 
     std::tm timeStruct{};                                 // Initialize a std::tm structure to hold the date and time components
@@ -100,7 +100,7 @@ void GenerateTimestamps(std::vector<TimePoint> &dataTimes, std::span<uint8_t> da
     }
 }
 
-DetectionResult ThresholdDetect(const Eigen::VectorXf &data, const std::span<TimePoint> times, const double &threshold, const unsigned int &SAMPLE_RATE)
+DetectionResult ThresholdDetect(const Eigen::VectorXf &data, const std::span<TimePoint> times, const float &threshold, const int &SAMPLE_RATE)
 {
     /**
      * @brief Detects peaks in the input data above a specified threshold.
@@ -132,7 +132,7 @@ DetectionResult ThresholdDetect(const Eigen::VectorXf &data, const std::span<Tim
     return result;
 }
 
-DetectionResult ThresholdDetectFD(const Eigen::VectorXcf &data, const std::span<TimePoint> times, const double &threshold, const unsigned int &SAMPLE_RATE)
+DetectionResult ThresholdDetectFD(const Eigen::VectorXcf &data, const std::span<TimePoint> times, const float &threshold, const int &SAMPLE_RATE)
 {
     /**
      * @brief Detects peaks in the input data above a specified threshold.
@@ -256,7 +256,7 @@ void ProcessSegmentStacked(vector<double>& data, vector<TimePoint>& times, const
 }
 
 */
-void ProcessSegmentInterleaved(std::span<float> data, Eigen::MatrixXf &channels, unsigned int NUM_CHAN)
+void ProcessSegmentInterleaved(std::span<float> data, Eigen::MatrixXf &channels, const int NUM_CHAN)
 {
     /**
      * @brief Processes interleaved data into separate channels. Each channel's data is saved into a corresponding Eigen matrix.
