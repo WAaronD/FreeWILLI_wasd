@@ -106,17 +106,21 @@ void DataProcessor(Session &sess, Experiment &exp)
                 auto startLoop = std::chrono::system_clock::now();
 
                 // Check if program has run for specified time
-            //std::cout << "time since last flush" <<  timeSinceLastWrite.count() << std::endl;
-            //if (sess.peakTimesBuffer.size() >= bufferWriter._bufferSizeThreshold || bufferWriter._flushInterval <= timeSinceLastWrite)
-                
                 auto elapsedTime = startLoop - exp.programStartTime;
                 auto timeSinceLastWrite = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - bufferWriter._lastFlushTime);
-                if (elapsedTime >= exp.programRuntime|| bufferWriter._flushInterval <= timeSinceLastWrite)
+                
+                bool timeToWrite = bufferWriter._flushInterval <= timeSinceLastWrite;
+                bool timeToExit = elapsedTime >= exp.programRuntime;
+                bool bufferIsFull = sess.peakTimesBuffer.size() >= bufferWriter._bufferSizeThreshold;
+                
+                if (bufferIsFull || timeToExit|| timeToWrite)
                 {
                     std::cout << "Terminating program from inside DataProcessor... duration reached" << std::endl;
                     std::cout << "Flushing buffers of length: " << sess.peakTimesBuffer.size() << std::endl;
                     bufferWriter.write(sess, exp);
-                    std::exit(0);
+                    if (timeToExit){
+                        std::exit(0);
+                    }
                 }
 
                 sess.dataBufferLock.lock(); // give this thread exclusive rights to modify the shared dataBytes variable
@@ -216,14 +220,6 @@ void DataProcessor(Session &sess, Experiment &exp)
             //sess.resultMatrixBuffer.push_back(tdoaVector);
             //sess.DOAsBuffer.push_back(DOAs);
             sess.Buffer.push_back(combined);
-
-            auto timeSinceLastWrite = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - bufferWriter._lastFlushTime);
-            //std::cout << "time since last flush" <<  timeSinceLastWrite.count() << std::endl;
-            if (sess.peakTimesBuffer.size() >= bufferWriter._bufferSizeThreshold || bufferWriter._flushInterval <= timeSinceLastWrite)
-            {
-                std::cout << "Flushing buffers of length: " << sess.peakTimesBuffer.size() << std::endl;
-                bufferWriter.write(sess, exp);
-            }
         }
     }
     catch (const GCC_Value_Error &e)
