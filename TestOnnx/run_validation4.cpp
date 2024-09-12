@@ -170,12 +170,22 @@ int main(int argc, char* argv[]) {
     input_shape[0] = 1;
     
     // Loop through the first 10 validation samples and process them one by one
-    for (int sample_idx = 0; sample_idx < val_spectra.size(); ++sample_idx) {
+    for (int sample_idx = 0; sample_idx < 2; ++sample_idx) {
         //std::cout << "Processing sample " << sample_idx + 1 << "..." << std::endl;
 
         // Select one sample at a time
         std::vector<float> input_tensor_values = val_spectra[sample_idx];
-
+        
+        // Print the contents of input_tensor_values
+        std::cout << "input_tensor_values: [";
+        for (size_t i = 0; i < input_tensor_values.size(); ++i) {
+            std::cout << input_tensor_values[i];
+            if (i < input_tensor_values.size() - 1) {
+                std::cout << ", ";  // Add a comma between elements except the last one
+            }
+        }
+        std::cout << "]" << std::endl;
+        
         // Normalize the real validation data using the scaler parameters
         normalize_data(input_tensor_values, mean, scale);
 

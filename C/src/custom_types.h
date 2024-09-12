@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pch.h"
+#include "onnx_model.h"
 
 // forward declarations
 void ProcessSegmentInterleaved(std::span<float> data, Eigen::MatrixXf &channelData, const int NUM_CHAN);
@@ -40,6 +41,8 @@ public:
 
     static constexpr const char* filterWeights = "filters/highpass_taps@101_cutoff@20k_window@hamming_fs@100k.txt";
     static constexpr const char* receiverPositions = "../Data/SOCAL_H_72_HS_harp4chPar_recPos.txt";
+    static constexpr const char* onnxModelPath = "../TestOnnx/model_quantized_static.onnx";
+    static constexpr const char* onnxModelScaling = "../TestOnnx/scaler_params.json";
     
     
     const std::function<void(std::span<float>, Eigen::MatrixXf &, unsigned int)> ProcessFncPtr = ProcessSegmentInterleaved;
@@ -53,6 +56,9 @@ public:
     std::chrono::seconds programRuntime;
     TimePoint            programStartTime; // placeholder value
     float                energyDetThresh = 100.0f; // 28.0f; // energy detector threshold - 2500.0 is default
+    
+    std::unique_ptr<ONNXModel> onnxModel; // Use smart pointer
+
     
     fftwf_plan forwardFFT = nullptr;
     fftwf_plan inverseFFT = nullptr;

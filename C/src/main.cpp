@@ -18,7 +18,8 @@ Example usage:
 #include "socket_manager.h"
 #include "session.h"
 #include "processor_thread.h"
-
+#include "onnx_model.h"
+//#include <memory>
 
 int main(int argc, char *argv[]) 
 {
@@ -27,12 +28,14 @@ int main(int argc, char *argv[])
     // Instantiate classes for configuration and socket handling
     ExperimentConfig expConfig;
     SocketManager socketManager;
-    
+
     // Main processing loop
     while (true) 
     {
         Session sess;
         ExperimentRuntime expRuntime;
+        expRuntime.onnxModel = std::make_unique<ONNXModel>(expConfig.onnxModelPath, expConfig.onnxModelScaling);
+        
         // Initialize the session and experiment
         InitializeSession(socketManager, expRuntime, argv);
         socketManager.RestartListener(); // Reset the listener state

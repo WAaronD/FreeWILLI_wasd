@@ -35,4 +35,7 @@
 #include <fftw3.h>
 // #include <liquid/liquid.h>
 
+#include <onnxruntime_cxx_api.h>
+#include <nlohmann/json.hpp>  // Use a JSON library to load JSON data
+
 #endif // PCH_H

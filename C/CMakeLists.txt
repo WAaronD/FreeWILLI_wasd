@@ -62,6 +62,18 @@ if (FFTW_INCLUDE_DIRS)
     list(APPEND THIRD_PARTY_INCLUDE_DIRS ${FFTW_INCLUDE_DIRS})
 endif()
 
+# Find ONNX Runtime library
+find_library(ONNXRUNTIME_LIBRARIES NAMES onnxruntime REQUIRED)
+message(STATUS "ONNX Runtime libraries: ${ONNXRUNTIME_LIBRARIES}")
+
+# Add ONNX Runtime to third-party libraries and include directories
+if (ONNXRUNTIME_LIBRARIES)
+    list(APPEND THIRD_PARTY_LIBRARIES ${ONNXRUNTIME_LIBRARIES})
+endif ()
+if (ONNXRUNTIME_INCLUDE_DIRS)
+    list(APPEND THIRD_PARTY_INCLUDE_DIRS ${ONNXRUNTIME_INCLUDE_DIRS})
+endif()
+
 # FFTW3f for single precision
 find_library(FFTWF_LIBRARIES NAMES fftw3f REQUIRED)
 if (FFTWF_LIBRARIES)
