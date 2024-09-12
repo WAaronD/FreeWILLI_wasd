@@ -1,5 +1,7 @@
 #include "utils.h"
 #include "process_data.h"
+#include "socket_manager.h"
+#include "custom_types.h"
 
 using TimePoint = std::chrono::system_clock::time_point;
 
@@ -35,39 +37,6 @@ void InitializeSession(SocketManager& sess, ExperimentRuntime& expRuntime, char*
     std::cout << "Listening to IP address " << sess.UDP_IP << " and port " << sess.UDP_PORT << std::endl;
 }
 
-/*
-bool ConfigureExperiment(ExperimentConfig& expConfig, int firmwareVersion) 
-{
-     * @brief Configures the Experiment structure based on the firmware version.
-     *
-     * This function loads the configuration file corresponding to the specified firmware version,
-     * initializes function pointers and calculates experiment parameters based on the loaded configuration.
-     *
-     * @param expConfig       Reference to the Experiment structure to be configured.
-     * @param firmwareVersion The firmware version used to determine the configuration file.
-     * @return                True if the configuration file is successfully processed, false otherwise.
-    std::cout << "Firmware version: " << firmwareVersion << std::endl;
-    const std::string path = "config_files/" + std::to_string(firmwareVersion) + "_config.txt";
-    if (ProcessFile(expConfig, path)) {
-        std::cout << "Error: Unable to open config file: " << path << std::endl;
-        return false;
-    }
-    expConfig.NUM_PACKS_DETECT = static_cast<int>(expConfig.TIME_WINDOW * 100000 / expConfig.SAMPS_PER_CHANNEL);
-    expConfig.DATA_SEGMENT_LENGTH = expConfig.NUM_PACKS_DETECT * expConfig.SAMPS_PER_CHANNEL * expConfig.NUM_CHAN;
-
-    std::cout << "HEAD_SIZE: " << exp.HEAD_SIZE << std::endl;
-    std::cout << "SAMPS_PER_CHAN: " << exp.SAMPS_PER_CHANNEL << std::endl;
-    std::cout << "BYTES_PER_SAMP: " << exp.BYTES_PER_SAMP << std::endl;
-    std::cout << "Bytes per packet:       " << exp.REQUIRED_BYTES << std::endl;
-    std::cout << "Time between packets:   " << exp.MICRO_INCR << std::endl;
-    std::cout << "Number of channels:     " << exp.NUM_CHAN << std::endl;
-    std::cout << "Data bytes per channel: " << exp.DATA_BYTES_PER_CHANNEL << std::endl;
-    std::cout << "Detecting over a time window of " << exp.TIME_WINDOW << " seconds, using " << exp.NUM_PACKS_DETECT << " packets" << std::endl;
-
-    return true;
-}
-*/
-
 void PrintTimes(const std::span<TimePoint> timestamps)
 {
     /**
@@ -98,77 +67,6 @@ void PrintTimes(const std::span<TimePoint> timestamps)
         std::cout << msg.str();
     }
 }
-
-void RestartListener(SocketManager &sess)
-{
-    /**
-     * @brief (Re)starts the udp listener. It closes the existing socket connection and creates a new one.
-     * Additionally, it clears the buffer (dataBuffer) and the segment to be processed (dataSegment)
-     * as well as the vector containing the timestamps (dataTimes).
-     *
-     * @param sess A reference to the Session object representing the listener session.
-     */
-
-    std::cout << "restarting listener: \n";
-
-    if (close(sess.datagramSocket) == -1)
-    {
-        throw std::runtime_error("Failed to close socket \n");
-    }
-
-    sess.datagramSocket = socket(AF_INET, SOCK_DGRAM, 0);
-    if (sess.datagramSocket == -1)
-    {
-        throw std::runtime_error("Error creating socket \n");
-    }
-
-    struct sockaddr_in serverAddr;
-    serverAddr.sin_family = AF_INET;
-    serverAddr.sin_addr.s_addr = inet_addr(sess.UDP_IP.c_str());
-    serverAddr.sin_port = htons(sess.UDP_PORT);
-
-    if (sess.UDP_IP == "192.168.100.220")
-    {
-        std::cout << "Sending wake up data to IP address to data logger \n";
-        const char *m1 = "Open";
-        unsigned char m2[96] = {0};
-        unsigned char message[100];
-        std::memcpy(message, m1, 4);
-        std::memcpy(message + 4, m2, 96);
-        if (sendto(sess.datagramSocket, message, sizeof(message), 0, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0)
-        {
-            throw std::runtime_error("Error sending wake-up data packet to data logger \n");
-        }
-    }
-    else if (bind(sess.datagramSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == -1)
-    {
-        throw std::runtime_error("Error binding socket \n");
-    }
-
-}
-
-/*
-bool ProcessFile(ExperimentConfig &expConfig, const std::string &fileName)
-{
-     * @brief Processes a configuration file and initializes global variables accordingly.
-     *
-     * @param fileName The name (or path) of the configuration file to process.
-
-    std::ifstream inputFile(fileName);
-    if (!inputFile.is_open())
-    {
-        return 1;
-    }
-    inputFile >> expConfig.HEAD_SIZE >> expConfig.MICRO_INCR >> expConfig.NUM_CHAN >> expConfig.SAMPS_PER_CHANNEL >> expConfig.BYTES_PER_SAMP;
-    expConfig.DATA_SIZE = expConfig.SAMPS_PER_CHANNEL * expConfig.NUM_CHAN * expConfig.BYTES_PER_SAMP;
-
-    expConfig.PACKET_SIZE = expConfig.HEAD_SIZE + expConfig.DATA_SIZE;
-    expConfig.REQUIRED_BYTES = expConfig.DATA_SIZE + expConfig.HEAD_SIZE;
-    expConfig.DATA_BYTES_PER_CHANNEL = expConfig.SAMPS_PER_CHANNEL * expConfig.BYTES_PER_SAMP;
-    return 0;
-}
-*/
-
 
 void InitiateOutputFile(std::string &outputFile, std::tm &timeStruct, int64_t microSec, std::string &feature, int NUM_CHAN)
 {
@@ -383,6 +281,25 @@ Eigen::MatrixXd LoadHydrophonePositions(const char* filename)
     }
 
     return relativePositions;
+}
+
+void ShouldFlushBuffer(BufferWriter &bufferWriter, Session &sess, ExperimentRuntime &expRuntime, const std::chrono::system_clock::time_point& startLoop){
+    auto elapsedTime = startLoop - expRuntime.programStartTime;
+    auto timeSinceLastWrite = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - bufferWriter._lastFlushTime);
+    
+    bool timeToWrite = bufferWriter._flushInterval <= timeSinceLastWrite;
+    bool timeToExit = elapsedTime >= expRuntime.programRuntime;
+    bool bufferIsFull = sess.peakTimesBuffer.size() >= bufferWriter._bufferSizeThreshold;
+    
+    if (bufferIsFull || timeToExit|| timeToWrite)
+    {
+        std::cout << "Flushing buffers of length: " << sess.peakTimesBuffer.size() << std::endl;
+        bufferWriter.write(sess.Buffer, sess.peakTimesBuffer, expRuntime.detectionOutputFile);
+        if (timeToExit){
+            std::cout << "Terminating program from inside DataProcessor... duration reached \n";
+            std::exit(0);
+        }
+    }
 }
 
 void WritePulseAmplitudes(std::span<float> clickPeakAmps, std::span<TimePoint> timestamps, const std::string &filename)

@@ -15,6 +15,8 @@ Example usage:
 #include "TDOA_estimation.h"
 #include "utils.h"
 #include "listener_thread.h"
+#include "socket_manager.h"
+#include "session.h"
 #include "processor_thread.h"
 
 
@@ -33,7 +35,7 @@ int main(int argc, char *argv[])
         ExperimentRuntime expRuntime;
         // Initialize the session and experiment
         InitializeSession(socketManager, expRuntime, argv);
-        RestartListener(socketManager); // Reset the listener state
+        socketManager.RestartListener(); // Reset the listener state
         
         expRuntime.programStartTime = std::chrono::system_clock::now(); // Start experiment timer
 

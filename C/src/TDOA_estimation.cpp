@@ -85,52 +85,6 @@ auto GCC_PHAT_FFTW(Eigen::MatrixXcf &savedFFTs, fftwf_plan &inverseFFT,
     return std::make_tuple(tauVector, XCorrPeaks);
 }
 
-/*
-Eigen::VectorXf CrossCorr(const Eigen::MatrixXf &channel_matrix, float fs, float max_tau = -1.0f, int interp = 16)
-{
-    int num_channels = channel_matrix.cols();
-    int signal_length = channel_matrix.rows();
-
-    Eigen::MatrixXf tau_matrix = Eigen::MatrixXf::Zero(num_channels, num_channels);
-    Eigen::VectorXf tau_vector((num_channels * (num_channels - 1)) / 2);
-
-    int pairing = 0;
-    for (int sig_ind = 0; sig_ind < num_channels - 1; ++sig_ind)
-    {
-        for (int ref_ind = sig_ind + 1; ref_ind < num_channels; ++ref_ind)
-        {
-            // Get the absolute values of the signals
-            Eigen::VectorXf sig = channel_matrix.col(sig_ind).array().abs();
-            Eigen::VectorXf refsig = channel_matrix.col(ref_ind).array().abs();
-
-            // Cross-correlation of the two signals
-            Eigen::VectorXf cross_corr = Eigen::VectorXf::Zero(2 * signal_length - 1);
-            for (int i = 0; i < signal_length; ++i)
-            {
-                cross_corr.segment(i, signal_length) += sig(i) * refsig;
-            }
-
-            // Time axis for the cross-correlation
-            Eigen::VectorXf time_axis(2 * signal_length - 1);
-            std::iota(time_axis.data(), time_axis.data() + time_axis.size(), -signal_length + 1);
-            time_axis /= fs;
-
-            // Find the index of the maximum value in the cross-correlation
-            int max_index = 0;
-            cross_corr.cwiseAbs().maxCoeff(&max_index);
-
-            // Calculate the TDOA in seconds
-            float tdoa = time_axis(max_index);
-            tau_matrix(ref_ind, sig_ind) = tdoa;
-            tau_vector(pairing) = tdoa;
-            pairing++;
-        }
-    }
-
-    return tau_vector;
-}
-*/
-
 // Precompute the QR decomposition
 Eigen::ColPivHouseholderQR<Eigen::MatrixXd> precomputedQR(const Eigen::MatrixXd &H) {
     return H.colPivHouseholderQr();

@@ -2,11 +2,10 @@
 
 #include "pch.h"
 
-// forward declare processing function. Needed for function pointer in ExperimentConfig
+// forward declarations
 void ProcessSegmentInterleaved(std::span<float> data, Eigen::MatrixXf &channelData, const int NUM_CHAN);
 
 using TimePoint = std::chrono::system_clock::time_point;
-using namespace std::chrono_literals;
 
 class GCC_Value_Error : public std::runtime_error
 {
@@ -66,55 +65,6 @@ public:
     ~ExperimentRuntime() {
         if (forwardFFT) fftwf_destroy_plan(forwardFFT);
         if (inverseFFT) fftwf_destroy_plan(inverseFFT);
-    }
-};
-
-class SocketManager{
-public:
-    int         datagramSocket = socket(AF_INET, SOCK_DGRAM, 0); // udp socket
-    int         UDP_PORT;                                        // Listening port
-    std::string UDP_IP; // IP address of data logger or simulator
-
-};
-
-//(focuses on managing shared resources and thread safety):
-class Session {
-public:
-    std::atomic<bool> errorOccurred = false;
-    std::queue<std::vector<uint8_t>> dataBuffer;
-    std::vector<std::vector<uint8_t>> dataBytesSaved;
-    std::vector<float> dataSegment;
-    std::vector<std::chrono::system_clock::time_point> dataTimes;
-    std::mutex dataBufferLock;
-    int detectionCounter = 0;
-    std::vector<Eigen::VectorXf> Buffer;
-    std::vector<std::chrono::system_clock::time_point> peakTimesBuffer;
-
-    Session() {
-        // Initialize other runtime-specific variables as needed
-    }
-
-    // Add methods for buffer management
-    int pushDataToBuffer(const std::vector<uint8_t>& data) {
-        std::lock_guard<std::mutex> lock(dataBufferLock);
-        dataBuffer.push(data);
-        return dataBuffer.size();
-    }
-
-    std::vector<uint8_t> popDataFromBuffer() {
-        std::vector<uint8_t> data;
-        while (true) {
-            {
-                std::lock_guard<std::mutex> lock(dataBufferLock);
-                if (!dataBuffer.empty()) {
-                    data = dataBuffer.front();
-                    dataBuffer.pop();
-                    return data;
-                }
-            }
-            // Sleep for 15ms before trying again
-            std::this_thread::sleep_for(std::chrono::milliseconds(15ms));
-        }
     }
 };
 

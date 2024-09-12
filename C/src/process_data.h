@@ -7,8 +7,6 @@ This file contains all function prototypes for process_data.cpp
 #pragma once
 
 #include "custom_types.h"
-//struct DetectionResult;
-
 
 using TimePoint = std::chrono::system_clock::time_point;
 

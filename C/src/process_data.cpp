@@ -1,5 +1,4 @@
 #include "utils.h"
-
 using TimePoint = std::chrono::system_clock::time_point;
 
 // Function to perform frequency domain FIR filtering
@@ -164,59 +163,6 @@ DetectionResult ThresholdDetectFD(const Eigen::VectorXcf &data, const std::span<
     }
     return result;
 }
-/*
-void ProcessSegment(arma::Col<double>& data, vector<TimePoint>& times, const string& outputFile) {
-    arma::Col<double> dataAbsolute = arma::abs(data);
-
-    // define the filter for click regions
-    arma::Col<double> smoothFilter(1.0, 256, arma::fill::ones); // Filter of size 256 with all ones
-    smoothFilter /= 256.0;
-
-    // Convolve abs_data with the filter
-    arma::Col<double> dataSmoothed = arma::conv(dataAbsolute, smoothFilter, "same");
-
-    // Thresholding low amplitude values
-    dataSmoothed.elem(arma::find(dataSmoothed < 80.0)).fill(0.0);
-
-    // Create a mask for click regions (ones filter)
-    arma::Col<double> segmentationFilter(1.0,256,arma::fill::ones);
-    arma::Col<double> dataMasked = arma::conv(dataSmoothed, segmentationFilter, "same");
-    dataMasked.elem(arma::find(dataMasked > 0.0)).fill(1.0);
-
-
-    // Find click region indices based on differences
-    arma::Col<double> diff = arma::diff(dataMasked);
-    arma::uvec segmentBoundary = arma::find(diff != 0.0);
-
-    if (segmentBoundary.n_elem > 0){
-        vector<TimePoint> timestamps;
-        segmentBoundary.insert_rows(0, 1);
-        segmentBoundary(0) = 0;
-        vector<double> clickPeakAmps;
-        for (size_t i = 0; i < segmentBoundary.size() - 1; ++i) {
-            int start_point = segmentBoundary[i];
-            int end_point = segmentBoundary[i + 1];
-
-            // Check if there's any non-zero value in the region
-            if (arma::any(dataSmoothed.subvec(start_point, end_point - 1) != 0.0)) {
-                //arma::vec region_data = data.subvec(start_point, end_point - 1);
-                arma::Col<double> clickSegment = data.subvec(start_point, end_point - 1);
-
-                // Calculate the index (avoid potential iterator subtraction issues)
-                int peakIndex = arma::index_max(clickSegment);
-                double peakAmplitude = arma::max(clickSegment);
-
-                // Calculate click time based on sampling rate and peak index
-                long long seconds = ((start_point + peakIndex) * 10); // divide (...) by 1e5 then times 1e6
-
-                std::chrono::time_point<std::chrono::system_clock> peakAmplitudeTime = times[0] + std::chrono::microseconds(seconds);
-                clickPeakAmps.push_back(peakAmplitude);
-                timestamps.push_back(peakAmplitudeTime);
-            }
-        }
-    }
-}
-*/
 
 /*
 void ProcessSegmentStacked(vector<double>& data, vector<TimePoint>& times, const string& outputFile, unsigned int& NUM_CHAN, unsigned int& SAMPS_PER_CHANNEL, unsigned int& NUM_PACKS_DETECT) {

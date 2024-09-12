@@ -3,6 +3,8 @@
 #include "TDOA_estimation.h"
 #include "utils.h"
 #include "pch.h"
+#include "session.h"
+#include "buffer_writter.h"
 
 
 void DataProcessor(Session &sess, ExperimentConfig &expConfig, ExperimentRuntime &expRuntime)
@@ -103,24 +105,8 @@ void DataProcessor(Session &sess, ExperimentConfig &expConfig, ExperimentRuntime
             {
 
                 auto startLoop = std::chrono::system_clock::now();
-
+                ShouldFlushBuffer(bufferWriter, sess, expRuntime, startLoop);
                 // Check if program has run for specified time
-                auto elapsedTime = startLoop - expRuntime.programStartTime;
-                auto timeSinceLastWrite = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - bufferWriter._lastFlushTime);
-                
-                bool timeToWrite = bufferWriter._flushInterval <= timeSinceLastWrite;
-                bool timeToExit = elapsedTime >= expRuntime.programRuntime;
-                bool bufferIsFull = sess.peakTimesBuffer.size() >= bufferWriter._bufferSizeThreshold;
-                
-                if (bufferIsFull || timeToExit|| timeToWrite)
-                {
-                    std::cout << "Terminating program from inside DataProcessor... duration reached" << std::endl;
-                    std::cout << "Flushing buffers of length: " << sess.peakTimesBuffer.size() << std::endl;
-                    bufferWriter.write(sess, expRuntime);
-                    if (timeToExit){
-                        std::exit(0);
-                    }
-                }
 
                 dataBytes = sess.popDataFromBuffer(); // this function will send the thread to sleep until data is available 
 
@@ -181,30 +167,26 @@ void DataProcessor(Session &sess, ExperimentConfig &expConfig, ExperimentRuntime
             sess.detectionCounter++;
 
             auto beforeGCCW = std::chrono::steady_clock::now();
-
             std::tuple<Eigen::VectorXf, Eigen::VectorXf> tdoasAndXCorrAmps = GCC_PHAT_FFTW(savedFFTs, expRuntime.inverseFFT, expConfig.interp, paddedLength, expConfig.NUM_CHAN, expConfig.SAMPLE_RATE);
             Eigen::VectorXf tdoaVector = std::get<0>(tdoasAndXCorrAmps);
             Eigen::VectorXf XCorrAmps = std::get<1>(tdoasAndXCorrAmps);
             auto afterGCCW = std::chrono::steady_clock::now();
             std::chrono::duration<double> durationGCCW = afterGCCW - beforeGCCW;
-            std::cout << "GCC time: " << durationGCCW.count() << std::endl;
+            //std::cout << "GCC time: " << durationGCCW.count() << std::endl;
 
             // Eigen::VectorXf DOAs = DOA_EstimateVerticalArray(resultMatrix, expConfig.speedOfSound, expConfig.chanSpacing);
             auto beforeDOA = std::chrono::steady_clock::now();
             Eigen::VectorXf DOAs = TDOA_To_DOA_GeneralArray(qrDecompH, expConfig.speedOfSound, tdoaVector);
             auto afterDOA = std::chrono::steady_clock::now();
             std::chrono::duration<double> durationDOA = afterDOA - beforeDOA;
-            std::cout << "DOA time: " << durationDOA.count() << std::endl;
+            //std::cout << "DOA time: " << durationDOA.count() << std::endl;
             // Eigen::VectorXf DOAs = TDOA_To_DOA_VerticalArray(resultMatrix, 1500.0, expConfig.chanSpacing);
-            std::cout << "DOAs: " << DOAs.transpose() << std::endl;
+            //std::cout << "DOAs: " << DOAs.transpose() << std::endl;
 
             // Write to buffers
             Eigen::VectorXf combined(1 + DOAs.size() + tdoaVector.size() + XCorrAmps.size()); // + 1 for amplitude
             combined << detResult.peakAmplitude, DOAs, tdoaVector, XCorrAmps;
-            //sess.peakAmplitudeBuffer.push_back(detResult.peakAmplitude);
             sess.peakTimesBuffer.push_back(detResult.peakTimes);
-            //sess.resultMatrixBuffer.push_back(tdoaVector);
-            //sess.DOAsBuffer.push_back(DOAs);
             sess.Buffer.push_back(combined);
         }
     }
