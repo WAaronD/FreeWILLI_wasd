@@ -21,6 +21,8 @@ Example usage:
 #include "onnx_model.h"
 //#include <memory>
 
+//valgrind --log-file=grind2.txt --leak-check=yes --show-possibly-lost=no ./debug/HarpListenDebug self 1045 1240 100 30
+
 int main(int argc, char *argv[]) 
 {
     PrintMode(); // print debug or release
@@ -28,13 +30,17 @@ int main(int argc, char *argv[])
     // Instantiate classes for configuration and socket handling
     ExperimentConfig expConfig;
     SocketManager socketManager;
+    
+    // Create a single ONNX environment that persists for the entire program
+    //Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "TestOnnxRuntime");
+    
+    expConfig.onnxModel = std::make_unique<ONNXModel>(expConfig.onnxModelPath, expConfig.onnxModelScaling);
 
     // Main processing loop
     while (true) 
     {
         Session sess;
         ExperimentRuntime expRuntime;
-        expRuntime.onnxModel = std::make_unique<ONNXModel>(expConfig.onnxModelPath, expConfig.onnxModelScaling);
         
         // Initialize the session and experiment
         InitializeSession(socketManager, expRuntime, argv);

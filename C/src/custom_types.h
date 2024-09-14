@@ -46,7 +46,7 @@ public:
     
     
     const std::function<void(std::span<float>, Eigen::MatrixXf &, unsigned int)> ProcessFncPtr = ProcessSegmentInterleaved;
-     
+    std::unique_ptr<ONNXModel> onnxModel; // Use smart pointer
 };
 
 class ExperimentRuntime {
@@ -57,7 +57,6 @@ public:
     TimePoint            programStartTime; // placeholder value
     float                energyDetThresh = 100.0f; // 28.0f; // energy detector threshold - 2500.0 is default
     
-    std::unique_ptr<ONNXModel> onnxModel; // Use smart pointer
 
     
     fftwf_plan forwardFFT = nullptr;
@@ -74,7 +73,7 @@ public:
     }
 };
 
-
+/*
 struct DetectionResult
 {
     int minPeakIndex = -1;
@@ -82,3 +81,4 @@ struct DetectionResult
     std::chrono::system_clock::time_point peakTimes;
     float peakAmplitude;
 };
+*/

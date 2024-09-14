@@ -6,9 +6,17 @@ This file contains all function prototypes for process_data.cpp
 
 #pragma once
 
-#include "custom_types.h"
+//#include "custom_types.h"
 
 using TimePoint = std::chrono::system_clock::time_point;
+
+struct DetectionResult
+{
+    int minPeakIndex = -1;
+    int maxPeakIndex = -1;
+    std::chrono::system_clock::time_point peakTimes;
+    float peakAmplitude;
+};
 
 void FrequencyDomainFIRFiltering(
     const Eigen::MatrixXf &channelData, // Zero-padded time-domain data

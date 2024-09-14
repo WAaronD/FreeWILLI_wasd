@@ -11,6 +11,7 @@
 // Class to encapsulate ONNX model loading and inference
 class ONNXModel {
 public:
+    
     ONNXModel(const std::string& model_path, const std::string& scaler_params_path) {
         // Initialize ONNX Runtime and create a session
         Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "TestOnnxRuntime");
@@ -29,7 +30,6 @@ public:
             cstr_vec.push_back(str.c_str());
         }
     }
-
     std::vector<int64_t> get_input_node_info() {
         Ort::AllocatorWithDefaultOptions allocator;
         size_t num_input_nodes = session.GetInputCount();

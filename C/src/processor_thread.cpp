@@ -166,7 +166,7 @@ void DataProcessor(Session &sess, ExperimentConfig &expConfig, ExperimentRuntime
             sess.detectionCounter++;
 
             auto beforeGCCW = std::chrono::steady_clock::now();
-            std::tuple<Eigen::VectorXf, Eigen::VectorXf> tdoasAndXCorrAmps = GCC_PHAT_FFTW(savedFFTs, expRuntime.inverseFFT, expConfig.interp, paddedLength, expConfig.NUM_CHAN, expConfig.SAMPLE_RATE);
+            std::tuple<Eigen::VectorXf, Eigen::VectorXf> tdoasAndXCorrAmps = GCC_PHAT(savedFFTs, expRuntime.inverseFFT, expConfig.interp, paddedLength, expConfig.NUM_CHAN, expConfig.SAMPLE_RATE);
             Eigen::VectorXf tdoaVector = std::get<0>(tdoasAndXCorrAmps);
             Eigen::VectorXf XCorrAmps = std::get<1>(tdoasAndXCorrAmps);
             auto afterGCCW = std::chrono::steady_clock::now();
@@ -212,11 +212,12 @@ void DataProcessor(Session &sess, ExperimentConfig &expConfig, ExperimentRuntime
     94.2079, 93.6266, 92.9577, 92.4459, 92.1938, 92.2134, 92.6957, 93.7765, 95.1637, 96.4559, 
     97.3677
 };
-
+            
+            
             auto beforeClass = std::chrono::steady_clock::now();
-            expRuntime.onnxModel->normalize_data(input_tensor_values);
+            expConfig.onnxModel->normalize_data(input_tensor_values);
             // Run inference
-            std::vector<float> predictions = expRuntime.onnxModel->run_inference(input_tensor_values);
+            std::vector<float> predictions = expConfig.onnxModel->run_inference(input_tensor_values);
             auto afterClass = std::chrono::steady_clock::now();
             std::chrono::duration<double> durationClass = afterClass - beforeClass;
             std::cout << "classifier runtime: " << durationClass.count() << std::endl;
@@ -224,6 +225,7 @@ void DataProcessor(Session &sess, ExperimentConfig &expConfig, ExperimentRuntime
                 std::cout << predictions[i] << " ";
             }
             std::cout << std::endl;
+            
 
 
         }

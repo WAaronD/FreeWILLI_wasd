@@ -8,7 +8,7 @@ This file contains all function prototypes for TDOA_estimation.cpp
 
 #include "custom_types.h"
 
-auto GCC_PHAT_FFTW(Eigen::MatrixXcf &savedFFTs, fftwf_plan &inverseFFT,
+auto GCC_PHAT(Eigen::MatrixXcf &savedFFTs, fftwf_plan &inverseFFT,
                    const int interp, int &paddedLength,
                    const int &NUM_CHAN, const int &SAMPLE_RATE)
     -> std::tuple<Eigen::VectorXf, Eigen::VectorXf>;
