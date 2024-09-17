@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.29.7)
 
 project(HarpListen VERSION 1.0)
 
+# Set the compilers to gcc-12 and g++-12
+set(CMAKE_C_COMPILER /usr/bin/gcc-12)
+set(CMAKE_CXX_COMPILER /usr/bin/g++-12)
+
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 20)
 
@@ -203,6 +207,7 @@ if(ENABLE_BENCHMARK)
     add_subdirectory(${PROJECT_SOURCE_DIR}/libs/benchmark)
     add_subdirectory(${PROJECT_SOURCE_DIR}/benchmark)
 endif()
+
 
 # Set the output directory for the executable based on mode
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")

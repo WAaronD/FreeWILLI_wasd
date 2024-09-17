@@ -5,7 +5,8 @@
 using namespace std;
 
 static void BM_Threshold(benchmark::State& state) {
-    Experiment exp;
+    ExperimentConfig expConfig;
+    /*
     exp.ProcessFncPtr = ProcessSegmentInterleaved;
     exp.energyDetThresh = 2500;
     exp.SAMPS_PER_CHANNEL = 124;
@@ -19,6 +20,7 @@ static void BM_Threshold(benchmark::State& state) {
     exp.DATA_SIZE = 496;
     exp.NUM_PACKS_DETECT = (int)(exp.TIME_WINDOW * 100000 / exp.SAMPS_PER_CHANNEL);
     exp.DATA_SEGMENT_LENGTH = exp.NUM_PACKS_DETECT * exp.SAMPS_PER_CHANNEL * exp.NUM_CHAN;
+    */
 
     // Get the current date and time
     auto now = std::chrono::system_clock::now();
