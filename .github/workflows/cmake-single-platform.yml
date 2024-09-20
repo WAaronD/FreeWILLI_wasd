@@ -25,6 +25,13 @@ jobs:
     - name: Install dependencies
       run: sudo apt-get update && sudo apt-get install -y libfftw3-dev libblas-dev libeigen3-dev
 
+    - name: Download ONNX Runtime
+      run: |
+        wget https://github.com/microsoft/onnxruntime/releases/download/v1.14.1/onnxruntime-linux-x64-1.14.1.tgz
+        tar -xzf onnxruntime-linux-x64-1.14.1.tgz
+        sudo cp -r onnxruntime-linux-x64-1.14.1/include/* /usr/local/include/
+        sudo cp -r onnxruntime-linux-x64-1.14.1/lib/* /usr/local/lib/
+
     - name: Include submodules
       run: git submodule update --init --recursive
 
