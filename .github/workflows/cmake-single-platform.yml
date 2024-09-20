@@ -6,6 +6,7 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  workflow_dispatch:  # Add this line to support manual triggering
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
