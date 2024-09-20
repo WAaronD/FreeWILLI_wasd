@@ -76,14 +76,16 @@ jobs:
         run: |
           curl -L -o onnxruntime-osx-arm64-1.19.2.tgz https://github.com/microsoft/onnxruntime/releases/download/v1.19.2/onnxruntime-osx-arm64-1.19.2.tgz
           tar -xzf onnxruntime-osx-arm64-1.19.2.tgz
-          mkdir -p ${{github.workspace}}/onnxruntime/include ${{github.workspace}}/onnxruntime/lib
-          cp -r onnxruntime-osx-arm64-1.19.2/include/* ${{github.workspace}}/onnxruntime/include/
-          cp -r onnxruntime-osx-arm64-1.19.2/lib/* ${{github.workspace}}/onnxruntime/lib/
-
+      
+          # Copy the headers and libraries to the standard macOS directories
+          sudo mkdir -p /usr/local/include/onnxruntime /usr/local/lib
+          sudo cp -r onnxruntime-osx-arm64-1.19.2/include/* /usr/local/include/onnxruntime/
+          sudo cp -r onnxruntime-osx-arm64-1.19.2/lib/* /usr/local/lib/
+      
       - name: Set environment variables for ONNX Runtime
         run: |
-          echo "CPLUS_INCLUDE_PATH=${{github.workspace}}/onnxruntime/include" >> $GITHUB_ENV
-          echo "LD_LIBRARY_PATH=${{github.workspace}}/onnxruntime/lib:\$LD_LIBRARY_PATH" >> $GITHUB_ENV
+          echo "CPLUS_INCLUDE_PATH=/usr/local/include/onnxruntime" >> $GITHUB_ENV
+          echo "LD_LIBRARY_PATH=/usr/local/lib:\$LD_LIBRARY_PATH" >> $GITHUB_ENV
 
           
       - name: Include submodules
