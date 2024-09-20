@@ -74,11 +74,11 @@ jobs:
 
       - name: Download ONNX Runtime
         run: |
-          curl -L -o onnxruntime-osx-x64-1.14.1.tgz https://github.com/microsoft/onnxruntime/releases/download/v1.14.1/onnxruntime-osx-x64-1.14.1.tgz
-          tar -xzf onnxruntime-osx-x64-1.14.1.tgz
-          sudo cp -r onnxruntime-osx-x64-1.14.1/include/* /usr/local/include/
-          sudo cp -r onnxruntime-osx-x64-1.14.1/lib/* /usr/local/lib/
-
+          curl -L -o onnxruntime-osx-arm64-1.19.2.tgz https://github.com/microsoft/onnxruntime/releases/download/v1.19.2/onnxruntime-osx-arm64-1.19.2.tgz
+          tar -xzf onnxruntime-osx-arm64-1.19.2.tgz
+          sudo cp -r onnxruntime-osx-arm64-1.19.2/include/* /usr/local/include/
+          sudo cp -r onnxruntime-osx-arm64-1.19.2/lib/* /usr/local/lib/
+          
       - name: Include submodules
         run: git submodule update --init --recursive
 
