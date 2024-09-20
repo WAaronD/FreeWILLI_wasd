@@ -1,3 +1,6 @@
+# cmake -DCMAKE_C_COMPILER=/usr/bin/gcc-12 -DCMAKE_CXX_COMPILER=/usr/bin/g++-12 ..
+# cmake -DCMAKE_BUILD_TYPE=Debug ..
+
 cmake_minimum_required(VERSION 3.29.7)
 
 project(HarpListen VERSION 1.0)

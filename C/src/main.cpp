@@ -22,6 +22,9 @@ Example usage:
 //#include <memory>
 
 //valgrind --log-file=grind2.txt --leak-check=yes --show-possibly-lost=no ./debug/HarpListenDebug self 1045 1240 100 30
+//valgrind --tool=massif --pages-as-heap=yes ./bin/HarpListen self 1045 1240 100 10000
+// profiling the stack (--stacks=yes) slows down performance significantly
+// --pages-as-heap=yes likely to also slow down program
 
 int main(int argc, char *argv[]) 
 {
