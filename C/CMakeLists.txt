@@ -6,10 +6,13 @@ cmake_minimum_required(VERSION 3.29.7)
 project(HarpListen VERSION 1.0)
 
 # Set the compilers to gcc-12 and g++-12
-# set(CMAKE_C_COMPILER /usr/bin/gcc-12)
-# set(CMAKE_CXX_COMPILER /usr/bin/g++-12)
-set(CMAKE_C_COMPILER /usr/bin/gcc)
-set(CMAKE_CXX_COMPILER /usr/bin/g++)
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    set(CMAKE_C_COMPILER /usr/bin/gcc-12)
+    set(CMAKE_CXX_COMPILER /usr/bin/g++-12)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    set(CMAKE_C_COMPILER /usr/bin/gcc)
+    set(CMAKE_CXX_COMPILER /usr/bin/g++)
+endif()
 
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 20)

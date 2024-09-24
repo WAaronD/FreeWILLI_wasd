@@ -175,7 +175,7 @@ void DataProcessor(Session &sess, ExperimentConfig &expConfig, ExperimentRuntime
 
             // Eigen::VectorXf DOAs = DOA_EstimateVerticalArray(resultMatrix, expConfig.speedOfSound, expConfig.chanSpacing);
             auto beforeDOA = std::chrono::steady_clock::now();
-            Eigen::VectorXf DOAs = TDOA_To_DOA_GeneralArray(qrDecompH, expConfig.speedOfSound, tdoaVector);
+            Eigen::VectorXf DOAs = TDOA_To_DOA_GeneralArray(qrDecompH, expRuntime.speedOfSound, tdoaVector);
             auto afterDOA = std::chrono::steady_clock::now();
             std::chrono::duration<double> durationDOA = afterDOA - beforeDOA;
             //std::cout << "DOA time: " << durationDOA.count() << std::endl;

@@ -34,7 +34,6 @@ public:
     static constexpr float TIME_WINDOW = 0.01; // fraction of a second to consider when performing cross correlation 
     static constexpr int   NUM_PACKS_DETECT = static_cast<int>(TIME_WINDOW * 100000 / SAMPS_PER_CHANNEL);
     static constexpr int   DATA_SEGMENT_LENGTH = NUM_PACKS_DETECT * SAMPS_PER_CHANNEL * NUM_CHAN;
-    static constexpr float speedOfSound = 1482.965459;
     static constexpr int   interp = 1;
 
     // std::vector<float> chanSpacing = {1.0, 2.0, 3.0, 1.0, 2.0, 1.0};
@@ -52,10 +51,11 @@ public:
 class ExperimentRuntime {
 public:
     
-    std::string          detectionOutputFile = ""; // Define at runtime
+    std::string          detectionOutputFile = "";
     std::chrono::seconds programRuntime;
-    TimePoint            programStartTime; // placeholder value
-    float                energyDetThresh = 100.0f; // 28.0f; // energy detector threshold - 2500.0 is default
+    TimePoint            programStartTime;
+    float                energyDetThresh = 100.0f; // 28.0f;
+    float                speedOfSound = 1482.965459;
     
 
     

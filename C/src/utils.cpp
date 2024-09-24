@@ -32,6 +32,7 @@ void InitializeSession(SocketManager& sess, ExperimentRuntime& expRuntime, char*
         sess.UDP_IP = "127.0.0.1";
     }
     sess.UDP_PORT = std::stoi(argv[2]);
+    expRuntime.speedOfSound = std::stof(argv[3]);
     expRuntime.energyDetThresh = std::stof(argv[4]);
     expRuntime.programRuntime = std::chrono::seconds(std::stoi(argv[5]));
     std::cout << "Listening to IP address " << sess.UDP_IP << " and port " << sess.UDP_PORT << std::endl;

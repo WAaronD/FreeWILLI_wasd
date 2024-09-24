@@ -2,7 +2,9 @@
 @file main.cpp
 @brief A program for receiving and processing UDP packets in real-time.
 
-This program sets up a UDP listener to receive packets and processes them concurrently using multi-threading. It handles configuration dynamically and logs processed data. In case of errors, it attempts to restart to maintain continuous operation.
+This program sets up a UDP listener to receive packets and processes them concurrently using multi-threading. 
+It handles configuration dynamically and logs processed data. 
+In case of errors, it attempts to restart to maintain continuous operation.
 
 @note Requires FFTW3 for FFT operations and Eigen for linear algebra.
 
