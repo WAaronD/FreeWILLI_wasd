@@ -281,6 +281,17 @@ Eigen::MatrixXd LoadHydrophonePositions(const char* filename)
         }
     }
 
+    std::cout << "Relative positions" << std::endl;
+    for (int i = 0; i < numRows; i++)
+    {
+        for (int j = 0; j < numCols; j++)
+        {
+            std::cout << relativePositions(i,j) << " ";
+        }
+        std::cout << std::endl;
+    }
+
+
     return relativePositions;
 }
 

@@ -39,7 +39,8 @@ public:
     // std::vector<float> chanSpacing = {1.0, 2.0, 3.0, 1.0, 2.0, 1.0};
 
     static constexpr const char* filterWeights = "filters/highpass_taps@101_cutoff@20k_window@hamming_fs@100k.txt";
-    static constexpr const char* receiverPositions = "../Data/SOCAL_H_72_HS_harp4chPar_recPos.txt";
+    //static constexpr const char* receiverPositions = "../Data/SOCAL_H_72_HS_harp4chPar_recPos.txt";
+    static constexpr const char* receiverPositions = "../Data/SOCAL_H_72_HS_harp4chPar_VLA.txt";
     static constexpr const char* onnxModelPath = "../TestOnnx/model_quantized_static.onnx";
     static constexpr const char* onnxModelScaling = "../TestOnnx/scaler_params.json";
     

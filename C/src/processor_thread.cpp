@@ -85,7 +85,14 @@ void DataProcessor(Session &sess, ExperimentConfig &expConfig, ExperimentRuntime
         Eigen::MatrixXd H = LoadHydrophonePositions(expConfig.receiverPositions);
         
         // Precompute QR decomposition once
-        auto qrDecompH = precomputedQR(H);
+        // auto qrDecompH = precomputedQR(H);
+        auto qrDecompH = precomputedPseudoInverse(H);
+        for (int i = 0; i < 4; i++){
+            for (int j = 0; j < 4; j++){
+                std::cout << qrDecompH(i,j) << " ";
+            }
+            std::cout << std::endl; 
+        }
 
         // set the frequency of file writes
         BufferWriter bufferWriter;
@@ -180,7 +187,7 @@ void DataProcessor(Session &sess, ExperimentConfig &expConfig, ExperimentRuntime
             std::chrono::duration<double> durationDOA = afterDOA - beforeDOA;
             //std::cout << "DOA time: " << durationDOA.count() << std::endl;
             // Eigen::VectorXf DOAs = TDOA_To_DOA_VerticalArray(resultMatrix, 1500.0, expConfig.chanSpacing);
-            //std::cout << "DOAs: " << DOAs.transpose() << std::endl;
+            std::cout << "DOAs: " << DOAs.transpose() << std::endl;
 
             // Write to buffers
             Eigen::VectorXf combined(1 + DOAs.size() + tdoaVector.size() + XCorrAmps.size()); // + 1 for amplitude
@@ -220,14 +227,13 @@ void DataProcessor(Session &sess, ExperimentConfig &expConfig, ExperimentRuntime
             std::vector<float> predictions = expConfig.onnxModel->run_inference(input_tensor_values);
             auto afterClass = std::chrono::steady_clock::now();
             std::chrono::duration<double> durationClass = afterClass - beforeClass;
+            /**
             std::cout << "classifier runtime: " << durationClass.count() << std::endl;
             for(int i = 0; i < predictions.size(); i++){
                 std::cout << predictions[i] << " ";
             }
             std::cout << std::endl;
-            
-
-
+            */
         }
     }
     catch (const GCC_Value_Error &e)

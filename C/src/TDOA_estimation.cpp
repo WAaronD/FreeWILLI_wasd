@@ -85,11 +85,32 @@ auto GCC_PHAT(Eigen::MatrixXcf &savedFFTs, fftwf_plan &inverseFFT,
     return std::make_tuple(tauVector, XCorrPeaks);
 }
 
+// Compute the Moore-Penrose pseudoinverse using the Singular Value Decomposition (SVD)
+Eigen::MatrixXd computePseudoInverse(const Eigen::MatrixXd &H) {
+    Eigen::JacobiSVD<Eigen::MatrixXd> svd(H, Eigen::ComputeThinU | Eigen::ComputeThinV);
+    double tolerance = std::numeric_limits<double>::epsilon() * std::max(H.cols(), H.rows()) * svd.singularValues().array().abs().maxCoeff();
+    Eigen::MatrixXd singularValuesInv = svd.singularValues().array().inverse().matrix().asDiagonal();
+
+    // Only invert values above the tolerance threshold
+    for (long i = 0; i < singularValuesInv.rows(); ++i) {
+        if (svd.singularValues()(i) < tolerance) {
+            singularValuesInv(i, i) = 0;
+        }
+    }
+    
+    return svd.matrixV() * singularValuesInv * svd.matrixU().transpose();
+}
+
+// Precompute the pseudoinverse instead of QR decomposition
+Eigen::MatrixXd precomputedPseudoInverse(const Eigen::MatrixXd &H) {
+    return computePseudoInverse(H);
+}
+
 // Precompute the QR decomposition
 Eigen::ColPivHouseholderQR<Eigen::MatrixXd> precomputedQR(const Eigen::MatrixXd &H) {
     return H.colPivHouseholderQr();
 }
-
+/*
 Eigen::VectorXf TDOA_To_DOA_GeneralArray(const Eigen::ColPivHouseholderQR<Eigen::MatrixXd> &qr, const float speedOfSound, const Eigen::VectorXf &tdoa)
 {
     // Convert tdoa to VectorXd
@@ -112,6 +133,35 @@ Eigen::VectorXf TDOA_To_DOA_GeneralArray(const Eigen::ColPivHouseholderQR<Eigen:
 
     return result_vector;
 }
+*/
+
+// Modify TDOA to DOA calculation to work with the pseudoinverse
+Eigen::VectorXf TDOA_To_DOA_GeneralArray(const Eigen::MatrixXd &pseudoInv, const float speedOfSound, const Eigen::VectorXf &tdoa) {
+    // Convert tdoa to VectorXd
+    Eigen::VectorXd tdoa_d = tdoa.cast<double>();
+
+    // Scale TDOAs by the speed of sound
+    Eigen::VectorXd scaled_tdoa = tdoa_d * speedOfSound;
+
+    // Solve for DOA using the pseudoinverse
+    Eigen::VectorXd doa = pseudoInv * scaled_tdoa;
+
+    // Normalize the DOA vector
+    if (doa.norm() != 0) {
+        doa /= doa.norm();
+    }
+
+    // Calculate elevation and azimuth
+    float el = static_cast<float>(180.0 - std::acos(doa(2)) * 180.0 / M_PI);
+    float az = static_cast<float>(std::atan2(doa(1), doa(0)) * 180.0 / M_PI);
+
+    // Create a result vector containing el, az
+    Eigen::VectorXf result_vector(2);
+    result_vector << el, az;
+
+    return result_vector;
+}
+
 
 Eigen::VectorXf TDOA_To_DOA_VerticalArray(Eigen::VectorXf &TDOAs, const float &soundSpeed, std::span<float> chanSpacing)
 {

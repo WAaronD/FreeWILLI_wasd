@@ -167,44 +167,6 @@ DetectionResult ThresholdDetectFD(const Eigen::VectorXcf &data, const std::span<
     return result;
 }
 
-/*
-void ProcessSegmentStacked(vector<double>& data, vector<TimePoint>& times, const string& outputFile, unsigned int& NUM_CHAN, unsigned int& SAMPS_PER_CHANNEL, unsigned int& NUM_PACKS_DETECT) {
-    //
-    // THIS FUNCTION IS DEPRICATED
-    //
-
-    arma::Col<int16_t> ch1;
-    int channelSize = data.size() / NUM_CHAN;
-    ch1.set_size(channelSize);                    // Reserve space in the arma::Col (optional but can improve performance)
-
-    // Iterate over the data in steps of 100
-    for (size_t i = 0; i < NUM_PACKS_DETECT; ++i) {
-        // Calculate the starting index of the current segment
-        size_t segmentStart = i * (NUM_CHAN * SAMPS_PER_CHANNEL);
-
-        // Extract SAMPS_PER_CHANNEL consecutive elements from the current segment
-        for (size_t j = 0; j < SAMPS_PER_CHANNEL; ++j) {
-            ch1(i * SAMPS_PER_CHANNEL + j) = data[segmentStart + j];
-        }
-    }
-    #ifdef PRINT_PROCESS_SEGMENT_1240
-        std::cout << "Ch1 size " << ch1.size() << std::endl;
-        std::cout << "First few elements in ch1 " << ch1.size() << std::endl;
-        for (size_t j = 0; j < 12; j++){
-            std::cout << ch1[j] << " ";
-        }
-        std::cout << std::endl;
-        std::cout << "Last few elements in ch1 " << ch1.size() << std::endl;
-        for (size_t j = ch1.size() - 12; j < ch1.size(); j++){
-            std::cout << ch1[j] << " ";
-        }
-        std::cout << std::endl;
-    #endif
-
-    //ProcessSegment(ch1, times, outputFile);  // Use memptr to access raw data
-}
-
-*/
 void ProcessSegmentInterleaved(std::span<float> data, Eigen::MatrixXf &channels, const int NUM_CHAN)
 {
     /**

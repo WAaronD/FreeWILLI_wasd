@@ -14,6 +14,8 @@ auto GCC_PHAT(Eigen::MatrixXcf &savedFFTs, fftwf_plan &inverseFFT,
     -> std::tuple<Eigen::VectorXf, Eigen::VectorXf>;
 Eigen::VectorXf TDOA_To_DOA_VerticalArray(Eigen::VectorXf &TDOAs, const float &soundSpeed, 
                 std::span<float> chanSpacing);
-Eigen::VectorXf TDOA_To_DOA_GeneralArray(const Eigen::ColPivHouseholderQR<Eigen::MatrixXd> &qr, const float c, const Eigen::VectorXf &tdoa);
-//Eigen::VectorXf CrossCorr(const Eigen::MatrixXf &channel_matrix, float fs, float max_tau, int interp);
+//Eigen::VectorXf TDOA_To_DOA_GeneralArray(const Eigen::ColPivHouseholderQR<Eigen::MatrixXd> &qr, const float c, const Eigen::VectorXf &tdoa);
+Eigen::VectorXf TDOA_To_DOA_GeneralArray(const Eigen::MatrixXd& pseudoInv, const float c, const Eigen::VectorXf &tdoa);
 Eigen::ColPivHouseholderQR<Eigen::MatrixXd> precomputedQR(const Eigen::MatrixXd &H);
+Eigen::MatrixXd precomputedPseudoInverse(const Eigen::MatrixXd &H);
+Eigen::MatrixXd computePseudoInverse(const Eigen::MatrixXd &H);
