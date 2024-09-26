@@ -14,6 +14,31 @@ void PrintMode()
 #endif
 }
 
+void ParseJSONConfig(SocketManager& sess, ExperimentRuntime& expRuntime, char* argv[]){
+
+    std::string filepath = argv[1]; 
+    std::ifstream file(filepath);
+    if (!file.is_open()) {
+        throw std::runtime_error("Unable to open JSON file: " + filepath);
+    }
+
+    nlohmann::json jsonConfig;
+    file >> jsonConfig;
+
+    sess.UDP_IP = jsonConfig.at("IPAddress").get<std::string>();
+    
+    if (sess.UDP_IP == "self") {
+        sess.UDP_IP = "127.0.0.1";
+    }
+    
+    sess.UDP_PORT = jsonConfig.at("Port").get<int>();
+    expRuntime.speedOfSound = jsonConfig.at("SpeedOfSound").get<float>();
+    expRuntime.energyDetThresh = jsonConfig.at("EnergyDetectionThreshold").get<float>();
+    expRuntime.programRuntime = std::chrono::seconds(std::stoi(argv[2]));
+    expRuntime.filterWeights = jsonConfig.at("FilterWeights").get<std::string>();
+    expRuntime.receiverPositions = jsonConfig.at("ReceiverPositions").get<std::string>();
+} 
+
 void InitializeSession(SocketManager& sess, ExperimentRuntime& expRuntime, char* argv[]) 
 {
     /**
@@ -128,7 +153,7 @@ void InitiateOutputFile(std::string &outputFile, std::tm &timeStruct, int64_t mi
     }
 }
 
-auto ReadFIRFilterFile(const char* fileName) -> std::vector<float>
+auto ReadFIRFilterFile(const std::string& fileName) -> std::vector<float>
 {
     /**
      * @brief Reads a file containing the FIR filter taps and returns the values as an Armadillo column vector.
@@ -204,7 +229,7 @@ bool WithProbability(double probability)
     return randomValue < probability;
 }
 
-Eigen::MatrixXd LoadHydrophonePositions(const char* filename)
+Eigen::MatrixXd LoadHydrophonePositions(const std::string& filename)
 {
     /**
      * @brief Loads hydrophone positions from a CSV file and calculates relative positions.
@@ -282,9 +307,9 @@ Eigen::MatrixXd LoadHydrophonePositions(const char* filename)
     }
 
     std::cout << "Relative positions" << std::endl;
-    for (int i = 0; i < numRows; i++)
+    for (int i = 0; i < relativePositions.rows(); i++)
     {
-        for (int j = 0; j < numCols; j++)
+        for (int j = 0; j < relativePositions.cols(); j++)
         {
             std::cout << relativePositions(i,j) << " ";
         }

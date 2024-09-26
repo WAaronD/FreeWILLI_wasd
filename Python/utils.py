@@ -162,7 +162,7 @@ def Load4ChannelDataset(filePath):
     dataMatrix = loadmat(filePath)['DATA']
     print("Shape of loaded data: ", dataMatrix.shape)
     assert dataMatrix.shape[1] == 4
-    return dataMatrix
+    return dataMatrix.T
 
 def DuplicateAndShiftChannels(dataMatrix, offset, NUM_CHAN):
     chanList = [2,3,4]
@@ -188,7 +188,8 @@ def DuplicateAndShiftChannels(dataMatrix, offset, NUM_CHAN):
 
 
 def InterleaveData(dataMatrix):
-    dataFlattened = dataMatrix.T.reshape(-1, order='F')   # Interleave the values of the rows uniformly
+    dataFlattened = dataMatrix.reshape(-1, order='F')   # Interleave the values of the rows uniformly
+    #dataFlattened = dataMatrix.reshape(-1, order='F')   # Interleave the values of the rows uniformly
     return dataFlattened#, np.where(dataFlattened > 200)[0][0] # return the flattened matrix as well as index of first high amplitude value
 
 

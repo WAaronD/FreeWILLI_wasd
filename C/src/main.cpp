@@ -48,7 +48,8 @@ int main(int argc, char *argv[])
         ExperimentRuntime expRuntime;
         
         // Initialize the session and experiment
-        InitializeSession(socketManager, expRuntime, argv);
+        //InitializeSession(socketManager, expRuntime, argv);
+        ParseJSONConfig(socketManager, expRuntime, argv);
         socketManager.RestartListener(); // Reset the listener state
         
         expRuntime.programStartTime = std::chrono::system_clock::now(); // Start experiment timer
@@ -56,7 +57,6 @@ int main(int argc, char *argv[])
         // Create threads for listening to UDP packets and processing data
         std::thread listenerThread(UdpListener, std::ref(sess), std::ref(socketManager), expConfig.PACKET_SIZE);
         std::thread processorThread(DataProcessor, std::ref(sess), std::ref(expConfig), std::ref(expRuntime));
-
         // Wait for threads to finish
         listenerThread.join();
         processorThread.join();

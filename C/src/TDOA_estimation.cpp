@@ -103,6 +103,14 @@ Eigen::MatrixXd computePseudoInverse(const Eigen::MatrixXd &H) {
 
 // Precompute the pseudoinverse instead of QR decomposition
 Eigen::MatrixXd precomputedPseudoInverse(const Eigen::MatrixXd &H) {
+    /*
+    Eigen::MatrixXd mat(3,4);
+        // Fill the matrix with the pseudo-inverse values
+    mat << 0, 0, 0, 0,
+           0, 0, 0, 0,
+           -0.0666666, -0.13333333, -0.2, -0.06666666;
+    return mat;
+    */
     return computePseudoInverse(H);
 }
 
@@ -110,7 +118,91 @@ Eigen::MatrixXd precomputedPseudoInverse(const Eigen::MatrixXd &H) {
 Eigen::ColPivHouseholderQR<Eigen::MatrixXd> precomputedQR(const Eigen::MatrixXd &H) {
     return H.colPivHouseholderQr();
 }
-/*
+
+
+// Precompute the SVD decomposition
+Eigen::JacobiSVD<Eigen::MatrixXd> SVD(const Eigen::MatrixXd &H) {
+    return Eigen::JacobiSVD<Eigen::MatrixXd>(H, Eigen::ComputeThinU | Eigen::ComputeThinV);
+}
+
+// Precompute P = V * Sigma^+ 
+Eigen::MatrixXd precomputeInverse(const Eigen::JacobiSVD<Eigen::MatrixXd> &svd) {
+    // Obtain matrices from SVD decomposition
+    Eigen::MatrixXd V = svd.matrixV();
+    Eigen::MatrixXd U = svd.matrixU();
+    Eigen::VectorXd singularValues = svd.singularValues();
+
+    // Compute Sigma^+
+    Eigen::MatrixXd Sigma_pseudo_inv = Eigen::MatrixXd::Zero(V.cols(), U.cols());
+    for (int i = 0; i < singularValues.size(); ++i) {
+        if (singularValues(i) > 1e-10) {  // Use a threshold to avoid division by zero
+            Sigma_pseudo_inv(i, i) = 1.0 / singularValues(i);
+        }
+    }
+
+    // Precompute P = V * Sigma^+
+    Eigen::MatrixXd P = V * Sigma_pseudo_inv;
+    return P;
+}
+
+// Function to normalize only the necessary components based on the rank
+void normalizeDOA(Eigen::VectorXd &doa, int rank) {
+    if (rank == 3) {
+        // Full 3D normalization
+        doa /= doa.norm();
+    } else if (rank == 2) {
+        // Normalize only the x and y components
+        double xy_norm = std::sqrt(doa(0) * doa(0) + doa(1) * doa(1));
+        if (xy_norm > 1e-6) { // Avoid division by zero
+            doa(0) /= xy_norm;
+            doa(1) /= xy_norm;
+        }
+    }
+    // If rank == 1, normalization might not be meaningful at all
+}
+// Function to determine if the DOA should be normalized
+int GetRank(const Eigen::MatrixXd &H, double tolerance) {
+    // Perform SVD decomposition
+    Eigen::JacobiSVD<Eigen::MatrixXd> svd(H, Eigen::ComputeThinU | Eigen::ComputeThinV);
+    Eigen::VectorXd singularValues = svd.singularValues();
+
+    // Check how many singular values are effectively non-zero
+    int rank = 0;
+    for (int i = 0; i < singularValues.size(); ++i) {
+        if (singularValues(i) > tolerance) {
+            ++rank;
+        }
+    }
+    return rank;
+}
+
+// Updated TDOA to DOA using precomputed matrices
+Eigen::VectorXf TDOA_To_DOA_Optimized(const Eigen::MatrixXd &P, const Eigen::MatrixXd &U, const float speedOfSound, const Eigen::VectorXf &tdoa, int rank) {
+    // Convert tdoa to VectorXd and scale it
+    Eigen::VectorXd scaled_tdoa = tdoa.cast<double>() * speedOfSound;
+
+    // Compute U^T * scaled_tdoa
+    Eigen::VectorXd Ut_tdoa = U.transpose() * scaled_tdoa;
+
+    // Compute DOA using the precomputed matrix P
+    Eigen::VectorXd doa = P * Ut_tdoa;
+
+    // Normalize the DOA vector
+    if (rank > 1){
+        normalizeDOA(doa, rank);
+    }
+
+    // Calculate elevation and azimuth
+    float el = static_cast<float>(180.0 - std::acos(doa(2)) * 180.0 / M_PI);
+    float az = static_cast<float>(std::atan2(doa(1), doa(0)) * 180.0 / M_PI);
+
+    // Create a result vector containing el and az
+    Eigen::VectorXf result_vector(2);
+    result_vector << el, az;
+
+    return result_vector;
+}
+
 Eigen::VectorXf TDOA_To_DOA_GeneralArray(const Eigen::ColPivHouseholderQR<Eigen::MatrixXd> &qr, const float speedOfSound, const Eigen::VectorXf &tdoa)
 {
     // Convert tdoa to VectorXd
@@ -133,8 +225,44 @@ Eigen::VectorXf TDOA_To_DOA_GeneralArray(const Eigen::ColPivHouseholderQR<Eigen:
 
     return result_vector;
 }
-*/
 
+// Convert TDOAs to DOAs using SVD
+Eigen::VectorXf TDOA_To_DOA_SVD(const Eigen::JacobiSVD<Eigen::MatrixXd> &svd, const float speedOfSound, const Eigen::VectorXf &tdoa) {
+    // Convert tdoa to VectorXd
+    Eigen::VectorXd tdoa_d = tdoa.cast<double>();
+
+    // Solve for DOA using the pseudo-inverse from SVD
+    Eigen::VectorXd scaled_tdoa = tdoa_d * speedOfSound;
+    Eigen::VectorXd doa = svd.solve(scaled_tdoa);
+
+    // Normalize the DOA vector
+    std::cout << "DOA before norm: " << std::endl;
+    doa /= doa.norm();
+    /*
+    for (int i = 0; i < 3; i++){
+        std::cout << doa[i] << " ";
+    }
+    std::cout << std::endl;
+    doa /= doa.norm();
+    std::cout << "DOA after norm: " << std::endl;
+    for (int i = 0; i < 3; i++){
+        std::cout << doa[i] << " ";
+    }
+    std::cout << std::endl;
+    */
+
+    // Calculate elevation and azimuth
+    float el = static_cast<float>(180.0 - std::acos(doa(2)) * 180.0 / M_PI);
+    float az = static_cast<float>(std::atan2(doa(1), doa(0)) * 180.0 / M_PI);
+
+    // Create a result vector containing el, az, and the DOA vector components
+    Eigen::VectorXf result_vector(2);
+    result_vector << el, az;
+
+    return result_vector;
+}
+
+/*
 // Modify TDOA to DOA calculation to work with the pseudoinverse
 Eigen::VectorXf TDOA_To_DOA_GeneralArray(const Eigen::MatrixXd &pseudoInv, const float speedOfSound, const Eigen::VectorXf &tdoa) {
     // Convert tdoa to VectorXd
@@ -145,15 +273,19 @@ Eigen::VectorXf TDOA_To_DOA_GeneralArray(const Eigen::MatrixXd &pseudoInv, const
 
     // Solve for DOA using the pseudoinverse
     Eigen::VectorXd doa = pseudoInv * scaled_tdoa;
+    std::cout << "doa from inside function: " << std::endl;
+    std::cout << doa << std::endl;
 
     // Normalize the DOA vector
-    if (doa.norm() != 0) {
-        doa /= doa.norm();
-    }
+
+
+    std::cout << "doa from inside function after norm: " << std::endl;
+    std::cout << doa << std::endl;
 
     // Calculate elevation and azimuth
     float el = static_cast<float>(180.0 - std::acos(doa(2)) * 180.0 / M_PI);
     float az = static_cast<float>(std::atan2(doa(1), doa(0)) * 180.0 / M_PI);
+    
 
     // Create a result vector containing el, az
     Eigen::VectorXf result_vector(2);
@@ -161,6 +293,7 @@ Eigen::VectorXf TDOA_To_DOA_GeneralArray(const Eigen::MatrixXd &pseudoInv, const
 
     return result_vector;
 }
+*/
 
 
 Eigen::VectorXf TDOA_To_DOA_VerticalArray(Eigen::VectorXf &TDOAs, const float &soundSpeed, std::span<float> chanSpacing)

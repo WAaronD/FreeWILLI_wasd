@@ -18,10 +18,12 @@ void FrequencyDomainFIRFiltering(
     fftwf_execute(forwardFFT);
 
     // Apply the frequency domain filter to each channel
+    
     for (int i = 0; i < numChannels; i++)
     {
         savedFFTs.col(i) = savedFFTs.col(i).array() * filterFreq.array();
     }
+    
 }
 
 void ConvertData(std::vector<float> &dataSegment, std::span<uint8_t> dataBytes, const int &DATA_SIZE, const int &HEAD_SIZE)

@@ -25,28 +25,24 @@ public:
     static constexpr int MICRO_INCR        = 1240; // time between packets
     static constexpr int SAMPLE_RATE       = 1e5;  // sample rate in Hz
     
-    static constexpr int DATA_SIZE = SAMPS_PER_CHANNEL * NUM_CHAN * BYTES_PER_SAMP;   // packet data size (bytes)
-    static constexpr int PACKET_SIZE = DATA_SIZE + HEAD_SIZE;                         // packet size (bytes)
-    static constexpr int REQUIRED_BYTES = DATA_SIZE + HEAD_SIZE;
-    static constexpr int DATA_BYTES_PER_CHANNEL = SAMPS_PER_CHANNEL * BYTES_PER_SAMP; // number of data bytes per channel (REQUIRED_BYTES - 12) / 4 channels
+    static constexpr int DATA_SIZE              = SAMPS_PER_CHANNEL * NUM_CHAN * BYTES_PER_SAMP; // packet data size (bytes)
+    static constexpr int PACKET_SIZE            = DATA_SIZE + HEAD_SIZE;                         // packet size (bytes)
+    static constexpr int REQUIRED_BYTES         = DATA_SIZE + HEAD_SIZE;
+    static constexpr int DATA_BYTES_PER_CHANNEL = SAMPS_PER_CHANNEL * BYTES_PER_SAMP;            // number of data bytes per channel (REQUIRED_BYTES - 12) / 4 channels
 
 
-    static constexpr float TIME_WINDOW = 0.01; // fraction of a second to consider when performing cross correlation 
-    static constexpr int   NUM_PACKS_DETECT = static_cast<int>(TIME_WINDOW * 100000 / SAMPS_PER_CHANNEL);
+    static constexpr float TIME_WINDOW         = 0.01; // fraction of a second to consider when performing cross correlation 
+    static constexpr int   NUM_PACKS_DETECT    = static_cast<int>(TIME_WINDOW * 100000 / SAMPS_PER_CHANNEL);
     static constexpr int   DATA_SEGMENT_LENGTH = NUM_PACKS_DETECT * SAMPS_PER_CHANNEL * NUM_CHAN;
-    static constexpr int   interp = 1;
+    static constexpr int   interp              = 1;
 
-    // std::vector<float> chanSpacing = {1.0, 2.0, 3.0, 1.0, 2.0, 1.0};
-
-    static constexpr const char* filterWeights = "filters/highpass_taps@101_cutoff@20k_window@hamming_fs@100k.txt";
-    //static constexpr const char* receiverPositions = "../Data/SOCAL_H_72_HS_harp4chPar_recPos.txt";
-    static constexpr const char* receiverPositions = "../Data/SOCAL_H_72_HS_harp4chPar_VLA.txt";
-    static constexpr const char* onnxModelPath = "../TestOnnx/model_quantized_static.onnx";
+    //static constexpr const char* receiverPositions = "../Data/SOCAL_H_72_HS_harp4chPar_VLA.txt";
+    static constexpr const char* onnxModelPath    = "../TestOnnx/model_quantized_static.onnx";
     static constexpr const char* onnxModelScaling = "../TestOnnx/scaler_params.json";
     
     
     const std::function<void(std::span<float>, Eigen::MatrixXf &, unsigned int)> ProcessFncPtr = ProcessSegmentInterleaved;
-    std::unique_ptr<ONNXModel> onnxModel; // Use smart pointer
+    std::unique_ptr<ONNXModel> onnxModel;
 };
 
 class ExperimentRuntime {
@@ -58,6 +54,8 @@ public:
     float                energyDetThresh = 100.0f; // 28.0f;
     float                speedOfSound = 1482.965459;
     
+    std::string filterWeights     = "filters/highpass_taps@101_cutoff@20k_window@hamming_fs@100k.txt";
+    std::string receiverPositions = "../Data/SOCAL_H_72_HS_harp4chPar_recPos.txt";
 
     
     fftwf_plan forwardFFT = nullptr;

@@ -1,0 +1,8 @@
+{
+    "IPAddress": "self",
+    "Port": 1045,
+    "SpeedOfSound": 1482.965459,
+    "EnergyDetectionThreshold": 100,
+    "FilterWeights": "filters/highpass_taps@101_cutoff@20k_window@hamming_fs@100k.txt",
+    "ReceiverPositions": "../Data/SOCAL_H_72_HS_harp4chPar_recPos.txt"
+}

@@ -33,7 +33,7 @@ void DataProcessor(Session &sess, ExperimentConfig &expConfig, ExperimentRuntime
         int channelSize = expConfig.DATA_SEGMENT_LENGTH / expConfig.NUM_CHAN;
 
         // Read filter weights from file
-        std::vector<float> filterWeightsFloat = ReadFIRFilterFile(expConfig.filterWeights);
+        std::vector<float> filterWeightsFloat = ReadFIRFilterFile(expRuntime.filterWeights);
 
         // Declare time checking variables
         bool previousTimeSet = false;
@@ -82,17 +82,24 @@ void DataProcessor(Session &sess, ExperimentConfig &expConfig, ExperimentRuntime
         channelData.setZero();
         savedFFTs.setZero();
 
-        Eigen::MatrixXd H = LoadHydrophonePositions(expConfig.receiverPositions);
+        Eigen::MatrixXd H = LoadHydrophonePositions(expRuntime.receiverPositions);
         
         // Precompute QR decomposition once
-        // auto qrDecompH = precomputedQR(H);
-        auto qrDecompH = precomputedPseudoInverse(H);
-        for (int i = 0; i < 4; i++){
-            for (int j = 0; j < 4; j++){
+        //auto qrDecompH = precomputedQR(H);
+        auto svd = SVD(H);
+        int rankOfH = GetRank(H);
+        // Precompute P and extract U
+        Eigen::MatrixXd P = precomputeInverse(svd);
+        Eigen::MatrixXd U = svd.matrixU();
+        //auto qrDecompH = precomputedPseudoInverse(H);
+        /*
+        for (int i = 0; i < qrDecompH.rows(); i++){
+            for (int j = 0; j < qrDecompH.cols(); j++){
                 std::cout << qrDecompH(i,j) << " ";
             }
             std::cout << std::endl; 
         }
+        */
 
         // set the frequency of file writes
         BufferWriter bufferWriter;
@@ -178,15 +185,19 @@ void DataProcessor(Session &sess, ExperimentConfig &expConfig, ExperimentRuntime
             Eigen::VectorXf XCorrAmps = std::get<1>(tdoasAndXCorrAmps);
             auto afterGCCW = std::chrono::steady_clock::now();
             std::chrono::duration<double> durationGCCW = afterGCCW - beforeGCCW;
+            std::cout << "TDOAs: " << tdoaVector.transpose() << std::endl;
             //std::cout << "GCC time: " << durationGCCW.count() << std::endl;
 
             // Eigen::VectorXf DOAs = DOA_EstimateVerticalArray(resultMatrix, expConfig.speedOfSound, expConfig.chanSpacing);
             auto beforeDOA = std::chrono::steady_clock::now();
-            Eigen::VectorXf DOAs = TDOA_To_DOA_GeneralArray(qrDecompH, expRuntime.speedOfSound, tdoaVector);
+            //Eigen::VectorXf DOAs = TDOA_To_DOA_SVD(qrDecompH, expRuntime.speedOfSound, tdoaVector);
+            Eigen::VectorXf DOAs = TDOA_To_DOA_Optimized(P, U, expRuntime.speedOfSound, tdoaVector, rankOfH);
             auto afterDOA = std::chrono::steady_clock::now();
             std::chrono::duration<double> durationDOA = afterDOA - beforeDOA;
             //std::cout << "DOA time: " << durationDOA.count() << std::endl;
-            // Eigen::VectorXf DOAs = TDOA_To_DOA_VerticalArray(resultMatrix, 1500.0, expConfig.chanSpacing);
+
+            //std::vector<float> chanSpacing = {1.0, 2.0, 3.0, 1.0, 2.0, 1.0};
+            //Eigen::VectorXf DOAs = TDOA_To_DOA_VerticalArray(tdoaVector, 1500.0, chanSpacing);
             std::cout << "DOAs: " << DOAs.transpose() << std::endl;
 
             // Write to buffers

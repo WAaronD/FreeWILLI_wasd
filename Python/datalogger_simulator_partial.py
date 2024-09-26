@@ -53,7 +53,7 @@ npy_files = sorted([os.path.join(args.data_dir, f) for f in os.listdir(args.data
 # Function to process each file
 def process_npy_file(npy_file):
     print("Loading file: ",npy_file )
-    dataMatrix = np.load(npy_file, mmap_mode='r')  # Load the .npy file with memory mapping
+    dataMatrix = np.load(npy_file, mmap_mode='r').T  # Load the .npy file with memory mapping
     #print("dataMatrix size: ", dataMatrix.shape())
     
     if args.tdoa_sim is not False:

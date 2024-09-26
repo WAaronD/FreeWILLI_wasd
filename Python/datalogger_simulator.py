@@ -77,7 +77,7 @@ SetHighPriority(15) # set this process to run the program at high priority (nice
 parser = argparse.ArgumentParser(description='Program command line arguments')
 parser.add_argument('--port', default=1045, type=int, help='UDP port to send data to')
 parser.add_argument('--ip', default="192.168.7.2", type=str, help='IP address to send data to')
-parser.add_argument('--data_path', default="../Data/rawdat_track104_00.mat", type=str, help='prerecorded data to use')
+parser.add_argument('--data_path', default="../Data/joesdata.mat", type=str, help='prerecorded data to use')
 parser.add_argument('--fw', default=1240, type=int, help='Firmware version to simulate')
 parser.add_argument('--loop', action='store_true', help='Enable looping over the data')
 parser.add_argument('--stretch', action='store_true', help='normalize data values min and max range of unsigned 16 bit int')
@@ -164,7 +164,7 @@ while(True):
         print("Loading new data: ", shift)
         dataMatrixShifted = DuplicateAndShiftChannels(np.copy(dataMatrix), shift, NUM_CHAN)
         if args.fw == 1240:
-            dataFlattened, _ = InterleaveData(dataMatrixShifted)
+            dataFlattened = InterleaveData(dataMatrixShifted)
         else:
             print("Error: only interleaving method for firmware version 1240 is implemented")
             sys.exit()
