@@ -194,7 +194,7 @@ else ()
                 # add_compile_options(--fast-math) # may mess up the results
             else ()
                 message(STATUS "Non-M-series ARM chip detected: enabling neon vectorization")
-                add_compile_options(-mfpu=neon)
+                #add_compile_options(-mfpu=neon)
             endif ()
 
         else()
