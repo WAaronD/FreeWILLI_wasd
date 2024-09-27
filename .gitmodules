@@ -13,3 +13,6 @@
 [submodule "C/libs/FlameGraph"]
 	path = C/libs/FlameGraph
 	url = https://github.com/brendangregg/FlameGraph
+[submodule "C/dbscan"]
+	path = C/dbscan
+	url = https://github.com/Eleobert/dbscan.git
