@@ -1,17 +1,33 @@
 # cmake -DCMAKE_C_COMPILER=/usr/bin/gcc-12 -DCMAKE_CXX_COMPILER=/usr/bin/g++-12 ..
 # cmake -DCMAKE_BUILD_TYPE=Debug ..
 
+#cmake -DCMAKE_TOOLCHAIN_FILE=../toolchain.cmake -DRASPBERRY_PI_ZERO=TRUE ..
+
 cmake_minimum_required(VERSION 3.29.7)
 
 project(HarpListen VERSION 1.0)
 
-# Set the compilers to gcc-12 and g++-12
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    set(CMAKE_C_COMPILER /usr/bin/gcc-12)
-    set(CMAKE_CXX_COMPILER /usr/bin/g++-12)
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    set(CMAKE_C_COMPILER /usr/bin/gcc)
-    set(CMAKE_CXX_COMPILER /usr/bin/g++)
+# Instruction for cross-compiling
+if(CMAKE_CROSSCOMPILING)
+    message(STATUS "Cross-compiling for ARM (Raspberry Pi Zero 2W)")
+
+    # Set Raspberry Pi 64-bit specific flags
+    add_compile_options(-mcpu=cortex-a53+crypto -march=armv8-a -mfloat-abi=hard -ftree-vectorize -O3 -ffast-math)
+
+    # Enable NEON SIMD support
+    add_compile_options(-mfpu=neon-fp-armv8)
+
+    set(ENABLE_TEST FALSE)  # Disable tests for cross-compiling
+    set(ENABLE_BENCHMARK FALSE)
+else()
+    # Set the compilers to gcc-12 and g++-12
+    if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        set(CMAKE_C_COMPILER /usr/bin/gcc-12)
+        set(CMAKE_CXX_COMPILER /usr/bin/g++-12)
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+        set(CMAKE_C_COMPILER /usr/bin/gcc)
+        set(CMAKE_CXX_COMPILER /usr/bin/g++)
+    endif()
 endif()
 
 # Set the C++ standard
