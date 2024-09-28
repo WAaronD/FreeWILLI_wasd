@@ -52,7 +52,7 @@ set(CMAKE_C_LINKER_DEPFILE_SUPPORTED FALSE)
 set(CMAKE_C_SIZEOF_DATA_PTR "8")
 set(CMAKE_C_COMPILER_ABI "ELF")
 set(CMAKE_C_BYTE_ORDER "LITTLE_ENDIAN")
-set(CMAKE_C_LIBRARY_ARCHITECTURE "")
+set(CMAKE_C_LIBRARY_ARCHITECTURE "aarch64-linux-gnu")
 
 if(CMAKE_C_SIZEOF_DATA_PTR)
   set(CMAKE_SIZEOF_VOID_P "${CMAKE_C_SIZEOF_DATA_PTR}")
@@ -63,7 +63,7 @@ if(CMAKE_C_COMPILER_ABI)
 endif()
 
 if(CMAKE_C_LIBRARY_ARCHITECTURE)
-  set(CMAKE_LIBRARY_ARCHITECTURE "")
+  set(CMAKE_LIBRARY_ARCHITECTURE "aarch64-linux-gnu")
 endif()
 
 set(CMAKE_C_CL_SHOWINCLUDES_PREFIX "")
@@ -75,7 +75,7 @@ endif()
 
 
 
-set(CMAKE_C_IMPLICIT_INCLUDE_DIRECTORIES "/usr/lib/gcc-cross/aarch64-linux-gnu/11/include;/usr/aarch64-linux-gnu/include")
+set(CMAKE_C_IMPLICIT_INCLUDE_DIRECTORIES "/usr/lib/gcc-cross/aarch64-linux-gnu/11/include;/usr/aarch64-linux-gnu/include;/home/harp/rpi-sysroot/usr/include/aarch64-linux-gnu;/home/harp/rpi-sysroot/usr/include")
 set(CMAKE_C_IMPLICIT_LINK_LIBRARIES "gcc;gcc_s;c;gcc;gcc_s")
-set(CMAKE_C_IMPLICIT_LINK_DIRECTORIES "/usr/lib/gcc-cross/aarch64-linux-gnu/11;/usr/aarch64-linux-gnu/lib")
+set(CMAKE_C_IMPLICIT_LINK_DIRECTORIES "/usr/lib/gcc-cross/aarch64-linux-gnu/11;/usr/aarch64-linux-gnu/lib;/home/harp/rpi-sysroot/lib/aarch64-linux-gnu;/home/harp/rpi-sysroot/lib;/home/harp/rpi-sysroot/usr/lib/aarch64-linux-gnu;/home/harp/rpi-sysroot/usr/lib")
 set(CMAKE_C_IMPLICIT_LINK_FRAMEWORK_DIRECTORIES "")

@@ -8,11 +8,18 @@ set(CMAKE_SYSTEM_PROCESSOR aarch64)
 set(CMAKE_C_COMPILER /usr/bin/aarch64-linux-gnu-gcc)
 set(CMAKE_CXX_COMPILER /usr/bin/aarch64-linux-gnu-g++)
 
-# Specify the sysroot (change this path to where your sysroot is located)
-set(CMAKE_SYSROOT /path/to/rpi/sysroot)
+# Specify the sysroot
+set(CMAKE_SYSROOT /home/harp/rpi-sysroot)
 
-# Include directories in the sysroot
+# Set the sysroot and root path
+set(CMAKE_FIND_ROOT_PATH ${CMAKE_SYSROOT})
+
+# Ensure that CMake searches within the sysroot for libraries and include files
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
+
+# Specify flags for NEON SIMD support and armv8-a architecture
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=armv8-a+simd")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=armv8-a+simd")

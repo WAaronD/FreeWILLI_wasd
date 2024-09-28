@@ -4,23 +4,23 @@
 #cmake -DCMAKE_TOOLCHAIN_FILE=../toolchain.cmake -DRASPBERRY_PI_ZERO=TRUE ..
 
 cmake_minimum_required(VERSION 3.29.7)
-
 project(HarpListen VERSION 1.0)
 
-# Instruction for cross-compiling
+# Check if we are cross-compiling
 if(CMAKE_CROSSCOMPILING)
     message(STATUS "Cross-compiling for ARM (Raspberry Pi Zero 2W)")
 
     # Set Raspberry Pi 64-bit specific flags
-    add_compile_options(-mcpu=cortex-a53+crypto -march=armv8-a -mfloat-abi=hard -ftree-vectorize -O3 -ffast-math)
-
-    # Enable NEON SIMD support
-    add_compile_options(-mfpu=neon-fp-armv8)
+    add_compile_options(-mcpu=cortex-a53+crypto -march=armv8-a -ftree-vectorize -O3 -ffast-math)
 
     set(ENABLE_TEST FALSE)  # Disable tests for cross-compiling
     set(ENABLE_BENCHMARK FALSE)
+
+    # Ensure CMake searches the correct paths within the sysroot
+    set(CMAKE_PREFIX_PATH ${CMAKE_SYSROOT}/usr ${CMAKE_SYSROOT}/usr/lib/aarch64-linux-gnu ${CMAKE_SYSROOT}/usr/include)
+    set(CMAKE_LIBRARY_PATH ${CMAKE_SYSROOT}/usr/lib/aarch64-linux-gnu ${CMAKE_SYSROOT}/lib/aarch64-linux-gnu)
 else()
-    # Set the compilers to gcc-12 and g++-12
+    # If not cross-compiling, set the compilers if needed
     if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
         set(CMAKE_C_COMPILER /usr/bin/gcc-12)
         set(CMAKE_CXX_COMPILER /usr/bin/g++-12)
@@ -33,8 +33,6 @@ endif()
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 20)
 
-set(TEST_ON_RASPBERRY_PI_ZERO FALSE)
-
 # Add a check for empty CMAKE_SYSTEM_NAME
 if (NOT CMAKE_SYSTEM_NAME)
     message(FATAL_ERROR "CMAKE_SYSTEM_NAME is not set. Please check your CMake configuration.")
@@ -45,71 +43,88 @@ message(STATUS "CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
 set(ENABLE_TEST FALSE)
 set(ENABLE_AUTO_TEST FALSE)
 set(ENABLE_BENCHMARK FALSE)
+
 # Check for a build type
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
-# SET THIRD PARTY LIBRARIES AND INCLUDE DIRECTORIES
-set(THIRD_PARTY_LIBRARIES)
-set(THIRD_PARTY_INCLUDE_DIRS)
+# Initialize third-party libraries and include directories
+set(THIRD_PARTY_LIBRARIES "")
+set(THIRD_PARTY_INCLUDE_DIRS "")
 
-# LAPACK
-find_package(LAPACK REQUIRED)
-if (LAPACK_LIBRARIES)
-    list(APPEND THIRD_PARTY_LIBRARIES ${LAPACK_LIBRARIES})
-    message(STATUS "LAPACK libraries: ${LAPACK_LIBRARIES}")
-endif ()
-if (LAPACK_INCLUDE_DIRS)
-    list(APPEND THIRD_PARTY_INCLUDE_DIRS ${LAPACK_INCLUDE_DIRS})
-    message(STATUS "LAPACK include dirs: ${LAPACK_INCLUDE_DIRS}")
-endif()
+# Include and link directories
+include_directories(${THIRD_PARTY_INCLUDE_DIRS})
+link_directories(${CMAKE_LIBRARY_PATH})
 
+# Find and append third-party libraries
+if(CMAKE_CROSSCOMPILING)
+    # Find OpenBLAS
+    find_library(OPENBLAS_LIBRARIES 
+    NAMES openblas openblasp-r0.3.21
+    PATHS ${CMAKE_SYSROOT}/usr/lib/aarch64-linux-gnu/ 
+        ${CMAKE_SYSROOT}/usr/lib/aarch64-linux-gnu/openblas-pthread/
+    NO_DEFAULT_PATH)
 
-# FFTW3
-find_library(FFTW_LIBRARIES NAMES fftw3 REQUIRED)
-message(STATUS "FFTW libraries: ${FFTW_LIBRARIES}")
-find_path(FFTW_INCLUDE_DIRS NAMES fftw3.h REQUIRED PATH_SUFFIXES /opt/homebrew/Cellar/)
-message(STATUS "FFTW include dirs: ${FFTW_INCLUDE_DIRS}")
-if (FFTW_LIBRARIES)
-    list(APPEND THIRD_PARTY_LIBRARIES ${FFTW_LIBRARIES})
-endif ()
-if (FFTW_INCLUDE_DIRS)
-    list(APPEND THIRD_PARTY_INCLUDE_DIRS ${FFTW_INCLUDE_DIRS})
-endif()
+    if (OPENBLAS_LIBRARIES)
+    list(APPEND THIRD_PARTY_LIBRARIES ${OPENBLAS_LIBRARIES})
+    message(STATUS "OpenBLAS libraries (cross-compiling): ${OPENBLAS_LIBRARIES}")
+    else()
+    message(FATAL_ERROR "OpenBLAS libraries not found!")
+    endif()
+    
+    # Find FFTW3
+    find_library(FFTW_LIBRARIES NAMES fftw3 REQUIRED PATHS ${CMAKE_SYSROOT}/usr/lib/aarch64-linux-gnu/ NO_DEFAULT_PATH)
+    find_path(FFTW_INCLUDE_DIRS NAMES fftw3.h PATHS ${CMAKE_SYSROOT}/usr/include NO_DEFAULT_PATH)
+    if (FFTW_LIBRARIES)
+        list(APPEND THIRD_PARTY_LIBRARIES ${FFTW_LIBRARIES})
+        message(STATUS "FFTW libraries (cross-compiling): ${FFTW_LIBRARIES}")
+    endif ()
+    if (FFTW_INCLUDE_DIRS)
+        list(APPEND THIRD_PARTY_INCLUDE_DIRS ${FFTW_INCLUDE_DIRS})
+        message(STATUS "FFTW include dirs (cross-compiling): ${FFTW_INCLUDE_DIRS}")
+    endif()
+    
+    # Find ONNX Runtime library
+    find_library(ONNXRUNTIME_LIBRARIES 
+                NAMES onnxruntime 
+                REQUIRED 
+                PATHS ${CMAKE_SYSROOT}/usr/lib/aarch64-linux-gnu/ 
+                    ${CMAKE_SYSROOT}/usr/local/lib 
+                NO_DEFAULT_PATH)
 
-# Find ONNX Runtime library
-find_library(ONNXRUNTIME_LIBRARIES NAMES onnxruntime REQUIRED)
-message(STATUS "ONNX Runtime libraries: ${ONNXRUNTIME_LIBRARIES}")
+    # Find ONNX Runtime include directory
+    find_path(ONNXRUNTIME_INCLUDE_DIRS 
+            NAMES onnxruntime_cxx_api.h 
+            PATHS ${CMAKE_SYSROOT}/usr/include 
+                    ${CMAKE_SYSROOT}/usr/local/include 
+            NO_DEFAULT_PATH)
 
-# Add ONNX Runtime to third-party libraries and include directories
-if (ONNXRUNTIME_LIBRARIES)
-    list(APPEND THIRD_PARTY_LIBRARIES ${ONNXRUNTIME_LIBRARIES})
-endif ()
-if (ONNXRUNTIME_INCLUDE_DIRS)
-    list(APPEND THIRD_PARTY_INCLUDE_DIRS ${ONNXRUNTIME_INCLUDE_DIRS})
-endif()
+    # Add to THIRD_PARTY_LIBRARIES and THIRD_PARTY_INCLUDE_DIRS
+    if (ONNXRUNTIME_LIBRARIES AND ONNXRUNTIME_INCLUDE_DIRS)
+        list(APPEND THIRD_PARTY_LIBRARIES ${ONNXRUNTIME_LIBRARIES})
+        list(APPEND THIRD_PARTY_INCLUDE_DIRS ${ONNXRUNTIME_INCLUDE_DIRS})
+        
+        message(STATUS "ONNX Runtime libraries (cross-compiling): ${ONNXRUNTIME_LIBRARIES}")
+        message(STATUS "ONNX Runtime include dirs (cross-compiling): ${ONNXRUNTIME_INCLUDE_DIRS}")
+    else()
+        message(FATAL_ERROR "ONNX Runtime libraries or include directories not found!")
+    endif()
 
-# FFTW3f for single precision
-find_library(FFTWF_LIBRARIES NAMES fftw3f REQUIRED)
-if (FFTWF_LIBRARIES)
-    list(APPEND THIRD_PARTY_LIBRARIES ${FFTWF_LIBRARIES})
-    message(STATUS "FFTWf libraries: ${FFTWF_LIBRARIES}")
-endif ()
-if (FFTWF_INCLUDE_DIRS)
-    list(APPEND THIRD_PARTY_INCLUDE_DIRS ${FFTWF_INCLUDE_DIRS})
-    message(STATUS "FFTWf include dirs: ${FFTWF_INCLUDE_DIRS}")
-endif()
+    # Add ONNX Runtime include directories to the target
+    #target_include_directories(MainLib PRIVATE ${ONNXRUNTIME_INCLUDE_DIRS})
+    #target_link_libraries(MainLib PRIVATE ${ONNXRUNTIME_LIBRARIES})
 
-# BLAS
-find_package(BLAS REQUIRED)
-if (BLAS_LIBRARIES)
-    list(APPEND THIRD_PARTY_LIBRARIES ${BLAS_LIBRARIES})
-    message(STATUS "BLAS libraries: ${BLAS_LIBRARIES}")
-endif ()
-if (BLAS_INCLUDE_DIRS)
-    list(APPEND THIRD_PARTY_INCLUDE_DIRS ${BLAS_INCLUDE_DIRS})
-    message(STATUS "BLAS include dirs: ${BLAS_INCLUDE_DIRS}")
+    # Find FFTW3f for single precision
+    find_library(FFTWF_LIBRARIES NAMES fftw3f REQUIRED PATHS ${CMAKE_SYSROOT}/usr/lib/aarch64-linux-gnu/ NO_DEFAULT_PATH)
+    if (FFTWF_LIBRARIES)
+        list(APPEND THIRD_PARTY_LIBRARIES ${FFTWF_LIBRARIES})
+        message(STATUS "FFTWf libraries (cross-compiling): ${FFTWF_LIBRARIES}")
+    endif ()
+    if (FFTWF_INCLUDE_DIRS)
+        list(APPEND THIRD_PARTY_INCLUDE_DIRS ${FFTWF_INCLUDE_DIRS})
+        message(STATUS "FFTWf include dirs (cross-compiling): ${FFTWF_INCLUDE_DIRS}")
+    endif()
 endif()
 
 # Eigen3
@@ -156,16 +171,16 @@ if(MACOSX)
     set(ENABLE_TEST TRUE)
     set(ENABLE_BENCHMARK TRUE)
 elseif(UBUNTU)
-    add_compile_options(-march=native)
+    #add_compile_options(-march=native)
     set(ENABLE_TEST TRUE)
     set(ENABLE_BENCHMARK TRUE)
 elseif(RASPBERRY_PI_4)
-    add_compile_options(-march=native)
+    #add_compile_options(-march=native)
     set(ENABLE_TEST TRUE)
     set(ENABLE_BENCHMARK TRUE)
 elseif(RASPBERRY_PI_ZERO)
     #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mcpu=cortex-a53 -O3 -flto=auto")
-    add_compile_options(-march=native)
+    #add_compile_options(-march=native)
     if(TEST_ON_RASPBERRY_PI_ZERO)
         set(ENABLE_TEST TRUE)
     endif ()
@@ -199,7 +214,7 @@ else ()
                 # add_compile_options(--fast-math) # may mess up the results
             else ()
                 message(STATUS "Non-M-series ARM chip detected: enabling neon vectorization")
-                add_compile_options(-mfpu=neon)
+                #add_compile_options(-mfpu=neon)
             endif ()
 
         else()

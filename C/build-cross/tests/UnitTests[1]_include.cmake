@@ -1,0 +1,5 @@
+if(EXISTS "/home/harp/Documents/Embedded_miniHarp/C/build-cross/tests/UnitTests[1]_tests.cmake")
+  include("/home/harp/Documents/Embedded_miniHarp/C/build-cross/tests/UnitTests[1]_tests.cmake")
+else()
+  add_test(UnitTests_NOT_BUILT UnitTests_NOT_BUILT)
+endif()

@@ -5,7 +5,7 @@ events:
     kind: "message-v1"
     backtrace:
       - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeDetermineSystem.cmake:200 (message)"
-      - "CMakeLists.txt:8 (project)"
+      - "CMakeLists.txt:7 (project)"
     message: |
       The target system is: Linux -  - aarch64
       The host system is: Linux - 6.8.0-40-generic - x86_64
@@ -15,11 +15,11 @@ events:
       - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
       - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
       - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
-      - "CMakeLists.txt:8 (project)"
+      - "CMakeLists.txt:7 (project)"
     message: |
       Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
       Compiler: /usr/bin/aarch64-linux-gnu-gcc 
-      Build flags: 
+      Build flags: -march=armv8-a+simd;-march=armv8-a+simd
       Id flags:  
       
       The output was:
@@ -37,11 +37,11 @@ events:
       - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
       - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
       - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
-      - "CMakeLists.txt:8 (project)"
+      - "CMakeLists.txt:7 (project)"
     message: |
       Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
       Compiler: /usr/bin/aarch64-linux-gnu-g++ 
-      Build flags: 
+      Build flags: -march=armv8-a+simd;-march=armv8-a+simd
       Id flags:  
       
       The output was:
@@ -58,28 +58,28 @@ events:
     backtrace:
       - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:74 (try_compile)"
       - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "CMakeLists.txt:8 (project)"
+      - "CMakeLists.txt:7 (project)"
     checks:
       - "Detecting C compiler ABI info"
     directories:
-      source: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-0wbudp"
-      binary: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-0wbudp"
+      source: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-0e7rxA"
+      binary: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-0e7rxA"
     cmakeVariables:
-      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS: " -march=armv8-a+simd -march=armv8-a+simd"
       CMAKE_C_FLAGS_DEBUG: "-g"
       CMAKE_EXE_LINKER_FLAGS: ""
-      CMAKE_SYSROOT: "/path/to/rpi/sysroot"
+      CMAKE_SYSROOT: "/home/harp/rpi-sysroot"
     buildResult:
       variable: "CMAKE_C_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-0wbudp'
+        Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-0e7rxA'
         
-        Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_d2892/fast
-        /usr/bin/gmake  -f CMakeFiles/cmTC_d2892.dir/build.make CMakeFiles/cmTC_d2892.dir/build
-        gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-0wbudp'
-        Building C object CMakeFiles/cmTC_d2892.dir/CMakeCCompilerABI.c.o
-        /usr/bin/aarch64-linux-gnu-gcc --sysroot=/path/to/rpi/sysroot   -v -o CMakeFiles/cmTC_d2892.dir/CMakeCCompilerABI.c.o -c /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeCCompilerABI.c
+        Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_6309f/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_6309f.dir/build.make CMakeFiles/cmTC_6309f.dir/build
+        gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-0e7rxA'
+        Building C object CMakeFiles/cmTC_6309f.dir/CMakeCCompilerABI.c.o
+        /usr/bin/aarch64-linux-gnu-gcc --sysroot=/home/harp/rpi-sysroot   -march=armv8-a+simd -march=armv8-a+simd    -v -o CMakeFiles/cmTC_6309f.dir/CMakeCCompilerABI.c.o -c /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeCCompilerABI.c
         Using built-in specs.
         COLLECT_GCC=/usr/bin/aarch64-linux-gnu-gcc
         Target: aarch64-linux-gnu
@@ -87,35 +87,35 @@ events:
         Thread model: posix
         Supported LTO compression algorithms: zlib zstd
         gcc version 11.4.0 (Ubuntu 11.4.0-1ubuntu1~22.04) 
-        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_d2892.dir/CMakeCCompilerABI.c.o' '-c' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_d2892.dir/'
-         /usr/lib/gcc-cross/aarch64-linux-gnu/11/cc1 -quiet -v -imultiarch aarch64-linux-gnu -isysroot /path/to/rpi/sysroot /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles/cmTC_d2892.dir/ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -mlittle-endian -mabi=lp64 -version -fasynchronous-unwind-tables -fstack-protector-strong -Wformat -Wformat-security -fstack-clash-protection -o /tmp/cc9Ztjiz.s
+        COLLECT_GCC_OPTIONS='-march=armv8-a+simd' '-v' '-o' 'CMakeFiles/cmTC_6309f.dir/CMakeCCompilerABI.c.o' '-c' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_6309f.dir/'
+         /usr/lib/gcc-cross/aarch64-linux-gnu/11/cc1 -quiet -v -imultiarch aarch64-linux-gnu -isysroot /home/harp/rpi-sysroot /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles/cmTC_6309f.dir/ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -march=armv8-a+simd -mlittle-endian -mabi=lp64 -version -fasynchronous-unwind-tables -fstack-protector-strong -Wformat -Wformat-security -fstack-clash-protection -o /tmp/cc5XZk3t.s
         GNU C17 (Ubuntu 11.4.0-1ubuntu1~22.04) version 11.4.0 (aarch64-linux-gnu)
         	compiled by GNU C version 11.4.0, GMP version 6.2.1, MPFR version 4.1.0, MPC version 1.2.1, isl version isl-0.24-GMP
         
         GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
-        ignoring nonexistent directory "/path/to/rpi/sysroot/usr/local/include/aarch64-linux-gnu"
+        ignoring nonexistent directory "/home/harp/rpi-sysroot/usr/local/include/aarch64-linux-gnu"
         ignoring nonexistent directory "/usr/lib/gcc-cross/aarch64-linux-gnu/11/include-fixed"
-        ignoring nonexistent directory "/path/to/rpi/sysroot/usr/include/aarch64-linux-gnu"
-        ignoring nonexistent directory "/path/to/rpi/sysroot/usr/include"
         #include "..." search starts here:
         #include <...> search starts here:
          /usr/lib/gcc-cross/aarch64-linux-gnu/11/include
          /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/include
+         /home/harp/rpi-sysroot/usr/include/aarch64-linux-gnu
+         /home/harp/rpi-sysroot/usr/include
         End of search list.
         GNU C17 (Ubuntu 11.4.0-1ubuntu1~22.04) version 11.4.0 (aarch64-linux-gnu)
         	compiled by GNU C version 11.4.0, GMP version 6.2.1, MPFR version 4.1.0, MPC version 1.2.1, isl version isl-0.24-GMP
         
         GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
         Compiler executable checksum: 2e7b1ee81654360a14ff23d75e63392d
-        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_d2892.dir/CMakeCCompilerABI.c.o' '-c' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_d2892.dir/'
-         /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/as -v -EL -mabi=lp64 -o CMakeFiles/cmTC_d2892.dir/CMakeCCompilerABI.c.o /tmp/cc9Ztjiz.s
+        COLLECT_GCC_OPTIONS='-march=armv8-a+simd' '-v' '-o' 'CMakeFiles/cmTC_6309f.dir/CMakeCCompilerABI.c.o' '-c' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_6309f.dir/'
+         /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/as -v -EL -march=armv8-a+simd -mabi=lp64 -o CMakeFiles/cmTC_6309f.dir/CMakeCCompilerABI.c.o /tmp/cc5XZk3t.s
         GNU assembler version 2.38 (aarch64-linux-gnu) using BFD version (GNU Binutils for Ubuntu) 2.38
         COMPILER_PATH=/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/
-        LIBRARY_PATH=/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/
-        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_d2892.dir/CMakeCCompilerABI.c.o' '-c' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_d2892.dir/CMakeCCompilerABI.c.'
-        Linking C executable cmTC_d2892
-        /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_d2892.dir/link.txt --verbose=1
-        /usr/bin/aarch64-linux-gnu-gcc --sysroot=/path/to/rpi/sysroot  -v -Wl,-v CMakeFiles/cmTC_d2892.dir/CMakeCCompilerABI.c.o -o cmTC_d2892
+        LIBRARY_PATH=/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/:/home/harp/rpi-sysroot/lib/aarch64-linux-gnu/:/home/harp/rpi-sysroot/lib/../lib/:/home/harp/rpi-sysroot/usr/lib/aarch64-linux-gnu/:/home/harp/rpi-sysroot/usr/lib/../lib/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/:/home/harp/rpi-sysroot/lib/:/home/harp/rpi-sysroot/usr/lib/
+        COLLECT_GCC_OPTIONS='-march=armv8-a+simd' '-v' '-o' 'CMakeFiles/cmTC_6309f.dir/CMakeCCompilerABI.c.o' '-c' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_6309f.dir/CMakeCCompilerABI.c.'
+        Linking C executable cmTC_6309f
+        /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_6309f.dir/link.txt --verbose=1
+        /usr/bin/aarch64-linux-gnu-gcc --sysroot=/home/harp/rpi-sysroot  -march=armv8-a+simd -march=armv8-a+simd   -v -Wl,-v CMakeFiles/cmTC_6309f.dir/CMakeCCompilerABI.c.o -o cmTC_6309f
         Using built-in specs.
         COLLECT_GCC=/usr/bin/aarch64-linux-gnu-gcc
         COLLECT_LTO_WRAPPER=/usr/lib/gcc-cross/aarch64-linux-gnu/11/lto-wrapper
@@ -125,14 +125,14 @@ events:
         Supported LTO compression algorithms: zlib zstd
         gcc version 11.4.0 (Ubuntu 11.4.0-1ubuntu1~22.04) 
         COMPILER_PATH=/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/
-        LIBRARY_PATH=/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/
-        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_d2892' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'cmTC_d2892.'
-         /usr/lib/gcc-cross/aarch64-linux-gnu/11/collect2 -plugin /usr/lib/gcc-cross/aarch64-linux-gnu/11/liblto_plugin.so -plugin-opt=/usr/lib/gcc-cross/aarch64-linux-gnu/11/lto-wrapper -plugin-opt=-fresolution=/tmp/ccbCyjw1.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --sysroot=/path/to/rpi/sysroot --build-id --eh-frame-hdr --hash-style=gnu --as-needed -dynamic-linker /lib/ld-linux-aarch64.so.1 -X -EL -maarch64linux --fix-cortex-a53-843419 -pie -z now -z relro -o cmTC_d2892 /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/Scrt1.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crti.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtbeginS.o -L/usr/lib/gcc-cross/aarch64-linux-gnu/11 -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib -v CMakeFiles/cmTC_d2892.dir/CMakeCCompilerABI.c.o -lgcc --push-state --as-needed -lgcc_s --pop-state -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtendS.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crtn.o
+        LIBRARY_PATH=/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/:/home/harp/rpi-sysroot/lib/aarch64-linux-gnu/:/home/harp/rpi-sysroot/lib/../lib/:/home/harp/rpi-sysroot/usr/lib/aarch64-linux-gnu/:/home/harp/rpi-sysroot/usr/lib/../lib/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/:/home/harp/rpi-sysroot/lib/:/home/harp/rpi-sysroot/usr/lib/
+        COLLECT_GCC_OPTIONS='-march=armv8-a+simd' '-v' '-o' 'cmTC_6309f' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'cmTC_6309f.'
+         /usr/lib/gcc-cross/aarch64-linux-gnu/11/collect2 -plugin /usr/lib/gcc-cross/aarch64-linux-gnu/11/liblto_plugin.so -plugin-opt=/usr/lib/gcc-cross/aarch64-linux-gnu/11/lto-wrapper -plugin-opt=-fresolution=/tmp/ccZw6p45.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --sysroot=/home/harp/rpi-sysroot --build-id --eh-frame-hdr --hash-style=gnu --as-needed -dynamic-linker /lib/ld-linux-aarch64.so.1 -X -EL -maarch64linux --fix-cortex-a53-843419 -pie -z now -z relro -o cmTC_6309f /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/Scrt1.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crti.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtbeginS.o -L/usr/lib/gcc-cross/aarch64-linux-gnu/11 -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib -L/home/harp/rpi-sysroot/lib/aarch64-linux-gnu -L/home/harp/rpi-sysroot/lib/../lib -L/home/harp/rpi-sysroot/usr/lib/aarch64-linux-gnu -L/home/harp/rpi-sysroot/usr/lib/../lib -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib -L/home/harp/rpi-sysroot/lib -L/home/harp/rpi-sysroot/usr/lib -v CMakeFiles/cmTC_6309f.dir/CMakeCCompilerABI.c.o -lgcc --push-state --as-needed -lgcc_s --pop-state -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtendS.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crtn.o
         collect2 version 11.4.0
-        /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/ld -plugin /usr/lib/gcc-cross/aarch64-linux-gnu/11/liblto_plugin.so -plugin-opt=/usr/lib/gcc-cross/aarch64-linux-gnu/11/lto-wrapper -plugin-opt=-fresolution=/tmp/ccbCyjw1.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --sysroot=/path/to/rpi/sysroot --build-id --eh-frame-hdr --hash-style=gnu --as-needed -dynamic-linker /lib/ld-linux-aarch64.so.1 -X -EL -maarch64linux --fix-cortex-a53-843419 -pie -z now -z relro -o cmTC_d2892 /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/Scrt1.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crti.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtbeginS.o -L/usr/lib/gcc-cross/aarch64-linux-gnu/11 -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib -v CMakeFiles/cmTC_d2892.dir/CMakeCCompilerABI.c.o -lgcc --push-state --as-needed -lgcc_s --pop-state -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtendS.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crtn.o
+        /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/ld -plugin /usr/lib/gcc-cross/aarch64-linux-gnu/11/liblto_plugin.so -plugin-opt=/usr/lib/gcc-cross/aarch64-linux-gnu/11/lto-wrapper -plugin-opt=-fresolution=/tmp/ccZw6p45.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --sysroot=/home/harp/rpi-sysroot --build-id --eh-frame-hdr --hash-style=gnu --as-needed -dynamic-linker /lib/ld-linux-aarch64.so.1 -X -EL -maarch64linux --fix-cortex-a53-843419 -pie -z now -z relro -o cmTC_6309f /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/Scrt1.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crti.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtbeginS.o -L/usr/lib/gcc-cross/aarch64-linux-gnu/11 -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib -L/home/harp/rpi-sysroot/lib/aarch64-linux-gnu -L/home/harp/rpi-sysroot/lib/../lib -L/home/harp/rpi-sysroot/usr/lib/aarch64-linux-gnu -L/home/harp/rpi-sysroot/usr/lib/../lib -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib -L/home/harp/rpi-sysroot/lib -L/home/harp/rpi-sysroot/usr/lib -v CMakeFiles/cmTC_6309f.dir/CMakeCCompilerABI.c.o -lgcc --push-state --as-needed -lgcc_s --pop-state -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtendS.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crtn.o
         GNU ld (GNU Binutils for Ubuntu) 2.38
-        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_d2892' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'cmTC_d2892.'
-        gmake[1]: Leaving directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-0wbudp'
+        COLLECT_GCC_OPTIONS='-march=armv8-a+simd' '-v' '-o' 'cmTC_6309f' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'cmTC_6309f.'
+        gmake[1]: Leaving directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-0e7rxA'
         
       exitCode: 0
   -
@@ -140,17 +140,21 @@ events:
     backtrace:
       - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:182 (message)"
       - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "CMakeLists.txt:8 (project)"
+      - "CMakeLists.txt:7 (project)"
     message: |
       Parsed C implicit include dir info: rv=done
         found start of include info
         found start of implicit include info
           add: [/usr/lib/gcc-cross/aarch64-linux-gnu/11/include]
           add: [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/include]
+          add: [/home/harp/rpi-sysroot/usr/include/aarch64-linux-gnu]
+          add: [/home/harp/rpi-sysroot/usr/include]
         end of search list found
         collapse include dir [/usr/lib/gcc-cross/aarch64-linux-gnu/11/include] ==> [/usr/lib/gcc-cross/aarch64-linux-gnu/11/include]
         collapse include dir [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/include] ==> [/usr/aarch64-linux-gnu/include]
-        implicit include dirs: [/usr/lib/gcc-cross/aarch64-linux-gnu/11/include;/usr/aarch64-linux-gnu/include]
+        collapse include dir [/home/harp/rpi-sysroot/usr/include/aarch64-linux-gnu] ==> [/home/harp/rpi-sysroot/usr/include/aarch64-linux-gnu]
+        collapse include dir [/home/harp/rpi-sysroot/usr/include] ==> [/home/harp/rpi-sysroot/usr/include]
+        implicit include dirs: [/usr/lib/gcc-cross/aarch64-linux-gnu/11/include;/usr/aarch64-linux-gnu/include;/home/harp/rpi-sysroot/usr/include/aarch64-linux-gnu;/home/harp/rpi-sysroot/usr/include]
       
       
   -
@@ -158,18 +162,18 @@ events:
     backtrace:
       - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:218 (message)"
       - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "CMakeLists.txt:8 (project)"
+      - "CMakeLists.txt:7 (project)"
     message: |
       Parsed C implicit link information:
         link line regex: [^( *|.*[/\\])(ld[0-9]*(\\.[a-z]+)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
         linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(ld[0-9]*(\\.[a-z]+)?))("|,| |$)]
-        ignore line: [Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-0wbudp']
+        ignore line: [Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-0e7rxA']
         ignore line: []
-        ignore line: [Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_d2892/fast]
-        ignore line: [/usr/bin/gmake  -f CMakeFiles/cmTC_d2892.dir/build.make CMakeFiles/cmTC_d2892.dir/build]
-        ignore line: [gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-0wbudp']
-        ignore line: [Building C object CMakeFiles/cmTC_d2892.dir/CMakeCCompilerABI.c.o]
-        ignore line: [/usr/bin/aarch64-linux-gnu-gcc --sysroot=/path/to/rpi/sysroot   -v -o CMakeFiles/cmTC_d2892.dir/CMakeCCompilerABI.c.o -c /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeCCompilerABI.c]
+        ignore line: [Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_6309f/fast]
+        ignore line: [/usr/bin/gmake  -f CMakeFiles/cmTC_6309f.dir/build.make CMakeFiles/cmTC_6309f.dir/build]
+        ignore line: [gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-0e7rxA']
+        ignore line: [Building C object CMakeFiles/cmTC_6309f.dir/CMakeCCompilerABI.c.o]
+        ignore line: [/usr/bin/aarch64-linux-gnu-gcc --sysroot=/home/harp/rpi-sysroot   -march=armv8-a+simd -march=armv8-a+simd    -v -o CMakeFiles/cmTC_6309f.dir/CMakeCCompilerABI.c.o -c /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeCCompilerABI.c]
         ignore line: [Using built-in specs.]
         ignore line: [COLLECT_GCC=/usr/bin/aarch64-linux-gnu-gcc]
         ignore line: [Target: aarch64-linux-gnu]
@@ -177,35 +181,35 @@ events:
         ignore line: [Thread model: posix]
         ignore line: [Supported LTO compression algorithms: zlib zstd]
         ignore line: [gcc version 11.4.0 (Ubuntu 11.4.0-1ubuntu1~22.04) ]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_d2892.dir/CMakeCCompilerABI.c.o' '-c' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_d2892.dir/']
-        ignore line: [ /usr/lib/gcc-cross/aarch64-linux-gnu/11/cc1 -quiet -v -imultiarch aarch64-linux-gnu -isysroot /path/to/rpi/sysroot /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles/cmTC_d2892.dir/ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -mlittle-endian -mabi=lp64 -version -fasynchronous-unwind-tables -fstack-protector-strong -Wformat -Wformat-security -fstack-clash-protection -o /tmp/cc9Ztjiz.s]
+        ignore line: [COLLECT_GCC_OPTIONS='-march=armv8-a+simd' '-v' '-o' 'CMakeFiles/cmTC_6309f.dir/CMakeCCompilerABI.c.o' '-c' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_6309f.dir/']
+        ignore line: [ /usr/lib/gcc-cross/aarch64-linux-gnu/11/cc1 -quiet -v -imultiarch aarch64-linux-gnu -isysroot /home/harp/rpi-sysroot /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles/cmTC_6309f.dir/ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -march=armv8-a+simd -mlittle-endian -mabi=lp64 -version -fasynchronous-unwind-tables -fstack-protector-strong -Wformat -Wformat-security -fstack-clash-protection -o /tmp/cc5XZk3t.s]
         ignore line: [GNU C17 (Ubuntu 11.4.0-1ubuntu1~22.04) version 11.4.0 (aarch64-linux-gnu)]
         ignore line: [	compiled by GNU C version 11.4.0  GMP version 6.2.1  MPFR version 4.1.0  MPC version 1.2.1  isl version isl-0.24-GMP]
         ignore line: []
         ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
-        ignore line: [ignoring nonexistent directory "/path/to/rpi/sysroot/usr/local/include/aarch64-linux-gnu"]
+        ignore line: [ignoring nonexistent directory "/home/harp/rpi-sysroot/usr/local/include/aarch64-linux-gnu"]
         ignore line: [ignoring nonexistent directory "/usr/lib/gcc-cross/aarch64-linux-gnu/11/include-fixed"]
-        ignore line: [ignoring nonexistent directory "/path/to/rpi/sysroot/usr/include/aarch64-linux-gnu"]
-        ignore line: [ignoring nonexistent directory "/path/to/rpi/sysroot/usr/include"]
         ignore line: [#include "..." search starts here:]
         ignore line: [#include <...> search starts here:]
         ignore line: [ /usr/lib/gcc-cross/aarch64-linux-gnu/11/include]
         ignore line: [ /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/include]
+        ignore line: [ /home/harp/rpi-sysroot/usr/include/aarch64-linux-gnu]
+        ignore line: [ /home/harp/rpi-sysroot/usr/include]
         ignore line: [End of search list.]
         ignore line: [GNU C17 (Ubuntu 11.4.0-1ubuntu1~22.04) version 11.4.0 (aarch64-linux-gnu)]
         ignore line: [	compiled by GNU C version 11.4.0  GMP version 6.2.1  MPFR version 4.1.0  MPC version 1.2.1  isl version isl-0.24-GMP]
         ignore line: []
         ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
         ignore line: [Compiler executable checksum: 2e7b1ee81654360a14ff23d75e63392d]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_d2892.dir/CMakeCCompilerABI.c.o' '-c' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_d2892.dir/']
-        ignore line: [ /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/as -v -EL -mabi=lp64 -o CMakeFiles/cmTC_d2892.dir/CMakeCCompilerABI.c.o /tmp/cc9Ztjiz.s]
+        ignore line: [COLLECT_GCC_OPTIONS='-march=armv8-a+simd' '-v' '-o' 'CMakeFiles/cmTC_6309f.dir/CMakeCCompilerABI.c.o' '-c' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_6309f.dir/']
+        ignore line: [ /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/as -v -EL -march=armv8-a+simd -mabi=lp64 -o CMakeFiles/cmTC_6309f.dir/CMakeCCompilerABI.c.o /tmp/cc5XZk3t.s]
         ignore line: [GNU assembler version 2.38 (aarch64-linux-gnu) using BFD version (GNU Binutils for Ubuntu) 2.38]
         ignore line: [COMPILER_PATH=/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/]
-        ignore line: [LIBRARY_PATH=/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_d2892.dir/CMakeCCompilerABI.c.o' '-c' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_d2892.dir/CMakeCCompilerABI.c.']
-        ignore line: [Linking C executable cmTC_d2892]
-        ignore line: [/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_d2892.dir/link.txt --verbose=1]
-        ignore line: [/usr/bin/aarch64-linux-gnu-gcc --sysroot=/path/to/rpi/sysroot  -v -Wl -v CMakeFiles/cmTC_d2892.dir/CMakeCCompilerABI.c.o -o cmTC_d2892]
+        ignore line: [LIBRARY_PATH=/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/:/home/harp/rpi-sysroot/lib/aarch64-linux-gnu/:/home/harp/rpi-sysroot/lib/../lib/:/home/harp/rpi-sysroot/usr/lib/aarch64-linux-gnu/:/home/harp/rpi-sysroot/usr/lib/../lib/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/:/home/harp/rpi-sysroot/lib/:/home/harp/rpi-sysroot/usr/lib/]
+        ignore line: [COLLECT_GCC_OPTIONS='-march=armv8-a+simd' '-v' '-o' 'CMakeFiles/cmTC_6309f.dir/CMakeCCompilerABI.c.o' '-c' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_6309f.dir/CMakeCCompilerABI.c.']
+        ignore line: [Linking C executable cmTC_6309f]
+        ignore line: [/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_6309f.dir/link.txt --verbose=1]
+        ignore line: [/usr/bin/aarch64-linux-gnu-gcc --sysroot=/home/harp/rpi-sysroot  -march=armv8-a+simd -march=armv8-a+simd   -v -Wl -v CMakeFiles/cmTC_6309f.dir/CMakeCCompilerABI.c.o -o cmTC_6309f]
         ignore line: [Using built-in specs.]
         ignore line: [COLLECT_GCC=/usr/bin/aarch64-linux-gnu-gcc]
         ignore line: [COLLECT_LTO_WRAPPER=/usr/lib/gcc-cross/aarch64-linux-gnu/11/lto-wrapper]
@@ -215,20 +219,20 @@ events:
         ignore line: [Supported LTO compression algorithms: zlib zstd]
         ignore line: [gcc version 11.4.0 (Ubuntu 11.4.0-1ubuntu1~22.04) ]
         ignore line: [COMPILER_PATH=/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/]
-        ignore line: [LIBRARY_PATH=/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_d2892' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'cmTC_d2892.']
-        link line: [ /usr/lib/gcc-cross/aarch64-linux-gnu/11/collect2 -plugin /usr/lib/gcc-cross/aarch64-linux-gnu/11/liblto_plugin.so -plugin-opt=/usr/lib/gcc-cross/aarch64-linux-gnu/11/lto-wrapper -plugin-opt=-fresolution=/tmp/ccbCyjw1.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --sysroot=/path/to/rpi/sysroot --build-id --eh-frame-hdr --hash-style=gnu --as-needed -dynamic-linker /lib/ld-linux-aarch64.so.1 -X -EL -maarch64linux --fix-cortex-a53-843419 -pie -z now -z relro -o cmTC_d2892 /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/Scrt1.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crti.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtbeginS.o -L/usr/lib/gcc-cross/aarch64-linux-gnu/11 -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib -v CMakeFiles/cmTC_d2892.dir/CMakeCCompilerABI.c.o -lgcc --push-state --as-needed -lgcc_s --pop-state -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtendS.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crtn.o]
+        ignore line: [LIBRARY_PATH=/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/:/home/harp/rpi-sysroot/lib/aarch64-linux-gnu/:/home/harp/rpi-sysroot/lib/../lib/:/home/harp/rpi-sysroot/usr/lib/aarch64-linux-gnu/:/home/harp/rpi-sysroot/usr/lib/../lib/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/:/home/harp/rpi-sysroot/lib/:/home/harp/rpi-sysroot/usr/lib/]
+        ignore line: [COLLECT_GCC_OPTIONS='-march=armv8-a+simd' '-v' '-o' 'cmTC_6309f' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'cmTC_6309f.']
+        link line: [ /usr/lib/gcc-cross/aarch64-linux-gnu/11/collect2 -plugin /usr/lib/gcc-cross/aarch64-linux-gnu/11/liblto_plugin.so -plugin-opt=/usr/lib/gcc-cross/aarch64-linux-gnu/11/lto-wrapper -plugin-opt=-fresolution=/tmp/ccZw6p45.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --sysroot=/home/harp/rpi-sysroot --build-id --eh-frame-hdr --hash-style=gnu --as-needed -dynamic-linker /lib/ld-linux-aarch64.so.1 -X -EL -maarch64linux --fix-cortex-a53-843419 -pie -z now -z relro -o cmTC_6309f /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/Scrt1.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crti.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtbeginS.o -L/usr/lib/gcc-cross/aarch64-linux-gnu/11 -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib -L/home/harp/rpi-sysroot/lib/aarch64-linux-gnu -L/home/harp/rpi-sysroot/lib/../lib -L/home/harp/rpi-sysroot/usr/lib/aarch64-linux-gnu -L/home/harp/rpi-sysroot/usr/lib/../lib -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib -L/home/harp/rpi-sysroot/lib -L/home/harp/rpi-sysroot/usr/lib -v CMakeFiles/cmTC_6309f.dir/CMakeCCompilerABI.c.o -lgcc --push-state --as-needed -lgcc_s --pop-state -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtendS.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crtn.o]
           arg [/usr/lib/gcc-cross/aarch64-linux-gnu/11/collect2] ==> ignore
           arg [-plugin] ==> ignore
           arg [/usr/lib/gcc-cross/aarch64-linux-gnu/11/liblto_plugin.so] ==> ignore
           arg [-plugin-opt=/usr/lib/gcc-cross/aarch64-linux-gnu/11/lto-wrapper] ==> ignore
-          arg [-plugin-opt=-fresolution=/tmp/ccbCyjw1.res] ==> ignore
+          arg [-plugin-opt=-fresolution=/tmp/ccZw6p45.res] ==> ignore
           arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
           arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
           arg [-plugin-opt=-pass-through=-lc] ==> ignore
           arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
           arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
-          arg [--sysroot=/path/to/rpi/sysroot] ==> ignore
+          arg [--sysroot=/home/harp/rpi-sysroot] ==> ignore
           arg [--build-id] ==> ignore
           arg [--eh-frame-hdr] ==> ignore
           arg [--hash-style=gnu] ==> ignore
@@ -243,15 +247,21 @@ events:
           arg [-znow] ==> ignore
           arg [-zrelro] ==> ignore
           arg [-o] ==> ignore
-          arg [cmTC_d2892] ==> ignore
+          arg [cmTC_6309f] ==> ignore
           arg [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/Scrt1.o] ==> obj [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/Scrt1.o]
           arg [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crti.o] ==> obj [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crti.o]
           arg [/usr/lib/gcc-cross/aarch64-linux-gnu/11/crtbeginS.o] ==> obj [/usr/lib/gcc-cross/aarch64-linux-gnu/11/crtbeginS.o]
           arg [-L/usr/lib/gcc-cross/aarch64-linux-gnu/11] ==> dir [/usr/lib/gcc-cross/aarch64-linux-gnu/11]
           arg [-L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib] ==> dir [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib]
+          arg [-L/home/harp/rpi-sysroot/lib/aarch64-linux-gnu] ==> dir [/home/harp/rpi-sysroot/lib/aarch64-linux-gnu]
+          arg [-L/home/harp/rpi-sysroot/lib/../lib] ==> dir [/home/harp/rpi-sysroot/lib/../lib]
+          arg [-L/home/harp/rpi-sysroot/usr/lib/aarch64-linux-gnu] ==> dir [/home/harp/rpi-sysroot/usr/lib/aarch64-linux-gnu]
+          arg [-L/home/harp/rpi-sysroot/usr/lib/../lib] ==> dir [/home/harp/rpi-sysroot/usr/lib/../lib]
           arg [-L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib] ==> dir [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib]
+          arg [-L/home/harp/rpi-sysroot/lib] ==> dir [/home/harp/rpi-sysroot/lib]
+          arg [-L/home/harp/rpi-sysroot/usr/lib] ==> dir [/home/harp/rpi-sysroot/usr/lib]
           arg [-v] ==> ignore
-          arg [CMakeFiles/cmTC_d2892.dir/CMakeCCompilerABI.c.o] ==> ignore
+          arg [CMakeFiles/cmTC_6309f.dir/CMakeCCompilerABI.c.o] ==> ignore
           arg [-lgcc] ==> lib [gcc]
           arg [--push-state] ==> ignore
           arg [--as-needed] ==> ignore
@@ -266,17 +276,23 @@ events:
           arg [/usr/lib/gcc-cross/aarch64-linux-gnu/11/crtendS.o] ==> obj [/usr/lib/gcc-cross/aarch64-linux-gnu/11/crtendS.o]
           arg [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crtn.o] ==> obj [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crtn.o]
         ignore line: [collect2 version 11.4.0]
-        ignore line: [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/ld -plugin /usr/lib/gcc-cross/aarch64-linux-gnu/11/liblto_plugin.so -plugin-opt=/usr/lib/gcc-cross/aarch64-linux-gnu/11/lto-wrapper -plugin-opt=-fresolution=/tmp/ccbCyjw1.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --sysroot=/path/to/rpi/sysroot --build-id --eh-frame-hdr --hash-style=gnu --as-needed -dynamic-linker /lib/ld-linux-aarch64.so.1 -X -EL -maarch64linux --fix-cortex-a53-843419 -pie -z now -z relro -o cmTC_d2892 /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/Scrt1.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crti.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtbeginS.o -L/usr/lib/gcc-cross/aarch64-linux-gnu/11 -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib -v CMakeFiles/cmTC_d2892.dir/CMakeCCompilerABI.c.o -lgcc --push-state --as-needed -lgcc_s --pop-state -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtendS.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crtn.o]
+        ignore line: [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/ld -plugin /usr/lib/gcc-cross/aarch64-linux-gnu/11/liblto_plugin.so -plugin-opt=/usr/lib/gcc-cross/aarch64-linux-gnu/11/lto-wrapper -plugin-opt=-fresolution=/tmp/ccZw6p45.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --sysroot=/home/harp/rpi-sysroot --build-id --eh-frame-hdr --hash-style=gnu --as-needed -dynamic-linker /lib/ld-linux-aarch64.so.1 -X -EL -maarch64linux --fix-cortex-a53-843419 -pie -z now -z relro -o cmTC_6309f /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/Scrt1.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crti.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtbeginS.o -L/usr/lib/gcc-cross/aarch64-linux-gnu/11 -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib -L/home/harp/rpi-sysroot/lib/aarch64-linux-gnu -L/home/harp/rpi-sysroot/lib/../lib -L/home/harp/rpi-sysroot/usr/lib/aarch64-linux-gnu -L/home/harp/rpi-sysroot/usr/lib/../lib -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib -L/home/harp/rpi-sysroot/lib -L/home/harp/rpi-sysroot/usr/lib -v CMakeFiles/cmTC_6309f.dir/CMakeCCompilerABI.c.o -lgcc --push-state --as-needed -lgcc_s --pop-state -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtendS.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crtn.o]
         linker tool for 'C': /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/ld
         collapse obj [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/Scrt1.o] ==> [/usr/aarch64-linux-gnu/lib/Scrt1.o]
         collapse obj [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crti.o] ==> [/usr/aarch64-linux-gnu/lib/crti.o]
         collapse obj [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crtn.o] ==> [/usr/aarch64-linux-gnu/lib/crtn.o]
         collapse library dir [/usr/lib/gcc-cross/aarch64-linux-gnu/11] ==> [/usr/lib/gcc-cross/aarch64-linux-gnu/11]
         collapse library dir [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib] ==> [/usr/aarch64-linux-gnu/lib]
+        collapse library dir [/home/harp/rpi-sysroot/lib/aarch64-linux-gnu] ==> [/home/harp/rpi-sysroot/lib/aarch64-linux-gnu]
+        collapse library dir [/home/harp/rpi-sysroot/lib/../lib] ==> [/home/harp/rpi-sysroot/lib]
+        collapse library dir [/home/harp/rpi-sysroot/usr/lib/aarch64-linux-gnu] ==> [/home/harp/rpi-sysroot/usr/lib/aarch64-linux-gnu]
+        collapse library dir [/home/harp/rpi-sysroot/usr/lib/../lib] ==> [/home/harp/rpi-sysroot/usr/lib]
         collapse library dir [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib] ==> [/usr/aarch64-linux-gnu/lib]
+        collapse library dir [/home/harp/rpi-sysroot/lib] ==> [/home/harp/rpi-sysroot/lib]
+        collapse library dir [/home/harp/rpi-sysroot/usr/lib] ==> [/home/harp/rpi-sysroot/usr/lib]
         implicit libs: [gcc;gcc_s;c;gcc;gcc_s]
         implicit objs: [/usr/aarch64-linux-gnu/lib/Scrt1.o;/usr/aarch64-linux-gnu/lib/crti.o;/usr/lib/gcc-cross/aarch64-linux-gnu/11/crtbeginS.o;/usr/lib/gcc-cross/aarch64-linux-gnu/11/crtendS.o;/usr/aarch64-linux-gnu/lib/crtn.o]
-        implicit dirs: [/usr/lib/gcc-cross/aarch64-linux-gnu/11;/usr/aarch64-linux-gnu/lib]
+        implicit dirs: [/usr/lib/gcc-cross/aarch64-linux-gnu/11;/usr/aarch64-linux-gnu/lib;/home/harp/rpi-sysroot/lib/aarch64-linux-gnu;/home/harp/rpi-sysroot/lib;/home/harp/rpi-sysroot/usr/lib/aarch64-linux-gnu;/home/harp/rpi-sysroot/usr/lib]
         implicit fwks: []
       
       
@@ -286,7 +302,7 @@ events:
       - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CMakeDetermineLinkerId.cmake:40 (message)"
       - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:255 (cmake_determine_linker_id)"
       - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "CMakeLists.txt:8 (project)"
+      - "CMakeLists.txt:7 (project)"
     message: |
       Running the C compiler's linker: "/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/ld" "-v"
       GNU ld (GNU Binutils for Ubuntu) 2.38
@@ -295,29 +311,29 @@ events:
     backtrace:
       - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:74 (try_compile)"
       - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "CMakeLists.txt:8 (project)"
+      - "CMakeLists.txt:7 (project)"
     checks:
       - "Detecting CXX compiler ABI info"
     directories:
-      source: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-tieavy"
-      binary: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-tieavy"
+      source: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-eFvcki"
+      binary: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-eFvcki"
     cmakeVariables:
-      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS: " -march=armv8-a+simd -march=armv8-a+simd"
       CMAKE_CXX_FLAGS_DEBUG: "-g"
       CMAKE_CXX_SCAN_FOR_MODULES: "OFF"
       CMAKE_EXE_LINKER_FLAGS: ""
-      CMAKE_SYSROOT: "/path/to/rpi/sysroot"
+      CMAKE_SYSROOT: "/home/harp/rpi-sysroot"
     buildResult:
       variable: "CMAKE_CXX_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-tieavy'
+        Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-eFvcki'
         
-        Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_9bd79/fast
-        /usr/bin/gmake  -f CMakeFiles/cmTC_9bd79.dir/build.make CMakeFiles/cmTC_9bd79.dir/build
-        gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-tieavy'
-        Building CXX object CMakeFiles/cmTC_9bd79.dir/CMakeCXXCompilerABI.cpp.o
-        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/path/to/rpi/sysroot   -v -o CMakeFiles/cmTC_9bd79.dir/CMakeCXXCompilerABI.cpp.o -c /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeCXXCompilerABI.cpp
+        Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_3b1e7/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_3b1e7.dir/build.make CMakeFiles/cmTC_3b1e7.dir/build
+        gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-eFvcki'
+        Building CXX object CMakeFiles/cmTC_3b1e7.dir/CMakeCXXCompilerABI.cpp.o
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot   -march=armv8-a+simd -march=armv8-a+simd    -v -o CMakeFiles/cmTC_3b1e7.dir/CMakeCXXCompilerABI.cpp.o -c /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeCXXCompilerABI.cpp
         Using built-in specs.
         COLLECT_GCC=/usr/bin/aarch64-linux-gnu-g++
         Target: aarch64-linux-gnu
@@ -325,16 +341,14 @@ events:
         Thread model: posix
         Supported LTO compression algorithms: zlib zstd
         gcc version 11.4.0 (Ubuntu 11.4.0-1ubuntu1~22.04) 
-        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_9bd79.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_9bd79.dir/'
-         /usr/lib/gcc-cross/aarch64-linux-gnu/11/cc1plus -quiet -v -imultiarch aarch64-linux-gnu -isysroot /path/to/rpi/sysroot -D_GNU_SOURCE /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles/cmTC_9bd79.dir/ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mlittle-endian -mabi=lp64 -version -fasynchronous-unwind-tables -fstack-protector-strong -Wformat -Wformat-security -fstack-clash-protection -o /tmp/ccvzZQ1g.s
+        COLLECT_GCC_OPTIONS='-march=armv8-a+simd' '-v' '-o' 'CMakeFiles/cmTC_3b1e7.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_3b1e7.dir/'
+         /usr/lib/gcc-cross/aarch64-linux-gnu/11/cc1plus -quiet -v -imultiarch aarch64-linux-gnu -isysroot /home/harp/rpi-sysroot -D_GNU_SOURCE /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles/cmTC_3b1e7.dir/ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -march=armv8-a+simd -mlittle-endian -mabi=lp64 -version -fasynchronous-unwind-tables -fstack-protector-strong -Wformat -Wformat-security -fstack-clash-protection -o /tmp/ccD4gaZ4.s
         GNU C++17 (Ubuntu 11.4.0-1ubuntu1~22.04) version 11.4.0 (aarch64-linux-gnu)
         	compiled by GNU C version 11.4.0, GMP version 6.2.1, MPFR version 4.1.0, MPC version 1.2.1, isl version isl-0.24-GMP
         
         GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
-        ignoring nonexistent directory "/path/to/rpi/sysroot/usr/local/include/aarch64-linux-gnu"
+        ignoring nonexistent directory "/home/harp/rpi-sysroot/usr/local/include/aarch64-linux-gnu"
         ignoring nonexistent directory "/usr/lib/gcc-cross/aarch64-linux-gnu/11/include-fixed"
-        ignoring nonexistent directory "/path/to/rpi/sysroot/usr/include/aarch64-linux-gnu"
-        ignoring nonexistent directory "/path/to/rpi/sysroot/usr/include"
         #include "..." search starts here:
         #include <...> search starts here:
          /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/include/c++/11
@@ -342,21 +356,23 @@ events:
          /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/include/c++/11/backward
          /usr/lib/gcc-cross/aarch64-linux-gnu/11/include
          /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/include
+         /home/harp/rpi-sysroot/usr/include/aarch64-linux-gnu
+         /home/harp/rpi-sysroot/usr/include
         End of search list.
         GNU C++17 (Ubuntu 11.4.0-1ubuntu1~22.04) version 11.4.0 (aarch64-linux-gnu)
         	compiled by GNU C version 11.4.0, GMP version 6.2.1, MPFR version 4.1.0, MPC version 1.2.1, isl version isl-0.24-GMP
         
         GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
         Compiler executable checksum: fbc882a9ce49446607e846bb30e5b470
-        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_9bd79.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_9bd79.dir/'
-         /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/as -v -EL -mabi=lp64 -o CMakeFiles/cmTC_9bd79.dir/CMakeCXXCompilerABI.cpp.o /tmp/ccvzZQ1g.s
+        COLLECT_GCC_OPTIONS='-march=armv8-a+simd' '-v' '-o' 'CMakeFiles/cmTC_3b1e7.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_3b1e7.dir/'
+         /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/as -v -EL -march=armv8-a+simd -mabi=lp64 -o CMakeFiles/cmTC_3b1e7.dir/CMakeCXXCompilerABI.cpp.o /tmp/ccD4gaZ4.s
         GNU assembler version 2.38 (aarch64-linux-gnu) using BFD version (GNU Binutils for Ubuntu) 2.38
         COMPILER_PATH=/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/
-        LIBRARY_PATH=/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/
-        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_9bd79.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_9bd79.dir/CMakeCXXCompilerABI.cpp.'
-        Linking CXX executable cmTC_9bd79
-        /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_9bd79.dir/link.txt --verbose=1
-        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/path/to/rpi/sysroot  -v -Wl,-v CMakeFiles/cmTC_9bd79.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_9bd79
+        LIBRARY_PATH=/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/:/home/harp/rpi-sysroot/lib/aarch64-linux-gnu/:/home/harp/rpi-sysroot/lib/../lib/:/home/harp/rpi-sysroot/usr/lib/aarch64-linux-gnu/:/home/harp/rpi-sysroot/usr/lib/../lib/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/:/home/harp/rpi-sysroot/lib/:/home/harp/rpi-sysroot/usr/lib/
+        COLLECT_GCC_OPTIONS='-march=armv8-a+simd' '-v' '-o' 'CMakeFiles/cmTC_3b1e7.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_3b1e7.dir/CMakeCXXCompilerABI.cpp.'
+        Linking CXX executable cmTC_3b1e7
+        /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_3b1e7.dir/link.txt --verbose=1
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot  -march=armv8-a+simd -march=armv8-a+simd   -v -Wl,-v CMakeFiles/cmTC_3b1e7.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_3b1e7
         Using built-in specs.
         COLLECT_GCC=/usr/bin/aarch64-linux-gnu-g++
         COLLECT_LTO_WRAPPER=/usr/lib/gcc-cross/aarch64-linux-gnu/11/lto-wrapper
@@ -366,14 +382,14 @@ events:
         Supported LTO compression algorithms: zlib zstd
         gcc version 11.4.0 (Ubuntu 11.4.0-1ubuntu1~22.04) 
         COMPILER_PATH=/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/
-        LIBRARY_PATH=/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/
-        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_9bd79' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'cmTC_9bd79.'
-         /usr/lib/gcc-cross/aarch64-linux-gnu/11/collect2 -plugin /usr/lib/gcc-cross/aarch64-linux-gnu/11/liblto_plugin.so -plugin-opt=/usr/lib/gcc-cross/aarch64-linux-gnu/11/lto-wrapper -plugin-opt=-fresolution=/tmp/ccE11YmT.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --sysroot=/path/to/rpi/sysroot --build-id --eh-frame-hdr --hash-style=gnu --as-needed -dynamic-linker /lib/ld-linux-aarch64.so.1 -X -EL -maarch64linux --fix-cortex-a53-843419 -pie -z now -z relro -o cmTC_9bd79 /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/Scrt1.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crti.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtbeginS.o -L/usr/lib/gcc-cross/aarch64-linux-gnu/11 -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib -v CMakeFiles/cmTC_9bd79.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtendS.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crtn.o
+        LIBRARY_PATH=/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/:/home/harp/rpi-sysroot/lib/aarch64-linux-gnu/:/home/harp/rpi-sysroot/lib/../lib/:/home/harp/rpi-sysroot/usr/lib/aarch64-linux-gnu/:/home/harp/rpi-sysroot/usr/lib/../lib/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/:/home/harp/rpi-sysroot/lib/:/home/harp/rpi-sysroot/usr/lib/
+        COLLECT_GCC_OPTIONS='-march=armv8-a+simd' '-v' '-o' 'cmTC_3b1e7' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'cmTC_3b1e7.'
+         /usr/lib/gcc-cross/aarch64-linux-gnu/11/collect2 -plugin /usr/lib/gcc-cross/aarch64-linux-gnu/11/liblto_plugin.so -plugin-opt=/usr/lib/gcc-cross/aarch64-linux-gnu/11/lto-wrapper -plugin-opt=-fresolution=/tmp/ccVx9Zo4.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --sysroot=/home/harp/rpi-sysroot --build-id --eh-frame-hdr --hash-style=gnu --as-needed -dynamic-linker /lib/ld-linux-aarch64.so.1 -X -EL -maarch64linux --fix-cortex-a53-843419 -pie -z now -z relro -o cmTC_3b1e7 /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/Scrt1.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crti.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtbeginS.o -L/usr/lib/gcc-cross/aarch64-linux-gnu/11 -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib -L/home/harp/rpi-sysroot/lib/aarch64-linux-gnu -L/home/harp/rpi-sysroot/lib/../lib -L/home/harp/rpi-sysroot/usr/lib/aarch64-linux-gnu -L/home/harp/rpi-sysroot/usr/lib/../lib -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib -L/home/harp/rpi-sysroot/lib -L/home/harp/rpi-sysroot/usr/lib -v CMakeFiles/cmTC_3b1e7.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtendS.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crtn.o
         collect2 version 11.4.0
-        /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/ld -plugin /usr/lib/gcc-cross/aarch64-linux-gnu/11/liblto_plugin.so -plugin-opt=/usr/lib/gcc-cross/aarch64-linux-gnu/11/lto-wrapper -plugin-opt=-fresolution=/tmp/ccE11YmT.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --sysroot=/path/to/rpi/sysroot --build-id --eh-frame-hdr --hash-style=gnu --as-needed -dynamic-linker /lib/ld-linux-aarch64.so.1 -X -EL -maarch64linux --fix-cortex-a53-843419 -pie -z now -z relro -o cmTC_9bd79 /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/Scrt1.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crti.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtbeginS.o -L/usr/lib/gcc-cross/aarch64-linux-gnu/11 -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib -v CMakeFiles/cmTC_9bd79.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtendS.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crtn.o
+        /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/ld -plugin /usr/lib/gcc-cross/aarch64-linux-gnu/11/liblto_plugin.so -plugin-opt=/usr/lib/gcc-cross/aarch64-linux-gnu/11/lto-wrapper -plugin-opt=-fresolution=/tmp/ccVx9Zo4.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --sysroot=/home/harp/rpi-sysroot --build-id --eh-frame-hdr --hash-style=gnu --as-needed -dynamic-linker /lib/ld-linux-aarch64.so.1 -X -EL -maarch64linux --fix-cortex-a53-843419 -pie -z now -z relro -o cmTC_3b1e7 /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/Scrt1.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crti.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtbeginS.o -L/usr/lib/gcc-cross/aarch64-linux-gnu/11 -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib -L/home/harp/rpi-sysroot/lib/aarch64-linux-gnu -L/home/harp/rpi-sysroot/lib/../lib -L/home/harp/rpi-sysroot/usr/lib/aarch64-linux-gnu -L/home/harp/rpi-sysroot/usr/lib/../lib -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib -L/home/harp/rpi-sysroot/lib -L/home/harp/rpi-sysroot/usr/lib -v CMakeFiles/cmTC_3b1e7.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtendS.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crtn.o
         GNU ld (GNU Binutils for Ubuntu) 2.38
-        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_9bd79' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'cmTC_9bd79.'
-        gmake[1]: Leaving directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-tieavy'
+        COLLECT_GCC_OPTIONS='-march=armv8-a+simd' '-v' '-o' 'cmTC_3b1e7' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'cmTC_3b1e7.'
+        gmake[1]: Leaving directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-eFvcki'
         
       exitCode: 0
   -
@@ -381,7 +397,7 @@ events:
     backtrace:
       - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:182 (message)"
       - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "CMakeLists.txt:8 (project)"
+      - "CMakeLists.txt:7 (project)"
     message: |
       Parsed CXX implicit include dir info: rv=done
         found start of include info
@@ -391,13 +407,17 @@ events:
           add: [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/include/c++/11/backward]
           add: [/usr/lib/gcc-cross/aarch64-linux-gnu/11/include]
           add: [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/include]
+          add: [/home/harp/rpi-sysroot/usr/include/aarch64-linux-gnu]
+          add: [/home/harp/rpi-sysroot/usr/include]
         end of search list found
         collapse include dir [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/include/c++/11] ==> [/usr/aarch64-linux-gnu/include/c++/11]
         collapse include dir [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/include/c++/11/aarch64-linux-gnu] ==> [/usr/aarch64-linux-gnu/include/c++/11/aarch64-linux-gnu]
         collapse include dir [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/include/c++/11/backward] ==> [/usr/aarch64-linux-gnu/include/c++/11/backward]
         collapse include dir [/usr/lib/gcc-cross/aarch64-linux-gnu/11/include] ==> [/usr/lib/gcc-cross/aarch64-linux-gnu/11/include]
         collapse include dir [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/include] ==> [/usr/aarch64-linux-gnu/include]
-        implicit include dirs: [/usr/aarch64-linux-gnu/include/c++/11;/usr/aarch64-linux-gnu/include/c++/11/aarch64-linux-gnu;/usr/aarch64-linux-gnu/include/c++/11/backward;/usr/lib/gcc-cross/aarch64-linux-gnu/11/include;/usr/aarch64-linux-gnu/include]
+        collapse include dir [/home/harp/rpi-sysroot/usr/include/aarch64-linux-gnu] ==> [/home/harp/rpi-sysroot/usr/include/aarch64-linux-gnu]
+        collapse include dir [/home/harp/rpi-sysroot/usr/include] ==> [/home/harp/rpi-sysroot/usr/include]
+        implicit include dirs: [/usr/aarch64-linux-gnu/include/c++/11;/usr/aarch64-linux-gnu/include/c++/11/aarch64-linux-gnu;/usr/aarch64-linux-gnu/include/c++/11/backward;/usr/lib/gcc-cross/aarch64-linux-gnu/11/include;/usr/aarch64-linux-gnu/include;/home/harp/rpi-sysroot/usr/include/aarch64-linux-gnu;/home/harp/rpi-sysroot/usr/include]
       
       
   -
@@ -405,18 +425,18 @@ events:
     backtrace:
       - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:218 (message)"
       - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "CMakeLists.txt:8 (project)"
+      - "CMakeLists.txt:7 (project)"
     message: |
       Parsed CXX implicit link information:
         link line regex: [^( *|.*[/\\])(ld[0-9]*(\\.[a-z]+)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
         linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(ld[0-9]*(\\.[a-z]+)?))("|,| |$)]
-        ignore line: [Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-tieavy']
+        ignore line: [Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-eFvcki']
         ignore line: []
-        ignore line: [Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_9bd79/fast]
-        ignore line: [/usr/bin/gmake  -f CMakeFiles/cmTC_9bd79.dir/build.make CMakeFiles/cmTC_9bd79.dir/build]
-        ignore line: [gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-tieavy']
-        ignore line: [Building CXX object CMakeFiles/cmTC_9bd79.dir/CMakeCXXCompilerABI.cpp.o]
-        ignore line: [/usr/bin/aarch64-linux-gnu-g++ --sysroot=/path/to/rpi/sysroot   -v -o CMakeFiles/cmTC_9bd79.dir/CMakeCXXCompilerABI.cpp.o -c /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeCXXCompilerABI.cpp]
+        ignore line: [Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_3b1e7/fast]
+        ignore line: [/usr/bin/gmake  -f CMakeFiles/cmTC_3b1e7.dir/build.make CMakeFiles/cmTC_3b1e7.dir/build]
+        ignore line: [gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-eFvcki']
+        ignore line: [Building CXX object CMakeFiles/cmTC_3b1e7.dir/CMakeCXXCompilerABI.cpp.o]
+        ignore line: [/usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot   -march=armv8-a+simd -march=armv8-a+simd    -v -o CMakeFiles/cmTC_3b1e7.dir/CMakeCXXCompilerABI.cpp.o -c /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeCXXCompilerABI.cpp]
         ignore line: [Using built-in specs.]
         ignore line: [COLLECT_GCC=/usr/bin/aarch64-linux-gnu-g++]
         ignore line: [Target: aarch64-linux-gnu]
@@ -424,16 +444,14 @@ events:
         ignore line: [Thread model: posix]
         ignore line: [Supported LTO compression algorithms: zlib zstd]
         ignore line: [gcc version 11.4.0 (Ubuntu 11.4.0-1ubuntu1~22.04) ]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_9bd79.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_9bd79.dir/']
-        ignore line: [ /usr/lib/gcc-cross/aarch64-linux-gnu/11/cc1plus -quiet -v -imultiarch aarch64-linux-gnu -isysroot /path/to/rpi/sysroot -D_GNU_SOURCE /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles/cmTC_9bd79.dir/ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mlittle-endian -mabi=lp64 -version -fasynchronous-unwind-tables -fstack-protector-strong -Wformat -Wformat-security -fstack-clash-protection -o /tmp/ccvzZQ1g.s]
+        ignore line: [COLLECT_GCC_OPTIONS='-march=armv8-a+simd' '-v' '-o' 'CMakeFiles/cmTC_3b1e7.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_3b1e7.dir/']
+        ignore line: [ /usr/lib/gcc-cross/aarch64-linux-gnu/11/cc1plus -quiet -v -imultiarch aarch64-linux-gnu -isysroot /home/harp/rpi-sysroot -D_GNU_SOURCE /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles/cmTC_3b1e7.dir/ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -march=armv8-a+simd -mlittle-endian -mabi=lp64 -version -fasynchronous-unwind-tables -fstack-protector-strong -Wformat -Wformat-security -fstack-clash-protection -o /tmp/ccD4gaZ4.s]
         ignore line: [GNU C++17 (Ubuntu 11.4.0-1ubuntu1~22.04) version 11.4.0 (aarch64-linux-gnu)]
         ignore line: [	compiled by GNU C version 11.4.0  GMP version 6.2.1  MPFR version 4.1.0  MPC version 1.2.1  isl version isl-0.24-GMP]
         ignore line: []
         ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
-        ignore line: [ignoring nonexistent directory "/path/to/rpi/sysroot/usr/local/include/aarch64-linux-gnu"]
+        ignore line: [ignoring nonexistent directory "/home/harp/rpi-sysroot/usr/local/include/aarch64-linux-gnu"]
         ignore line: [ignoring nonexistent directory "/usr/lib/gcc-cross/aarch64-linux-gnu/11/include-fixed"]
-        ignore line: [ignoring nonexistent directory "/path/to/rpi/sysroot/usr/include/aarch64-linux-gnu"]
-        ignore line: [ignoring nonexistent directory "/path/to/rpi/sysroot/usr/include"]
         ignore line: [#include "..." search starts here:]
         ignore line: [#include <...> search starts here:]
         ignore line: [ /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/include/c++/11]
@@ -441,21 +459,23 @@ events:
         ignore line: [ /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/include/c++/11/backward]
         ignore line: [ /usr/lib/gcc-cross/aarch64-linux-gnu/11/include]
         ignore line: [ /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/include]
+        ignore line: [ /home/harp/rpi-sysroot/usr/include/aarch64-linux-gnu]
+        ignore line: [ /home/harp/rpi-sysroot/usr/include]
         ignore line: [End of search list.]
         ignore line: [GNU C++17 (Ubuntu 11.4.0-1ubuntu1~22.04) version 11.4.0 (aarch64-linux-gnu)]
         ignore line: [	compiled by GNU C version 11.4.0  GMP version 6.2.1  MPFR version 4.1.0  MPC version 1.2.1  isl version isl-0.24-GMP]
         ignore line: []
         ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
         ignore line: [Compiler executable checksum: fbc882a9ce49446607e846bb30e5b470]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_9bd79.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_9bd79.dir/']
-        ignore line: [ /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/as -v -EL -mabi=lp64 -o CMakeFiles/cmTC_9bd79.dir/CMakeCXXCompilerABI.cpp.o /tmp/ccvzZQ1g.s]
+        ignore line: [COLLECT_GCC_OPTIONS='-march=armv8-a+simd' '-v' '-o' 'CMakeFiles/cmTC_3b1e7.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_3b1e7.dir/']
+        ignore line: [ /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/as -v -EL -march=armv8-a+simd -mabi=lp64 -o CMakeFiles/cmTC_3b1e7.dir/CMakeCXXCompilerABI.cpp.o /tmp/ccD4gaZ4.s]
         ignore line: [GNU assembler version 2.38 (aarch64-linux-gnu) using BFD version (GNU Binutils for Ubuntu) 2.38]
         ignore line: [COMPILER_PATH=/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/]
-        ignore line: [LIBRARY_PATH=/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_9bd79.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_9bd79.dir/CMakeCXXCompilerABI.cpp.']
-        ignore line: [Linking CXX executable cmTC_9bd79]
-        ignore line: [/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_9bd79.dir/link.txt --verbose=1]
-        ignore line: [/usr/bin/aarch64-linux-gnu-g++ --sysroot=/path/to/rpi/sysroot  -v -Wl -v CMakeFiles/cmTC_9bd79.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_9bd79]
+        ignore line: [LIBRARY_PATH=/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/:/home/harp/rpi-sysroot/lib/aarch64-linux-gnu/:/home/harp/rpi-sysroot/lib/../lib/:/home/harp/rpi-sysroot/usr/lib/aarch64-linux-gnu/:/home/harp/rpi-sysroot/usr/lib/../lib/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/:/home/harp/rpi-sysroot/lib/:/home/harp/rpi-sysroot/usr/lib/]
+        ignore line: [COLLECT_GCC_OPTIONS='-march=armv8-a+simd' '-v' '-o' 'CMakeFiles/cmTC_3b1e7.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'CMakeFiles/cmTC_3b1e7.dir/CMakeCXXCompilerABI.cpp.']
+        ignore line: [Linking CXX executable cmTC_3b1e7]
+        ignore line: [/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_3b1e7.dir/link.txt --verbose=1]
+        ignore line: [/usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot  -march=armv8-a+simd -march=armv8-a+simd   -v -Wl -v CMakeFiles/cmTC_3b1e7.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_3b1e7]
         ignore line: [Using built-in specs.]
         ignore line: [COLLECT_GCC=/usr/bin/aarch64-linux-gnu-g++]
         ignore line: [COLLECT_LTO_WRAPPER=/usr/lib/gcc-cross/aarch64-linux-gnu/11/lto-wrapper]
@@ -465,20 +485,20 @@ events:
         ignore line: [Supported LTO compression algorithms: zlib zstd]
         ignore line: [gcc version 11.4.0 (Ubuntu 11.4.0-1ubuntu1~22.04) ]
         ignore line: [COMPILER_PATH=/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/]
-        ignore line: [LIBRARY_PATH=/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_9bd79' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'cmTC_9bd79.']
-        link line: [ /usr/lib/gcc-cross/aarch64-linux-gnu/11/collect2 -plugin /usr/lib/gcc-cross/aarch64-linux-gnu/11/liblto_plugin.so -plugin-opt=/usr/lib/gcc-cross/aarch64-linux-gnu/11/lto-wrapper -plugin-opt=-fresolution=/tmp/ccE11YmT.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --sysroot=/path/to/rpi/sysroot --build-id --eh-frame-hdr --hash-style=gnu --as-needed -dynamic-linker /lib/ld-linux-aarch64.so.1 -X -EL -maarch64linux --fix-cortex-a53-843419 -pie -z now -z relro -o cmTC_9bd79 /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/Scrt1.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crti.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtbeginS.o -L/usr/lib/gcc-cross/aarch64-linux-gnu/11 -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib -v CMakeFiles/cmTC_9bd79.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtendS.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crtn.o]
+        ignore line: [LIBRARY_PATH=/usr/lib/gcc-cross/aarch64-linux-gnu/11/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/:/home/harp/rpi-sysroot/lib/aarch64-linux-gnu/:/home/harp/rpi-sysroot/lib/../lib/:/home/harp/rpi-sysroot/usr/lib/aarch64-linux-gnu/:/home/harp/rpi-sysroot/usr/lib/../lib/:/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/:/home/harp/rpi-sysroot/lib/:/home/harp/rpi-sysroot/usr/lib/]
+        ignore line: [COLLECT_GCC_OPTIONS='-march=armv8-a+simd' '-v' '-o' 'cmTC_3b1e7' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'cmTC_3b1e7.']
+        link line: [ /usr/lib/gcc-cross/aarch64-linux-gnu/11/collect2 -plugin /usr/lib/gcc-cross/aarch64-linux-gnu/11/liblto_plugin.so -plugin-opt=/usr/lib/gcc-cross/aarch64-linux-gnu/11/lto-wrapper -plugin-opt=-fresolution=/tmp/ccVx9Zo4.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --sysroot=/home/harp/rpi-sysroot --build-id --eh-frame-hdr --hash-style=gnu --as-needed -dynamic-linker /lib/ld-linux-aarch64.so.1 -X -EL -maarch64linux --fix-cortex-a53-843419 -pie -z now -z relro -o cmTC_3b1e7 /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/Scrt1.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crti.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtbeginS.o -L/usr/lib/gcc-cross/aarch64-linux-gnu/11 -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib -L/home/harp/rpi-sysroot/lib/aarch64-linux-gnu -L/home/harp/rpi-sysroot/lib/../lib -L/home/harp/rpi-sysroot/usr/lib/aarch64-linux-gnu -L/home/harp/rpi-sysroot/usr/lib/../lib -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib -L/home/harp/rpi-sysroot/lib -L/home/harp/rpi-sysroot/usr/lib -v CMakeFiles/cmTC_3b1e7.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtendS.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crtn.o]
           arg [/usr/lib/gcc-cross/aarch64-linux-gnu/11/collect2] ==> ignore
           arg [-plugin] ==> ignore
           arg [/usr/lib/gcc-cross/aarch64-linux-gnu/11/liblto_plugin.so] ==> ignore
           arg [-plugin-opt=/usr/lib/gcc-cross/aarch64-linux-gnu/11/lto-wrapper] ==> ignore
-          arg [-plugin-opt=-fresolution=/tmp/ccE11YmT.res] ==> ignore
+          arg [-plugin-opt=-fresolution=/tmp/ccVx9Zo4.res] ==> ignore
           arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
           arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
           arg [-plugin-opt=-pass-through=-lc] ==> ignore
           arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
           arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
-          arg [--sysroot=/path/to/rpi/sysroot] ==> ignore
+          arg [--sysroot=/home/harp/rpi-sysroot] ==> ignore
           arg [--build-id] ==> ignore
           arg [--eh-frame-hdr] ==> ignore
           arg [--hash-style=gnu] ==> ignore
@@ -493,15 +513,21 @@ events:
           arg [-znow] ==> ignore
           arg [-zrelro] ==> ignore
           arg [-o] ==> ignore
-          arg [cmTC_9bd79] ==> ignore
+          arg [cmTC_3b1e7] ==> ignore
           arg [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/Scrt1.o] ==> obj [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/Scrt1.o]
           arg [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crti.o] ==> obj [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crti.o]
           arg [/usr/lib/gcc-cross/aarch64-linux-gnu/11/crtbeginS.o] ==> obj [/usr/lib/gcc-cross/aarch64-linux-gnu/11/crtbeginS.o]
           arg [-L/usr/lib/gcc-cross/aarch64-linux-gnu/11] ==> dir [/usr/lib/gcc-cross/aarch64-linux-gnu/11]
           arg [-L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib] ==> dir [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib]
+          arg [-L/home/harp/rpi-sysroot/lib/aarch64-linux-gnu] ==> dir [/home/harp/rpi-sysroot/lib/aarch64-linux-gnu]
+          arg [-L/home/harp/rpi-sysroot/lib/../lib] ==> dir [/home/harp/rpi-sysroot/lib/../lib]
+          arg [-L/home/harp/rpi-sysroot/usr/lib/aarch64-linux-gnu] ==> dir [/home/harp/rpi-sysroot/usr/lib/aarch64-linux-gnu]
+          arg [-L/home/harp/rpi-sysroot/usr/lib/../lib] ==> dir [/home/harp/rpi-sysroot/usr/lib/../lib]
           arg [-L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib] ==> dir [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib]
+          arg [-L/home/harp/rpi-sysroot/lib] ==> dir [/home/harp/rpi-sysroot/lib]
+          arg [-L/home/harp/rpi-sysroot/usr/lib] ==> dir [/home/harp/rpi-sysroot/usr/lib]
           arg [-v] ==> ignore
-          arg [CMakeFiles/cmTC_9bd79.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
+          arg [CMakeFiles/cmTC_3b1e7.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
           arg [-lstdc++] ==> lib [stdc++]
           arg [-lm] ==> lib [m]
           arg [-lgcc_s] ==> lib [gcc_s]
@@ -512,17 +538,23 @@ events:
           arg [/usr/lib/gcc-cross/aarch64-linux-gnu/11/crtendS.o] ==> obj [/usr/lib/gcc-cross/aarch64-linux-gnu/11/crtendS.o]
           arg [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crtn.o] ==> obj [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crtn.o]
         ignore line: [collect2 version 11.4.0]
-        ignore line: [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/ld -plugin /usr/lib/gcc-cross/aarch64-linux-gnu/11/liblto_plugin.so -plugin-opt=/usr/lib/gcc-cross/aarch64-linux-gnu/11/lto-wrapper -plugin-opt=-fresolution=/tmp/ccE11YmT.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --sysroot=/path/to/rpi/sysroot --build-id --eh-frame-hdr --hash-style=gnu --as-needed -dynamic-linker /lib/ld-linux-aarch64.so.1 -X -EL -maarch64linux --fix-cortex-a53-843419 -pie -z now -z relro -o cmTC_9bd79 /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/Scrt1.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crti.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtbeginS.o -L/usr/lib/gcc-cross/aarch64-linux-gnu/11 -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib -v CMakeFiles/cmTC_9bd79.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtendS.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crtn.o]
+        ignore line: [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/ld -plugin /usr/lib/gcc-cross/aarch64-linux-gnu/11/liblto_plugin.so -plugin-opt=/usr/lib/gcc-cross/aarch64-linux-gnu/11/lto-wrapper -plugin-opt=-fresolution=/tmp/ccVx9Zo4.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --sysroot=/home/harp/rpi-sysroot --build-id --eh-frame-hdr --hash-style=gnu --as-needed -dynamic-linker /lib/ld-linux-aarch64.so.1 -X -EL -maarch64linux --fix-cortex-a53-843419 -pie -z now -z relro -o cmTC_3b1e7 /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/Scrt1.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crti.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtbeginS.o -L/usr/lib/gcc-cross/aarch64-linux-gnu/11 -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib -L/home/harp/rpi-sysroot/lib/aarch64-linux-gnu -L/home/harp/rpi-sysroot/lib/../lib -L/home/harp/rpi-sysroot/usr/lib/aarch64-linux-gnu -L/home/harp/rpi-sysroot/usr/lib/../lib -L/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib -L/home/harp/rpi-sysroot/lib -L/home/harp/rpi-sysroot/usr/lib -v CMakeFiles/cmTC_3b1e7.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc-cross/aarch64-linux-gnu/11/crtendS.o /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crtn.o]
         linker tool for 'CXX': /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/ld
         collapse obj [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/Scrt1.o] ==> [/usr/aarch64-linux-gnu/lib/Scrt1.o]
         collapse obj [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crti.o] ==> [/usr/aarch64-linux-gnu/lib/crti.o]
         collapse obj [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib/crtn.o] ==> [/usr/aarch64-linux-gnu/lib/crtn.o]
         collapse library dir [/usr/lib/gcc-cross/aarch64-linux-gnu/11] ==> [/usr/lib/gcc-cross/aarch64-linux-gnu/11]
         collapse library dir [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib/../lib] ==> [/usr/aarch64-linux-gnu/lib]
+        collapse library dir [/home/harp/rpi-sysroot/lib/aarch64-linux-gnu] ==> [/home/harp/rpi-sysroot/lib/aarch64-linux-gnu]
+        collapse library dir [/home/harp/rpi-sysroot/lib/../lib] ==> [/home/harp/rpi-sysroot/lib]
+        collapse library dir [/home/harp/rpi-sysroot/usr/lib/aarch64-linux-gnu] ==> [/home/harp/rpi-sysroot/usr/lib/aarch64-linux-gnu]
+        collapse library dir [/home/harp/rpi-sysroot/usr/lib/../lib] ==> [/home/harp/rpi-sysroot/usr/lib]
         collapse library dir [/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/lib] ==> [/usr/aarch64-linux-gnu/lib]
+        collapse library dir [/home/harp/rpi-sysroot/lib] ==> [/home/harp/rpi-sysroot/lib]
+        collapse library dir [/home/harp/rpi-sysroot/usr/lib] ==> [/home/harp/rpi-sysroot/usr/lib]
         implicit libs: [stdc++;m;gcc_s;gcc;c;gcc_s;gcc]
         implicit objs: [/usr/aarch64-linux-gnu/lib/Scrt1.o;/usr/aarch64-linux-gnu/lib/crti.o;/usr/lib/gcc-cross/aarch64-linux-gnu/11/crtbeginS.o;/usr/lib/gcc-cross/aarch64-linux-gnu/11/crtendS.o;/usr/aarch64-linux-gnu/lib/crtn.o]
-        implicit dirs: [/usr/lib/gcc-cross/aarch64-linux-gnu/11;/usr/aarch64-linux-gnu/lib]
+        implicit dirs: [/usr/lib/gcc-cross/aarch64-linux-gnu/11;/usr/aarch64-linux-gnu/lib;/home/harp/rpi-sysroot/lib/aarch64-linux-gnu;/home/harp/rpi-sysroot/lib;/home/harp/rpi-sysroot/usr/lib/aarch64-linux-gnu;/home/harp/rpi-sysroot/usr/lib]
         implicit fwks: []
       
       
@@ -532,51 +564,14 @@ events:
       - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CMakeDetermineLinkerId.cmake:40 (message)"
       - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeDetermineCompilerABI.cmake:255 (cmake_determine_linker_id)"
       - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
-      - "CMakeLists.txt:8 (project)"
+      - "CMakeLists.txt:7 (project)"
     message: |
       Running the CXX compiler's linker: "/usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/ld" "-v"
       GNU ld (GNU Binutils for Ubuntu) 2.38
-  -
-    kind: "try_compile-v1"
-    backtrace:
-      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CheckFunctionExists.cmake:86 (try_compile)"
-      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/FindBLAS.cmake:377 (check_function_exists)"
-      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/FindBLAS.cmake:421 (check_blas_libraries)"
-      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/FindLAPACK.cmake:247 (find_package)"
-      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/FindLAPACK.cmake:283 (_lapack_find_dependency)"
-      - "CMakeLists.txt:58 (find_package)"
-    checks:
-      - "Looking for sgemm_"
-    directories:
-      source: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-jPfH2W"
-      binary: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-jPfH2W"
-    cmakeVariables:
-      CMAKE_C_FLAGS: ""
-      CMAKE_C_FLAGS_DEBUG: "-g"
-      CMAKE_EXE_LINKER_FLAGS: ""
-      CMAKE_SYSROOT: "/path/to/rpi/sysroot"
-    buildResult:
-      variable: "BLAS_WORKS"
-      cached: true
-      stdout: |
-        Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-jPfH2W'
-        
-        Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_82894/fast
-        /usr/bin/gmake  -f CMakeFiles/cmTC_82894.dir/build.make CMakeFiles/cmTC_82894.dir/build
-        gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-jPfH2W'
-        Building C object CMakeFiles/cmTC_82894.dir/CheckFunctionExists.c.o
-        /usr/bin/aarch64-linux-gnu-gcc --sysroot=/path/to/rpi/sysroot   -DCHECK_FUNCTION_EXISTS=sgemm_ -o CMakeFiles/cmTC_82894.dir/CheckFunctionExists.c.o -c /home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-jPfH2W/CheckFunctionExists.c
-        Linking C executable cmTC_82894
-        /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_82894.dir/link.txt --verbose=1
-        /usr/bin/aarch64-linux-gnu-gcc --sysroot=/path/to/rpi/sysroot  -DCHECK_FUNCTION_EXISTS=sgemm_ CMakeFiles/cmTC_82894.dir/CheckFunctionExists.c.o -o cmTC_82894
-        /usr/lib/gcc-cross/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/bin/ld: CMakeFiles/cmTC_82894.dir/CheckFunctionExists.c.o: in function `main':
-        CheckFunctionExists.c:(.text+0x10): undefined reference to `sgemm_'
-        collect2: error: ld returned 1 exit status
-        gmake[1]: *** [CMakeFiles/cmTC_82894.dir/build.make:99: cmTC_82894] Error 1
-        gmake[1]: Leaving directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-jPfH2W'
-        gmake: *** [Makefile:127: cmTC_82894/fast] Error 2
-        
-      exitCode: 2
+...
+
+---
+events:
   -
     kind: "try_compile-v1"
     backtrace:
@@ -584,35 +579,855 @@ events:
       - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CheckCSourceCompiles.cmake:52 (cmake_check_source_compiles)"
       - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/FindThreads.cmake:97 (CHECK_C_SOURCE_COMPILES)"
       - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/FindThreads.cmake:163 (_threads_check_libc)"
-      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/FindBLAS.cmake:475 (find_package)"
-      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/FindLAPACK.cmake:247 (find_package)"
-      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/FindLAPACK.cmake:283 (_lapack_find_dependency)"
-      - "CMakeLists.txt:58 (find_package)"
+      - "libs/googletest/googletest/cmake/internal_utils.cmake:65 (find_package)"
+      - "libs/googletest/googletest/CMakeLists.txt:88 (config_compiler_and_linker)"
     checks:
       - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
     directories:
-      source: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-B582Fs"
-      binary: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-B582Fs"
+      source: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-iRjdtH"
+      binary: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-iRjdtH"
     cmakeVariables:
-      CMAKE_C_FLAGS: ""
-      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_C_FLAGS: " -march=armv8-a+simd"
       CMAKE_EXE_LINKER_FLAGS: ""
-      CMAKE_SYSROOT: "/path/to/rpi/sysroot"
+      CMAKE_SYSROOT: "/home/harp/rpi-sysroot"
     buildResult:
       variable: "CMAKE_HAVE_LIBC_PTHREAD"
       cached: true
       stdout: |
-        Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-B582Fs'
+        Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-iRjdtH'
         
-        Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_95c00/fast
-        /usr/bin/gmake  -f CMakeFiles/cmTC_95c00.dir/build.make CMakeFiles/cmTC_95c00.dir/build
-        gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-B582Fs'
-        Building C object CMakeFiles/cmTC_95c00.dir/src.c.o
-        /usr/bin/aarch64-linux-gnu-gcc --sysroot=/path/to/rpi/sysroot -DCMAKE_HAVE_LIBC_PTHREAD   -o CMakeFiles/cmTC_95c00.dir/src.c.o -c /home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-B582Fs/src.c
-        Linking C executable cmTC_95c00
-        /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_95c00.dir/link.txt --verbose=1
-        /usr/bin/aarch64-linux-gnu-gcc --sysroot=/path/to/rpi/sysroot CMakeFiles/cmTC_95c00.dir/src.c.o -o cmTC_95c00
-        gmake[1]: Leaving directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-B582Fs'
+        Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_e30c5/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_e30c5.dir/build.make CMakeFiles/cmTC_e30c5.dir/build
+        gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-iRjdtH'
+        Building C object CMakeFiles/cmTC_e30c5.dir/src.c.o
+        /usr/bin/aarch64-linux-gnu-gcc --sysroot=/home/harp/rpi-sysroot -DCMAKE_HAVE_LIBC_PTHREAD  -march=armv8-a+simd  -o CMakeFiles/cmTC_e30c5.dir/src.c.o -c /home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-iRjdtH/src.c
+        Linking C executable cmTC_e30c5
+        /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_e30c5.dir/link.txt --verbose=1
+        /usr/bin/aarch64-linux-gnu-gcc --sysroot=/home/harp/rpi-sysroot  -march=armv8-a+simd  CMakeFiles/cmTC_e30c5.dir/src.c.o -o cmTC_e30c5
+        gmake[1]: Leaving directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-iRjdtH'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CheckLibraryExists.cmake:69 (try_compile)"
+      - "libs/benchmark/CMakeLists.txt:135 (check_library_exists)"
+    checks:
+      - "Looking for shm_open in rt"
+    directories:
+      source: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-M5vkcp"
+      binary: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-M5vkcp"
+    cmakeVariables:
+      CMAKE_C_FLAGS: " -march=armv8-a+simd"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake/Modules;/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake"
+      CMAKE_SYSROOT: "/home/harp/rpi-sysroot"
+    buildResult:
+      variable: "HAVE_LIB_RT"
+      cached: true
+      stdout: |
+        Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-M5vkcp'
+        
+        Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_e3fb5/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_e3fb5.dir/build.make CMakeFiles/cmTC_e3fb5.dir/build
+        gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-M5vkcp'
+        Building C object CMakeFiles/cmTC_e3fb5.dir/CheckFunctionExists.c.o
+        /usr/bin/aarch64-linux-gnu-gcc --sysroot=/home/harp/rpi-sysroot   -march=armv8-a+simd -DCHECK_FUNCTION_EXISTS=shm_open -o CMakeFiles/cmTC_e3fb5.dir/CheckFunctionExists.c.o -c /home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-M5vkcp/CheckFunctionExists.c
+        Linking C executable cmTC_e3fb5
+        /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_e3fb5.dir/link.txt --verbose=1
+        /usr/bin/aarch64-linux-gnu-gcc --sysroot=/home/harp/rpi-sysroot  -march=armv8-a+simd -DCHECK_FUNCTION_EXISTS=shm_open CMakeFiles/cmTC_e3fb5.dir/CheckFunctionExists.c.o -o cmTC_e3fb5  -lrt
+        gmake[1]: Leaving directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-M5vkcp'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CheckCXXCompilerFlag.cmake:34 (cmake_check_compiler_flag)"
+      - "libs/benchmark/cmake/AddCXXCompilerFlag.cmake:34 (check_cxx_compiler_flag)"
+      - "libs/benchmark/CMakeLists.txt:184 (add_cxx_compiler_flag)"
+    checks:
+      - "Performing Test HAVE_CXX_FLAG_WALL"
+    directories:
+      source: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-vt5MS6"
+      binary: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-vt5MS6"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: " -march=armv8-a+simd"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake/Modules;/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake"
+      CMAKE_SYSROOT: "/home/harp/rpi-sysroot"
+    buildResult:
+      variable: "HAVE_CXX_FLAG_WALL"
+      cached: true
+      stdout: |
+        Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-vt5MS6'
+        
+        Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_0d39d/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_0d39d.dir/build.make CMakeFiles/cmTC_0d39d.dir/build
+        gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-vt5MS6'
+        Building CXX object CMakeFiles/cmTC_0d39d.dir/src.cxx.o
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot -DHAVE_CXX_FLAG_WALL  -march=armv8-a+simd  -Wall   -Wall -o CMakeFiles/cmTC_0d39d.dir/src.cxx.o -c /home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-vt5MS6/src.cxx
+        Linking CXX executable cmTC_0d39d
+        /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_0d39d.dir/link.txt --verbose=1
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot  -march=armv8-a+simd  -Wall CMakeFiles/cmTC_0d39d.dir/src.cxx.o -o cmTC_0d39d
+        gmake[1]: Leaving directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-vt5MS6'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CheckCXXCompilerFlag.cmake:34 (cmake_check_compiler_flag)"
+      - "libs/benchmark/cmake/AddCXXCompilerFlag.cmake:34 (check_cxx_compiler_flag)"
+      - "libs/benchmark/CMakeLists.txt:185 (add_cxx_compiler_flag)"
+    checks:
+      - "Performing Test HAVE_CXX_FLAG_WEXTRA"
+    directories:
+      source: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-N7CO0Y"
+      binary: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-N7CO0Y"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: " -march=armv8-a+simd  -Wall"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake/Modules;/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake"
+      CMAKE_SYSROOT: "/home/harp/rpi-sysroot"
+    buildResult:
+      variable: "HAVE_CXX_FLAG_WEXTRA"
+      cached: true
+      stdout: |
+        Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-N7CO0Y'
+        
+        Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_6fc6d/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_6fc6d.dir/build.make CMakeFiles/cmTC_6fc6d.dir/build
+        gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-N7CO0Y'
+        Building CXX object CMakeFiles/cmTC_6fc6d.dir/src.cxx.o
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot -DHAVE_CXX_FLAG_WEXTRA  -march=armv8-a+simd  -Wall  -Wextra   -Wextra -o CMakeFiles/cmTC_6fc6d.dir/src.cxx.o -c /home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-N7CO0Y/src.cxx
+        Linking CXX executable cmTC_6fc6d
+        /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_6fc6d.dir/link.txt --verbose=1
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot  -march=armv8-a+simd  -Wall  -Wextra CMakeFiles/cmTC_6fc6d.dir/src.cxx.o -o cmTC_6fc6d
+        gmake[1]: Leaving directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-N7CO0Y'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CheckCXXCompilerFlag.cmake:34 (cmake_check_compiler_flag)"
+      - "libs/benchmark/cmake/AddCXXCompilerFlag.cmake:34 (check_cxx_compiler_flag)"
+      - "libs/benchmark/CMakeLists.txt:186 (add_cxx_compiler_flag)"
+    checks:
+      - "Performing Test HAVE_CXX_FLAG_WSHADOW"
+    directories:
+      source: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-6Jblwy"
+      binary: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-6Jblwy"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: " -march=armv8-a+simd  -Wall  -Wextra"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake/Modules;/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake"
+      CMAKE_SYSROOT: "/home/harp/rpi-sysroot"
+    buildResult:
+      variable: "HAVE_CXX_FLAG_WSHADOW"
+      cached: true
+      stdout: |
+        Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-6Jblwy'
+        
+        Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_0b866/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_0b866.dir/build.make CMakeFiles/cmTC_0b866.dir/build
+        gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-6Jblwy'
+        Building CXX object CMakeFiles/cmTC_0b866.dir/src.cxx.o
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot -DHAVE_CXX_FLAG_WSHADOW  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow   -Wshadow -o CMakeFiles/cmTC_0b866.dir/src.cxx.o -c /home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-6Jblwy/src.cxx
+        Linking CXX executable cmTC_0b866
+        /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_0b866.dir/link.txt --verbose=1
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow CMakeFiles/cmTC_0b866.dir/src.cxx.o -o cmTC_0b866
+        gmake[1]: Leaving directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-6Jblwy'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CheckCXXCompilerFlag.cmake:34 (cmake_check_compiler_flag)"
+      - "libs/benchmark/cmake/AddCXXCompilerFlag.cmake:34 (check_cxx_compiler_flag)"
+      - "libs/benchmark/CMakeLists.txt:187 (add_cxx_compiler_flag)"
+    checks:
+      - "Performing Test HAVE_CXX_FLAG_WFLOAT_EQUAL"
+    directories:
+      source: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-xgY7h8"
+      binary: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-xgY7h8"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: " -march=armv8-a+simd  -Wall  -Wextra  -Wshadow"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake/Modules;/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake"
+      CMAKE_SYSROOT: "/home/harp/rpi-sysroot"
+    buildResult:
+      variable: "HAVE_CXX_FLAG_WFLOAT_EQUAL"
+      cached: true
+      stdout: |
+        Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-xgY7h8'
+        
+        Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_f38cd/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_f38cd.dir/build.make CMakeFiles/cmTC_f38cd.dir/build
+        gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-xgY7h8'
+        Building CXX object CMakeFiles/cmTC_f38cd.dir/src.cxx.o
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot -DHAVE_CXX_FLAG_WFLOAT_EQUAL  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal   -Wfloat-equal -o CMakeFiles/cmTC_f38cd.dir/src.cxx.o -c /home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-xgY7h8/src.cxx
+        Linking CXX executable cmTC_f38cd
+        /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_f38cd.dir/link.txt --verbose=1
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal CMakeFiles/cmTC_f38cd.dir/src.cxx.o -o cmTC_f38cd
+        gmake[1]: Leaving directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-xgY7h8'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CheckCXXCompilerFlag.cmake:34 (cmake_check_compiler_flag)"
+      - "libs/benchmark/cmake/AddCXXCompilerFlag.cmake:34 (check_cxx_compiler_flag)"
+      - "libs/benchmark/CMakeLists.txt:188 (add_cxx_compiler_flag)"
+    checks:
+      - "Performing Test HAVE_CXX_FLAG_WOLD_STYLE_CAST"
+    directories:
+      source: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-1Ygl8M"
+      binary: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-1Ygl8M"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: " -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake/Modules;/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake"
+      CMAKE_SYSROOT: "/home/harp/rpi-sysroot"
+    buildResult:
+      variable: "HAVE_CXX_FLAG_WOLD_STYLE_CAST"
+      cached: true
+      stdout: |
+        Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-1Ygl8M'
+        
+        Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_5c10d/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_5c10d.dir/build.make CMakeFiles/cmTC_5c10d.dir/build
+        gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-1Ygl8M'
+        Building CXX object CMakeFiles/cmTC_5c10d.dir/src.cxx.o
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot -DHAVE_CXX_FLAG_WOLD_STYLE_CAST  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast   -Wold-style-cast -o CMakeFiles/cmTC_5c10d.dir/src.cxx.o -c /home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-1Ygl8M/src.cxx
+        Linking CXX executable cmTC_5c10d
+        /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_5c10d.dir/link.txt --verbose=1
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast CMakeFiles/cmTC_5c10d.dir/src.cxx.o -o cmTC_5c10d
+        gmake[1]: Leaving directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-1Ygl8M'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CheckCXXCompilerFlag.cmake:34 (cmake_check_compiler_flag)"
+      - "libs/benchmark/cmake/AddCXXCompilerFlag.cmake:34 (check_cxx_compiler_flag)"
+      - "libs/benchmark/CMakeLists.txt:189 (add_cxx_compiler_flag)"
+    checks:
+      - "Performing Test HAVE_CXX_FLAG_WCONVERSION"
+    directories:
+      source: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-IqCFxy"
+      binary: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-IqCFxy"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: " -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake/Modules;/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake"
+      CMAKE_SYSROOT: "/home/harp/rpi-sysroot"
+    buildResult:
+      variable: "HAVE_CXX_FLAG_WCONVERSION"
+      cached: true
+      stdout: |
+        Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-IqCFxy'
+        
+        Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_a68a3/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_a68a3.dir/build.make CMakeFiles/cmTC_a68a3.dir/build
+        gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-IqCFxy'
+        Building CXX object CMakeFiles/cmTC_a68a3.dir/src.cxx.o
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot -DHAVE_CXX_FLAG_WCONVERSION  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion   -Wconversion -o CMakeFiles/cmTC_a68a3.dir/src.cxx.o -c /home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-IqCFxy/src.cxx
+        Linking CXX executable cmTC_a68a3
+        /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a68a3.dir/link.txt --verbose=1
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion CMakeFiles/cmTC_a68a3.dir/src.cxx.o -o cmTC_a68a3
+        gmake[1]: Leaving directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-IqCFxy'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CheckCXXCompilerFlag.cmake:34 (cmake_check_compiler_flag)"
+      - "libs/benchmark/cmake/AddCXXCompilerFlag.cmake:34 (check_cxx_compiler_flag)"
+      - "libs/benchmark/CMakeLists.txt:191 (add_cxx_compiler_flag)"
+    checks:
+      - "Performing Test HAVE_CXX_FLAG_WERROR"
+    directories:
+      source: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-Mnm6EF"
+      binary: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-Mnm6EF"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: " -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake/Modules;/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake"
+      CMAKE_SYSROOT: "/home/harp/rpi-sysroot"
+    buildResult:
+      variable: "HAVE_CXX_FLAG_WERROR"
+      cached: true
+      stdout: |
+        Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-Mnm6EF'
+        
+        Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_fdda4/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_fdda4.dir/build.make CMakeFiles/cmTC_fdda4.dir/build
+        gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-Mnm6EF'
+        Building CXX object CMakeFiles/cmTC_fdda4.dir/src.cxx.o
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot -DHAVE_CXX_FLAG_WERROR  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror   -Werror -o CMakeFiles/cmTC_fdda4.dir/src.cxx.o -c /home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-Mnm6EF/src.cxx
+        Linking CXX executable cmTC_fdda4
+        /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_fdda4.dir/link.txt --verbose=1
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror CMakeFiles/cmTC_fdda4.dir/src.cxx.o -o cmTC_fdda4
+        gmake[1]: Leaving directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-Mnm6EF'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CheckCXXCompilerFlag.cmake:34 (cmake_check_compiler_flag)"
+      - "libs/benchmark/cmake/AddCXXCompilerFlag.cmake:34 (check_cxx_compiler_flag)"
+      - "libs/benchmark/CMakeLists.txt:195 (add_cxx_compiler_flag)"
+    checks:
+      - "Performing Test HAVE_CXX_FLAG_WSUGGEST_OVERRIDE"
+    directories:
+      source: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-Vw6puW"
+      binary: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-Vw6puW"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: " -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake/Modules;/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake"
+      CMAKE_SYSROOT: "/home/harp/rpi-sysroot"
+    buildResult:
+      variable: "HAVE_CXX_FLAG_WSUGGEST_OVERRIDE"
+      cached: true
+      stdout: |
+        Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-Vw6puW'
+        
+        Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_7e45c/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_7e45c.dir/build.make CMakeFiles/cmTC_7e45c.dir/build
+        gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-Vw6puW'
+        Building CXX object CMakeFiles/cmTC_7e45c.dir/src.cxx.o
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot -DHAVE_CXX_FLAG_WSUGGEST_OVERRIDE  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override   -Wsuggest-override -o CMakeFiles/cmTC_7e45c.dir/src.cxx.o -c /home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-Vw6puW/src.cxx
+        Linking CXX executable cmTC_7e45c
+        /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_7e45c.dir/link.txt --verbose=1
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override CMakeFiles/cmTC_7e45c.dir/src.cxx.o -o cmTC_7e45c
+        gmake[1]: Leaving directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-Vw6puW'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CheckCXXCompilerFlag.cmake:34 (cmake_check_compiler_flag)"
+      - "libs/benchmark/cmake/AddCXXCompilerFlag.cmake:34 (check_cxx_compiler_flag)"
+      - "libs/benchmark/CMakeLists.txt:197 (add_cxx_compiler_flag)"
+    checks:
+      - "Performing Test HAVE_CXX_FLAG_PEDANTIC"
+    directories:
+      source: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-tvv4R1"
+      binary: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-tvv4R1"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: " -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake/Modules;/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake"
+      CMAKE_SYSROOT: "/home/harp/rpi-sysroot"
+    buildResult:
+      variable: "HAVE_CXX_FLAG_PEDANTIC"
+      cached: true
+      stdout: |
+        Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-tvv4R1'
+        
+        Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_12272/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_12272.dir/build.make CMakeFiles/cmTC_12272.dir/build
+        gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-tvv4R1'
+        Building CXX object CMakeFiles/cmTC_12272.dir/src.cxx.o
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot -DHAVE_CXX_FLAG_PEDANTIC  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic   -pedantic -o CMakeFiles/cmTC_12272.dir/src.cxx.o -c /home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-tvv4R1/src.cxx
+        Linking CXX executable cmTC_12272
+        /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_12272.dir/link.txt --verbose=1
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic CMakeFiles/cmTC_12272.dir/src.cxx.o -o cmTC_12272
+        gmake[1]: Leaving directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-tvv4R1'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CheckCXXCompilerFlag.cmake:34 (cmake_check_compiler_flag)"
+      - "libs/benchmark/cmake/AddCXXCompilerFlag.cmake:34 (check_cxx_compiler_flag)"
+      - "libs/benchmark/CMakeLists.txt:198 (add_cxx_compiler_flag)"
+    checks:
+      - "Performing Test HAVE_CXX_FLAG_PEDANTIC_ERRORS"
+    directories:
+      source: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-8fwo3I"
+      binary: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-8fwo3I"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: " -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake/Modules;/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake"
+      CMAKE_SYSROOT: "/home/harp/rpi-sysroot"
+    buildResult:
+      variable: "HAVE_CXX_FLAG_PEDANTIC_ERRORS"
+      cached: true
+      stdout: |
+        Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-8fwo3I'
+        
+        Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_04426/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_04426.dir/build.make CMakeFiles/cmTC_04426.dir/build
+        gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-8fwo3I'
+        Building CXX object CMakeFiles/cmTC_04426.dir/src.cxx.o
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot -DHAVE_CXX_FLAG_PEDANTIC_ERRORS  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors   -pedantic-errors -o CMakeFiles/cmTC_04426.dir/src.cxx.o -c /home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-8fwo3I/src.cxx
+        Linking CXX executable cmTC_04426
+        /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_04426.dir/link.txt --verbose=1
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors CMakeFiles/cmTC_04426.dir/src.cxx.o -o cmTC_04426
+        gmake[1]: Leaving directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-8fwo3I'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CheckCXXCompilerFlag.cmake:34 (cmake_check_compiler_flag)"
+      - "libs/benchmark/cmake/AddCXXCompilerFlag.cmake:34 (check_cxx_compiler_flag)"
+      - "libs/benchmark/CMakeLists.txt:199 (add_cxx_compiler_flag)"
+    checks:
+      - "Performing Test HAVE_CXX_FLAG_WSHORTEN_64_TO_32"
+    directories:
+      source: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-qgDBos"
+      binary: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-qgDBos"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: " -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake/Modules;/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake"
+      CMAKE_SYSROOT: "/home/harp/rpi-sysroot"
+    buildResult:
+      variable: "HAVE_CXX_FLAG_WSHORTEN_64_TO_32"
+      cached: true
+      stdout: |
+        Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-qgDBos'
+        
+        Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_07199/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_07199.dir/build.make CMakeFiles/cmTC_07199.dir/build
+        gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-qgDBos'
+        Building CXX object CMakeFiles/cmTC_07199.dir/src.cxx.o
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot -DHAVE_CXX_FLAG_WSHORTEN_64_TO_32  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -Wshorten-64-to-32   -Wshorten-64-to-32 -o CMakeFiles/cmTC_07199.dir/src.cxx.o -c /home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-qgDBos/src.cxx
+        aarch64-linux-gnu-g++: error: unrecognized command-line option '-Wshorten-64-to-32'
+        aarch64-linux-gnu-g++: error: unrecognized command-line option '-Wshorten-64-to-32'
+        gmake[1]: *** [CMakeFiles/cmTC_07199.dir/build.make:78: CMakeFiles/cmTC_07199.dir/src.cxx.o] Error 1
+        gmake[1]: Leaving directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-qgDBos'
+        gmake: *** [Makefile:127: cmTC_07199/fast] Error 2
+        
+      exitCode: 2
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CheckCXXCompilerFlag.cmake:34 (cmake_check_compiler_flag)"
+      - "libs/benchmark/cmake/AddCXXCompilerFlag.cmake:34 (check_cxx_compiler_flag)"
+      - "libs/benchmark/CMakeLists.txt:200 (add_cxx_compiler_flag)"
+    checks:
+      - "Performing Test HAVE_CXX_FLAG_FSTRICT_ALIASING"
+    directories:
+      source: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-OsUbMf"
+      binary: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-OsUbMf"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: " -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake/Modules;/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake"
+      CMAKE_SYSROOT: "/home/harp/rpi-sysroot"
+    buildResult:
+      variable: "HAVE_CXX_FLAG_FSTRICT_ALIASING"
+      cached: true
+      stdout: |
+        Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-OsUbMf'
+        
+        Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_e4e0e/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_e4e0e.dir/build.make CMakeFiles/cmTC_e4e0e.dir/build
+        gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-OsUbMf'
+        Building CXX object CMakeFiles/cmTC_e4e0e.dir/src.cxx.o
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot -DHAVE_CXX_FLAG_FSTRICT_ALIASING  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing   -fstrict-aliasing -o CMakeFiles/cmTC_e4e0e.dir/src.cxx.o -c /home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-OsUbMf/src.cxx
+        Linking CXX executable cmTC_e4e0e
+        /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_e4e0e.dir/link.txt --verbose=1
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing CMakeFiles/cmTC_e4e0e.dir/src.cxx.o -o cmTC_e4e0e
+        gmake[1]: Leaving directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-OsUbMf'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CheckCXXCompilerFlag.cmake:34 (cmake_check_compiler_flag)"
+      - "libs/benchmark/cmake/AddCXXCompilerFlag.cmake:34 (check_cxx_compiler_flag)"
+      - "libs/benchmark/CMakeLists.txt:203 (add_cxx_compiler_flag)"
+    checks:
+      - "Performing Test HAVE_CXX_FLAG_WNO_DEPRECATED_DECLARATIONS"
+    directories:
+      source: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-yRw18z"
+      binary: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-yRw18z"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: " -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake/Modules;/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake"
+      CMAKE_SYSROOT: "/home/harp/rpi-sysroot"
+    buildResult:
+      variable: "HAVE_CXX_FLAG_WNO_DEPRECATED_DECLARATIONS"
+      cached: true
+      stdout: |
+        Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-yRw18z'
+        
+        Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_d89c7/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_d89c7.dir/build.make CMakeFiles/cmTC_d89c7.dir/build
+        gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-yRw18z'
+        Building CXX object CMakeFiles/cmTC_d89c7.dir/src.cxx.o
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot -DHAVE_CXX_FLAG_WNO_DEPRECATED_DECLARATIONS  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing  -Wno-deprecated-declarations   -Wno-deprecated-declarations -o CMakeFiles/cmTC_d89c7.dir/src.cxx.o -c /home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-yRw18z/src.cxx
+        Linking CXX executable cmTC_d89c7
+        /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_d89c7.dir/link.txt --verbose=1
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing  -Wno-deprecated-declarations CMakeFiles/cmTC_d89c7.dir/src.cxx.o -o cmTC_d89c7
+        gmake[1]: Leaving directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-yRw18z'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CheckCXXCompilerFlag.cmake:34 (cmake_check_compiler_flag)"
+      - "libs/benchmark/cmake/AddCXXCompilerFlag.cmake:34 (check_cxx_compiler_flag)"
+      - "libs/benchmark/CMakeLists.txt:213 (add_cxx_compiler_flag)"
+    checks:
+      - "Performing Test HAVE_CXX_FLAG_WNO_DEPRECATED"
+    directories:
+      source: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-QuRHXK"
+      binary: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-QuRHXK"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: " -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing  -Wno-deprecated-declarations"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake/Modules;/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake"
+      CMAKE_SYSROOT: "/home/harp/rpi-sysroot"
+    buildResult:
+      variable: "HAVE_CXX_FLAG_WNO_DEPRECATED"
+      cached: true
+      stdout: |
+        Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-QuRHXK'
+        
+        Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_35f52/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_35f52.dir/build.make CMakeFiles/cmTC_35f52.dir/build
+        gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-QuRHXK'
+        Building CXX object CMakeFiles/cmTC_35f52.dir/src.cxx.o
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot -DHAVE_CXX_FLAG_WNO_DEPRECATED  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing  -Wno-deprecated-declarations  -Wno-deprecated   -Wno-deprecated -o CMakeFiles/cmTC_35f52.dir/src.cxx.o -c /home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-QuRHXK/src.cxx
+        Linking CXX executable cmTC_35f52
+        /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_35f52.dir/link.txt --verbose=1
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing  -Wno-deprecated-declarations  -Wno-deprecated CMakeFiles/cmTC_35f52.dir/src.cxx.o -o cmTC_35f52
+        gmake[1]: Leaving directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-QuRHXK'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CheckCXXCompilerFlag.cmake:34 (cmake_check_compiler_flag)"
+      - "libs/benchmark/cmake/AddCXXCompilerFlag.cmake:34 (check_cxx_compiler_flag)"
+      - "libs/benchmark/CMakeLists.txt:221 (add_cxx_compiler_flag)"
+    checks:
+      - "Performing Test HAVE_CXX_FLAG_WSTRICT_ALIASING"
+    directories:
+      source: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-CTMckD"
+      binary: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-CTMckD"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: " -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing  -Wno-deprecated-declarations  -Wno-deprecated"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake/Modules;/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake"
+      CMAKE_SYSROOT: "/home/harp/rpi-sysroot"
+    buildResult:
+      variable: "HAVE_CXX_FLAG_WSTRICT_ALIASING"
+      cached: true
+      stdout: |
+        Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-CTMckD'
+        
+        Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_2644d/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_2644d.dir/build.make CMakeFiles/cmTC_2644d.dir/build
+        gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-CTMckD'
+        Building CXX object CMakeFiles/cmTC_2644d.dir/src.cxx.o
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot -DHAVE_CXX_FLAG_WSTRICT_ALIASING  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing  -Wno-deprecated-declarations  -Wno-deprecated  -Wstrict-aliasing   -Wstrict-aliasing -o CMakeFiles/cmTC_2644d.dir/src.cxx.o -c /home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-CTMckD/src.cxx
+        Linking CXX executable cmTC_2644d
+        /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_2644d.dir/link.txt --verbose=1
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing  -Wno-deprecated-declarations  -Wno-deprecated  -Wstrict-aliasing CMakeFiles/cmTC_2644d.dir/src.cxx.o -o cmTC_2644d
+        gmake[1]: Leaving directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-CTMckD'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CheckCXXCompilerFlag.cmake:34 (cmake_check_compiler_flag)"
+      - "libs/benchmark/cmake/AddCXXCompilerFlag.cmake:34 (check_cxx_compiler_flag)"
+      - "libs/benchmark/CMakeLists.txt:226 (add_cxx_compiler_flag)"
+    checks:
+      - "Performing Test HAVE_CXX_FLAG_WD654"
+    directories:
+      source: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-E40SKS"
+      binary: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-E40SKS"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: " -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing  -Wno-deprecated-declarations  -Wno-deprecated  -Wstrict-aliasing"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake/Modules;/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake"
+      CMAKE_SYSROOT: "/home/harp/rpi-sysroot"
+    buildResult:
+      variable: "HAVE_CXX_FLAG_WD654"
+      cached: true
+      stdout: |
+        Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-E40SKS'
+        
+        Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_8c478/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_8c478.dir/build.make CMakeFiles/cmTC_8c478.dir/build
+        gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-E40SKS'
+        Building CXX object CMakeFiles/cmTC_8c478.dir/src.cxx.o
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot -DHAVE_CXX_FLAG_WD654  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing  -Wno-deprecated-declarations  -Wno-deprecated  -Wstrict-aliasing  -wd654   -wd654 -o CMakeFiles/cmTC_8c478.dir/src.cxx.o -c /home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-E40SKS/src.cxx
+        aarch64-linux-gnu-g++: error: unrecognized command-line option '-wd654'
+        aarch64-linux-gnu-g++: error: unrecognized command-line option '-wd654'
+        gmake[1]: *** [CMakeFiles/cmTC_8c478.dir/build.make:78: CMakeFiles/cmTC_8c478.dir/src.cxx.o] Error 1
+        gmake[1]: Leaving directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-E40SKS'
+        gmake: *** [Makefile:127: cmTC_8c478/fast] Error 2
+        
+      exitCode: 2
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CheckCXXCompilerFlag.cmake:34 (cmake_check_compiler_flag)"
+      - "libs/benchmark/cmake/AddCXXCompilerFlag.cmake:34 (check_cxx_compiler_flag)"
+      - "libs/benchmark/CMakeLists.txt:227 (add_cxx_compiler_flag)"
+    checks:
+      - "Performing Test HAVE_CXX_FLAG_WTHREAD_SAFETY"
+    directories:
+      source: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-kXFvoH"
+      binary: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-kXFvoH"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: " -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing  -Wno-deprecated-declarations  -Wno-deprecated  -Wstrict-aliasing"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake/Modules;/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake"
+      CMAKE_SYSROOT: "/home/harp/rpi-sysroot"
+    buildResult:
+      variable: "HAVE_CXX_FLAG_WTHREAD_SAFETY"
+      cached: true
+      stdout: |
+        Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-kXFvoH'
+        
+        Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_d628f/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_d628f.dir/build.make CMakeFiles/cmTC_d628f.dir/build
+        gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-kXFvoH'
+        Building CXX object CMakeFiles/cmTC_d628f.dir/src.cxx.o
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot -DHAVE_CXX_FLAG_WTHREAD_SAFETY  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing  -Wno-deprecated-declarations  -Wno-deprecated  -Wstrict-aliasing  -Wthread-safety   -Wthread-safety -o CMakeFiles/cmTC_d628f.dir/src.cxx.o -c /home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-kXFvoH/src.cxx
+        aarch64-linux-gnu-g++: error: unrecognized command-line option '-Wthread-safety'
+        aarch64-linux-gnu-g++: error: unrecognized command-line option '-Wthread-safety'
+        gmake[1]: *** [CMakeFiles/cmTC_d628f.dir/build.make:78: CMakeFiles/cmTC_d628f.dir/src.cxx.o] Error 1
+        gmake[1]: Leaving directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-kXFvoH'
+        gmake: *** [Makefile:127: cmTC_d628f/fast] Error 2
+        
+      exitCode: 2
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/share/cmake-3.30/Modules/CheckCXXCompilerFlag.cmake:34 (cmake_check_compiler_flag)"
+      - "libs/benchmark/cmake/AddCXXCompilerFlag.cmake:34 (check_cxx_compiler_flag)"
+      - "libs/benchmark/CMakeLists.txt:278 (add_cxx_compiler_flag)"
+    checks:
+      - "Performing Test HAVE_CXX_FLAG_COVERAGE"
+    directories:
+      source: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-98lGB1"
+      binary: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-98lGB1"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: " -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing  -Wno-deprecated-declarations  -Wno-deprecated  -Wstrict-aliasing"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake/Modules;/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake"
+      CMAKE_SYSROOT: "/home/harp/rpi-sysroot"
+    buildResult:
+      variable: "HAVE_CXX_FLAG_COVERAGE"
+      cached: true
+      stdout: |
+        Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-98lGB1'
+        
+        Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_92dc6/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_92dc6.dir/build.make CMakeFiles/cmTC_92dc6.dir/build
+        gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-98lGB1'
+        Building CXX object CMakeFiles/cmTC_92dc6.dir/src.cxx.o
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot -DHAVE_CXX_FLAG_COVERAGE  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing  -Wno-deprecated-declarations  -Wno-deprecated  -Wstrict-aliasing  --coverage   --coverage -o CMakeFiles/cmTC_92dc6.dir/src.cxx.o -c /home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-98lGB1/src.cxx
+        Linking CXX executable cmTC_92dc6
+        /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_92dc6.dir/link.txt --verbose=1
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing  -Wno-deprecated-declarations  -Wno-deprecated  -Wstrict-aliasing  --coverage CMakeFiles/cmTC_92dc6.dir/src.cxx.o -o cmTC_92dc6
+        gmake[1]: Leaving directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeScratch/TryCompile-98lGB1'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "libs/benchmark/cmake/CXXFeatureCheck.cmake:41 (try_compile)"
+      - "libs/benchmark/CMakeLists.txt:308 (cxx_feature_check)"
+    directories:
+      source: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeTmp"
+      binary: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeTmp"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: " -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing  -Wno-deprecated-declarations  -Wno-deprecated  -Wstrict-aliasing"
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake/Modules;/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake"
+      CMAKE_SYSROOT: "/home/harp/rpi-sysroot"
+    buildResult:
+      variable: "COMPILE_HAVE_STD_REGEX"
+      cached: true
+      stdout: |
+        Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeTmp'
+        
+        Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_d3af6/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_d3af6.dir/build.make CMakeFiles/cmTC_d3af6.dir/build
+        gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeTmp'
+        Building CXX object CMakeFiles/cmTC_d3af6.dir/std_regex.cpp.o
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot   -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing  -Wno-deprecated-declarations  -Wno-deprecated  -Wstrict-aliasing  -std=c++11 -o CMakeFiles/cmTC_d3af6.dir/std_regex.cpp.o -c /home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake/std_regex.cpp
+        Linking CXX executable cmTC_d3af6
+        /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_d3af6.dir/link.txt --verbose=1
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing  -Wno-deprecated-declarations  -Wno-deprecated  -Wstrict-aliasing  CMakeFiles/cmTC_d3af6.dir/std_regex.cpp.o -o cmTC_d3af6
+        gmake[1]: Leaving directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeTmp'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "libs/benchmark/cmake/CXXFeatureCheck.cmake:41 (try_compile)"
+      - "libs/benchmark/CMakeLists.txt:309 (cxx_feature_check)"
+    directories:
+      source: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeTmp"
+      binary: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeTmp"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: " -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing  -Wno-deprecated-declarations  -Wno-deprecated  -Wstrict-aliasing"
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake/Modules;/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake"
+      CMAKE_SYSROOT: "/home/harp/rpi-sysroot"
+    buildResult:
+      variable: "COMPILE_HAVE_GNU_POSIX_REGEX"
+      cached: true
+      stdout: |
+        Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeTmp'
+        
+        Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_d9f07/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_d9f07.dir/build.make CMakeFiles/cmTC_d9f07.dir/build
+        gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeTmp'
+        Building CXX object CMakeFiles/cmTC_d9f07.dir/gnu_posix_regex.cpp.o
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot   -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing  -Wno-deprecated-declarations  -Wno-deprecated  -Wstrict-aliasing  -std=c++11 -o CMakeFiles/cmTC_d9f07.dir/gnu_posix_regex.cpp.o -c /home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake/gnu_posix_regex.cpp
+        /home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake/gnu_posix_regex.cpp:1:10: fatal error: gnuregex.h: No such file or directory
+            1 | #include <gnuregex.h>
+              |          ^~~~~~~~~~~~
+        compilation terminated.
+        gmake[1]: *** [CMakeFiles/cmTC_d9f07.dir/build.make:78: CMakeFiles/cmTC_d9f07.dir/gnu_posix_regex.cpp.o] Error 1
+        gmake[1]: Leaving directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeTmp'
+        gmake: *** [Makefile:127: cmTC_d9f07/fast] Error 2
+        
+      exitCode: 2
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "libs/benchmark/cmake/CXXFeatureCheck.cmake:41 (try_compile)"
+      - "libs/benchmark/CMakeLists.txt:310 (cxx_feature_check)"
+    directories:
+      source: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeTmp"
+      binary: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeTmp"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: " -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing  -Wno-deprecated-declarations  -Wno-deprecated  -Wstrict-aliasing"
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake/Modules;/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake"
+      CMAKE_SYSROOT: "/home/harp/rpi-sysroot"
+    buildResult:
+      variable: "COMPILE_HAVE_POSIX_REGEX"
+      cached: true
+      stdout: |
+        Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeTmp'
+        
+        Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_9f85f/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_9f85f.dir/build.make CMakeFiles/cmTC_9f85f.dir/build
+        gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeTmp'
+        Building CXX object CMakeFiles/cmTC_9f85f.dir/posix_regex.cpp.o
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot   -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing  -Wno-deprecated-declarations  -Wno-deprecated  -Wstrict-aliasing  -std=c++11 -o CMakeFiles/cmTC_9f85f.dir/posix_regex.cpp.o -c /home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake/posix_regex.cpp
+        Linking CXX executable cmTC_9f85f
+        /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_9f85f.dir/link.txt --verbose=1
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing  -Wno-deprecated-declarations  -Wno-deprecated  -Wstrict-aliasing  CMakeFiles/cmTC_9f85f.dir/posix_regex.cpp.o -o cmTC_9f85f
+        gmake[1]: Leaving directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeTmp'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "libs/benchmark/cmake/CXXFeatureCheck.cmake:41 (try_compile)"
+      - "libs/benchmark/CMakeLists.txt:319 (cxx_feature_check)"
+    directories:
+      source: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeTmp"
+      binary: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeTmp"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: " -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing  -Wno-deprecated-declarations  -Wno-deprecated  -Wstrict-aliasing"
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake/Modules;/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake"
+      CMAKE_SYSROOT: "/home/harp/rpi-sysroot"
+    buildResult:
+      variable: "COMPILE_HAVE_STEADY_CLOCK"
+      cached: true
+      stdout: |
+        Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeTmp'
+        
+        Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_26d05/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_26d05.dir/build.make CMakeFiles/cmTC_26d05.dir/build
+        gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeTmp'
+        Building CXX object CMakeFiles/cmTC_26d05.dir/steady_clock.cpp.o
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot   -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing  -Wno-deprecated-declarations  -Wno-deprecated  -Wstrict-aliasing  -std=c++11 -o CMakeFiles/cmTC_26d05.dir/steady_clock.cpp.o -c /home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake/steady_clock.cpp
+        Linking CXX executable cmTC_26d05
+        /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_26d05.dir/link.txt --verbose=1
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing  -Wno-deprecated-declarations  -Wno-deprecated  -Wstrict-aliasing  CMakeFiles/cmTC_26d05.dir/steady_clock.cpp.o -o cmTC_26d05
+        gmake[1]: Leaving directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeTmp'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "libs/benchmark/cmake/CXXFeatureCheck.cmake:41 (try_compile)"
+      - "libs/benchmark/CMakeLists.txt:323 (cxx_feature_check)"
+    directories:
+      source: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeTmp"
+      binary: "/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeTmp"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: " -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing  -Wno-deprecated-declarations  -Wno-deprecated  -Wstrict-aliasing"
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake/Modules;/home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake"
+      CMAKE_SYSROOT: "/home/harp/rpi-sysroot"
+    buildResult:
+      variable: "COMPILE_HAVE_PTHREAD_AFFINITY"
+      cached: true
+      stdout: |
+        Change Dir: '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeTmp'
+        
+        Run Build Command(s): /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_801b6/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_801b6.dir/build.make CMakeFiles/cmTC_801b6.dir/build
+        gmake[1]: Entering directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeTmp'
+        Building CXX object CMakeFiles/cmTC_801b6.dir/pthread_affinity.cpp.o
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot   -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing  -Wno-deprecated-declarations  -Wno-deprecated  -Wstrict-aliasing  -std=c++11 -o CMakeFiles/cmTC_801b6.dir/pthread_affinity.cpp.o -c /home/harp/Documents/Embedded_miniHarp/C/libs/benchmark/cmake/pthread_affinity.cpp
+        Linking CXX executable cmTC_801b6
+        /home/harp/anaconda3/lib/python3.11/site-packages/cmake/data/bin/cmake -E cmake_link_script CMakeFiles/cmTC_801b6.dir/link.txt --verbose=1
+        /usr/bin/aarch64-linux-gnu-g++ --sysroot=/home/harp/rpi-sysroot  -march=armv8-a+simd  -Wall  -Wextra  -Wshadow  -Wfloat-equal  -Wold-style-cast  -Wconversion  -Werror  -Wsuggest-override  -pedantic  -pedantic-errors  -fstrict-aliasing  -Wno-deprecated-declarations  -Wno-deprecated  -Wstrict-aliasing  CMakeFiles/cmTC_801b6.dir/pthread_affinity.cpp.o -o cmTC_801b6
+        gmake[1]: Leaving directory '/home/harp/Documents/Embedded_miniHarp/C/build-cross/CMakeFiles/CMakeTmp'
         
       exitCode: 0
 ...
