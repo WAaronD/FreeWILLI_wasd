@@ -281,6 +281,9 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 #    add_compile_options(-Og -g -Wall -Wextra -fsanitize=address)
 else ()
     message(STATUS "Building tests in Release mode.")
+    if(CMAKE_CROSSCOMPILING)
+        set_property(TARGET HarpListen PROPERTY OUTPUT_NAME HarpListenX)
+    endif()
     # Set the output directory for the executable
     set_target_properties(HarpListen PROPERTIES
             RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin
