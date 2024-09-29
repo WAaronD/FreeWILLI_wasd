@@ -1,2 +1,0 @@
-/usr/bin/aarch64-linux-gnu-ar qc libMainLib.a CMakeFiles/MainLib.dir/process_data.cpp.o CMakeFiles/MainLib.dir/TDOA_estimation.cpp.o CMakeFiles/MainLib.dir/utils.cpp.o CMakeFiles/MainLib.dir/listener_thread.cpp.o CMakeFiles/MainLib.dir/processor_thread.cpp.o
-/usr/bin/aarch64-linux-gnu-ranlib libMainLib.a

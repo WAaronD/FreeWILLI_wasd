@@ -1,2 +1,0 @@
-/usr/bin/aarch64-linux-gnu-ar qc libbenchmark_main.a CMakeFiles/benchmark_main.dir/benchmark_main.cc.o
-/usr/bin/aarch64-linux-gnu-ranlib libbenchmark_main.a
