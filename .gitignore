@@ -12,3 +12,4 @@ deployment_files/*
 /C/debug/*
 out/
 TestOnnx/val_spectra.json
+build-cross/
