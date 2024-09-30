@@ -158,11 +158,14 @@ void DataProcessor(Session &sess, ExperimentConfig &expConfig, ExperimentRuntime
             auto afterPtr = std::chrono::steady_clock::now();
             std::chrono::duration<double> durationPtr = afterPtr - beforePtr;
 
+            auto beforeFilter = std::chrono::steady_clock::now();
             FrequencyDomainFIRFiltering(
                 channelData,   // Zero-padded time-domain data
                 filterFreq,    // Frequency domain filter (FIR taps in freq domain)
                 expRuntime.forwardFFT, // FFT plan
                 savedFFTs);    // Output of FFT transformed time-domain data
+            auto afterFilter = std::chrono::steady_clock::now();
+            std::chrono::duration<double> durationFilter = afterFilter - beforeFilter;
 
             // DetectionResult detResult = ThresholdDetect(invFFT.col(0), sess.dataTimes, expConfig.energyDetThresh, expConfig.SAMPLE_RATE);
             DetectionResult detResult = ThresholdDetectFD(savedFFTs.col(0), sess.dataTimes, 
@@ -177,6 +180,7 @@ void DataProcessor(Session &sess, ExperimentConfig &expConfig, ExperimentRuntime
              *  Pulse detected. Now process the channels filtering, TDOA & DOA estimation.
              */
 
+            std::cout << "filter: " << durationFilter << std::endl;
             sess.detectionCounter++;
 
             auto beforeGCCW = std::chrono::steady_clock::now();
@@ -186,7 +190,7 @@ void DataProcessor(Session &sess, ExperimentConfig &expConfig, ExperimentRuntime
             auto afterGCCW = std::chrono::steady_clock::now();
             std::chrono::duration<double> durationGCCW = afterGCCW - beforeGCCW;
             std::cout << "TDOAs: " << tdoaVector.transpose() << std::endl;
-            //std::cout << "GCC time: " << durationGCCW.count() << std::endl;
+            std::cout << "GCC time: " << durationGCCW.count() << std::endl;
 
             // Eigen::VectorXf DOAs = DOA_EstimateVerticalArray(resultMatrix, expConfig.speedOfSound, expConfig.chanSpacing);
             auto beforeDOA = std::chrono::steady_clock::now();
