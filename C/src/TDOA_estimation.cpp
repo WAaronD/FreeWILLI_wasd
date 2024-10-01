@@ -30,7 +30,7 @@ auto GCC_PHAT(Eigen::MatrixXcf &savedFFTs, fftwf_plan &inverseFFT,
 
     if (inverseFFT == nullptr)
     {
-        inverseFFT = fftwf_plan_dft_c2r_1d(paddedLength, reinterpret_cast<fftwf_complex *>(crossSpectraMagnitudeNorm.data()), crossCorr.data(), FFTW_MEASURE);
+        inverseFFT = fftwf_plan_dft_c2r_1d(paddedLength, reinterpret_cast<fftwf_complex *>(crossSpectraMagnitudeNorm.data()), crossCorr.data(), FFTW_ESTIMATE);
         crossSpectraMagnitudeNorm.setZero();
         crossCorr.setZero();
     }
