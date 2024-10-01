@@ -13,11 +13,6 @@
 [submodule "C/libs/FlameGraph"]
 	path = C/libs/FlameGraph
 	url = https://github.com/brendangregg/FlameGraph
-<<<<<<< HEAD
-[submodule "C/dbscan"]
-	path = C/dbscan
-=======
 [submodule "C/libs/dbscan"]
 	path = C/libs/dbscan
->>>>>>> crosscomp
 	url = https://github.com/Eleobert/dbscan.git
