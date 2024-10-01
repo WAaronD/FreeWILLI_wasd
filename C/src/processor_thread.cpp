@@ -76,7 +76,7 @@ void DataProcessor(Session &sess, ExperimentConfig &expConfig, ExperimentRuntime
                                                 nullptr,                                             // No embedding
                                                 1,                                                   // Stride between successive elements in output
                                                 fftOutputSize,                                       // Stride between successive channels in output
-                                                FFTW_MEASURE);                                       // Flag to measure and optimize the plan
+                                                FFTW_ESTIMATE);                                       // Flag to measure and optimize the plan
 
         // Fill the matrices with zeros
         channelData.setZero();
@@ -158,11 +158,14 @@ void DataProcessor(Session &sess, ExperimentConfig &expConfig, ExperimentRuntime
             auto afterPtr = std::chrono::steady_clock::now();
             std::chrono::duration<double> durationPtr = afterPtr - beforePtr;
 
+            auto beforeFilter = std::chrono::steady_clock::now();
             FrequencyDomainFIRFiltering(
                 channelData,   // Zero-padded time-domain data
                 filterFreq,    // Frequency domain filter (FIR taps in freq domain)
                 expRuntime.forwardFFT, // FFT plan
                 savedFFTs);    // Output of FFT transformed time-domain data
+            auto afterFilter = std::chrono::steady_clock::now();
+            std::chrono::duration<double> durationFilter = afterFilter - beforeFilter;
 
             // DetectionResult detResult = ThresholdDetect(invFFT.col(0), sess.dataTimes, expConfig.energyDetThresh, expConfig.SAMPLE_RATE);
             DetectionResult detResult = ThresholdDetectFD(savedFFTs.col(0), sess.dataTimes, 
@@ -178,13 +181,15 @@ void DataProcessor(Session &sess, ExperimentConfig &expConfig, ExperimentRuntime
              */
 
             sess.detectionCounter++;
+            std::cout << "Filter runtime: " << durationFilter.count() << std::endl;
 
             auto beforeGCCW = std::chrono::steady_clock::now();
             std::tuple<Eigen::VectorXf, Eigen::VectorXf> tdoasAndXCorrAmps = GCC_PHAT(savedFFTs, expRuntime.inverseFFT, expConfig.interp, paddedLength, expConfig.NUM_CHAN, expConfig.SAMPLE_RATE);
-            Eigen::VectorXf tdoaVector = std::get<0>(tdoasAndXCorrAmps);
-            Eigen::VectorXf XCorrAmps = std::get<1>(tdoasAndXCorrAmps);
             auto afterGCCW = std::chrono::steady_clock::now();
             std::chrono::duration<double> durationGCCW = afterGCCW - beforeGCCW;
+            std::cout << "GCC time: " << durationGCCW.count() << std::endl;
+            Eigen::VectorXf tdoaVector = std::get<0>(tdoasAndXCorrAmps);
+            Eigen::VectorXf XCorrAmps = std::get<1>(tdoasAndXCorrAmps);
             std::cout << "TDOAs: " << tdoaVector.transpose() << std::endl;
             //std::cout << "GCC time: " << durationGCCW.count() << std::endl;
 
@@ -194,7 +199,7 @@ void DataProcessor(Session &sess, ExperimentConfig &expConfig, ExperimentRuntime
             Eigen::VectorXf DOAs = TDOA_To_DOA_Optimized(P, U, expRuntime.speedOfSound, tdoaVector, rankOfH);
             auto afterDOA = std::chrono::steady_clock::now();
             std::chrono::duration<double> durationDOA = afterDOA - beforeDOA;
-            //std::cout << "DOA time: " << durationDOA.count() << std::endl;
+            std::cout << "DOA time: " << durationDOA.count() << std::endl;
 
             //std::vector<float> chanSpacing = {1.0, 2.0, 3.0, 1.0, 2.0, 1.0};
             //Eigen::VectorXf DOAs = TDOA_To_DOA_VerticalArray(tdoaVector, 1500.0, chanSpacing);
@@ -238,8 +243,8 @@ void DataProcessor(Session &sess, ExperimentConfig &expConfig, ExperimentRuntime
             std::vector<float> predictions = expConfig.onnxModel->run_inference(input_tensor_values);
             auto afterClass = std::chrono::steady_clock::now();
             std::chrono::duration<double> durationClass = afterClass - beforeClass;
-            /**
             std::cout << "classifier runtime: " << durationClass.count() << std::endl;
+            /**
             for(int i = 0; i < predictions.size(); i++){
                 std::cout << predictions[i] << " ";
             }

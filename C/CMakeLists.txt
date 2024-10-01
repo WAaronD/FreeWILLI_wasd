@@ -6,30 +6,6 @@
 cmake_minimum_required(VERSION 3.29.7)
 project(HarpListen VERSION 1.0)
 
-# Check if we are cross-compiling
-if(CMAKE_CROSSCOMPILING)
-    message(STATUS "Cross-compiling for ARM (Raspberry Pi Zero 2W)")
-
-    # Set Raspberry Pi 64-bit specific flags
-    add_compile_options(-mcpu=cortex-a53+crypto -march=armv8-a -ftree-vectorize -O3 -ffast-math)
-
-    set(ENABLE_TEST FALSE)  # Disable tests for cross-compiling
-    set(ENABLE_BENCHMARK FALSE)
-
-    # Ensure CMake searches the correct paths within the sysroot
-    set(CMAKE_PREFIX_PATH ${CMAKE_SYSROOT}/usr ${CMAKE_SYSROOT}/usr/lib/aarch64-linux-gnu ${CMAKE_SYSROOT}/usr/include)
-    set(CMAKE_LIBRARY_PATH ${CMAKE_SYSROOT}/usr/lib/aarch64-linux-gnu ${CMAKE_SYSROOT}/lib/aarch64-linux-gnu)
-else()
-    # If not cross-compiling, set the compilers if needed
-    if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-        set(CMAKE_C_COMPILER /usr/bin/gcc-12)
-        set(CMAKE_CXX_COMPILER /usr/bin/g++-12)
-    elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-        set(CMAKE_C_COMPILER /usr/bin/gcc)
-        set(CMAKE_CXX_COMPILER /usr/bin/g++)
-    endif()
-endif()
-
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 20)
 
@@ -58,73 +34,12 @@ include_directories(${THIRD_PARTY_INCLUDE_DIRS})
 link_directories(${CMAKE_LIBRARY_PATH})
 
 # Find and append third-party libraries
-if(CMAKE_CROSSCOMPILING)
-    # Find OpenBLAS
-    find_library(OPENBLAS_LIBRARIES 
-    NAMES openblas openblasp-r0.3.21
-    PATHS ${CMAKE_SYSROOT}/usr/lib/aarch64-linux-gnu/ 
-        ${CMAKE_SYSROOT}/usr/lib/aarch64-linux-gnu/openblas-pthread/
-    NO_DEFAULT_PATH)
-
-    if (OPENBLAS_LIBRARIES)
-    list(APPEND THIRD_PARTY_LIBRARIES ${OPENBLAS_LIBRARIES})
-    message(STATUS "OpenBLAS libraries (cross-compiling): ${OPENBLAS_LIBRARIES}")
-    else()
-    message(FATAL_ERROR "OpenBLAS libraries not found!")
-    endif()
-    
-    # Find FFTW3
-    find_library(FFTW_LIBRARIES NAMES fftw3 REQUIRED PATHS ${CMAKE_SYSROOT}/usr/lib/aarch64-linux-gnu/ NO_DEFAULT_PATH)
-    find_path(FFTW_INCLUDE_DIRS NAMES fftw3.h PATHS ${CMAKE_SYSROOT}/usr/include NO_DEFAULT_PATH)
-    if (FFTW_LIBRARIES)
-        list(APPEND THIRD_PARTY_LIBRARIES ${FFTW_LIBRARIES})
-        message(STATUS "FFTW libraries (cross-compiling): ${FFTW_LIBRARIES}")
-    endif ()
-    if (FFTW_INCLUDE_DIRS)
-        list(APPEND THIRD_PARTY_INCLUDE_DIRS ${FFTW_INCLUDE_DIRS})
-        message(STATUS "FFTW include dirs (cross-compiling): ${FFTW_INCLUDE_DIRS}")
-    endif()
-    
-    # Find ONNX Runtime library
-    find_library(ONNXRUNTIME_LIBRARIES 
-                NAMES onnxruntime 
-                REQUIRED 
-                PATHS ${CMAKE_SYSROOT}/usr/lib/aarch64-linux-gnu/ 
-                    ${CMAKE_SYSROOT}/usr/local/lib 
-                NO_DEFAULT_PATH)
-
-    # Find ONNX Runtime include directory
-    find_path(ONNXRUNTIME_INCLUDE_DIRS 
-            NAMES onnxruntime_cxx_api.h 
-            PATHS ${CMAKE_SYSROOT}/usr/include 
-                    ${CMAKE_SYSROOT}/usr/local/include 
-            NO_DEFAULT_PATH)
-
-    # Add to THIRD_PARTY_LIBRARIES and THIRD_PARTY_INCLUDE_DIRS
-    if (ONNXRUNTIME_LIBRARIES AND ONNXRUNTIME_INCLUDE_DIRS)
-        list(APPEND THIRD_PARTY_LIBRARIES ${ONNXRUNTIME_LIBRARIES})
-        list(APPEND THIRD_PARTY_INCLUDE_DIRS ${ONNXRUNTIME_INCLUDE_DIRS})
-        
-        message(STATUS "ONNX Runtime libraries (cross-compiling): ${ONNXRUNTIME_LIBRARIES}")
-        message(STATUS "ONNX Runtime include dirs (cross-compiling): ${ONNXRUNTIME_INCLUDE_DIRS}")
-    else()
-        message(FATAL_ERROR "ONNX Runtime libraries or include directories not found!")
-    endif()
-
-    # Add ONNX Runtime include directories to the target
-    #target_include_directories(MainLib PRIVATE ${ONNXRUNTIME_INCLUDE_DIRS})
-    #target_link_libraries(MainLib PRIVATE ${ONNXRUNTIME_LIBRARIES})
-
-    # Find FFTW3f for single precision
-    find_library(FFTWF_LIBRARIES NAMES fftw3f REQUIRED PATHS ${CMAKE_SYSROOT}/usr/lib/aarch64-linux-gnu/ NO_DEFAULT_PATH)
-    if (FFTWF_LIBRARIES)
-        list(APPEND THIRD_PARTY_LIBRARIES ${FFTWF_LIBRARIES})
-        message(STATUS "FFTWf libraries (cross-compiling): ${FFTWF_LIBRARIES}")
-    endif ()
-    if (FFTWF_INCLUDE_DIRS)
-        list(APPEND THIRD_PARTY_INCLUDE_DIRS ${FFTWF_INCLUDE_DIRS})
-        message(STATUS "FFTWf include dirs (cross-compiling): ${FFTWF_INCLUDE_DIRS}")
-    endif()
+if(CMAKE_CROSSCOMPILING) # assuming we are building on Ubuntu x86 and targeting R Pi Zero 2W
+    set(ENABLE_TEST TRUE)
+    set(ENABLE_BENCHMARK TRUE)
+    include("${CMAKE_SOURCE_DIR}/CrossCompileSettings.cmake")
+else ()
+    include("${CMAKE_SOURCE_DIR}/NativeCompileSettings.cmake")
 endif()
 
 # Eigen3
@@ -138,114 +53,63 @@ if (EIGEN3_INCLUDE_DIR)
     message(STATUS "Eigen3 include dir: ${EIGEN3_INCLUDE_DIR}")
 endif()
 
-# Set compiler flags based on OS
-# Check for OS
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    set(MACOSX TRUE)
-elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-    execute_process(
-        COMMAND lsb_release -is
-        OUTPUT_VARIABLE LSB_RELEASE_ID
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-    message(STATUS "LSB_RELEASE_ID: ${LSB_RELEASE_ID}")
-    if (LSB_RELEASE_ID STREQUAL "Ubuntu")
-        set(UBUNTU TRUE)
-    elseif (LSB_RELEASE_ID STREQUAL "Raspbian" OR LSB_RELEASE_ID STREQUAL "Debian")
-        set(RASPBIAN_DEBIAN TRUE)
 
-        # Check for specific Raspberry Pi models
-        file(READ "/proc/cpuinfo" CPUINFO_CONTENTS)
-        if (CPUINFO_CONTENTS MATCHES "Raspberry Pi 4")
-            set(RASPBERRY_PI_4 TRUE)
-        elseif (CPUINFO_CONTENTS MATCHES "Raspberry Pi Zero")
-            set(RASPBERRY_PI_ZERO TRUE)
-        endif()
-    endif()
-else()
-    message(FATAL_ERROR "Unsupported operating system or Raspberry Pi model.")
-endif()
-
-if(MACOSX)
-    add_compile_options(-mcpu=apple-m1)
-    set(ENABLE_TEST TRUE)
-    set(ENABLE_BENCHMARK TRUE)
-elseif(UBUNTU)
-    #add_compile_options(-march=native)
-    set(ENABLE_TEST TRUE)
-    set(ENABLE_BENCHMARK TRUE)
-    if(NOT CMAKE_CROSSCOMPILING)
-        set(ENABLE_AUTO_TEST TRUE)
-    endif()
-elseif(RASPBERRY_PI_4)
-    #add_compile_options(-march=native)
-    set(ENABLE_TEST TRUE)
-    set(ENABLE_BENCHMARK TRUE)
-elseif(RASPBERRY_PI_ZERO)
-    #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mcpu=cortex-a53 -O3 -flto=auto")
-    #add_compile_options(-march=native)
-    if(TEST_ON_RASPBERRY_PI_ZERO)
-        set(ENABLE_TEST TRUE)
-    endif ()
-    set(ENABLE_BENCHMARK TRUE)
-else()
-    add_compile_options(-march=native)
-    set(ENABLE_TEST TRUE)
-    set(ENABLE_BENCHMARK TRUE)
-endif()
-
+# Define Optimization flags according to mode
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     if (MACOSX)
-        add_compile_options(-O0 -g -Wall -fno-inline)
-        add_link_options(-fsanitize=address)
+        add_compile_options(-O0 -g -Wall -fno-inline -fsanitize=address)
     else ()
-        #add_compile_options(-O0 -g -Wall -fno-inline -fsanitize=address)
-        #add_link_options(-fsanitize=address)
         add_compile_options(-O0 -g -Wall -fno-inline)
-        #add_link_options(-fsanitize=address)
+        #add_compile_options(-O0 -g -Wall -fno-inline -fsanitize=address)
     endif ()
-else ()
-    # Enable Optimization flags
-    add_compile_options(-O3 -flto=auto)
-    # Vectorization
-    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
+    if(CMAKE_CROSSCOMPILING) # assuming we are always cross-compiling for R Pi Zero 2W
+        add_compile_options(-mcpu=cortex-a53 -O3 -flto=auto)
+    elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
         if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm|aarch64")
             message(STATUS "ARM processor does not support AVX vectorization.")
             if(MACOSX)
                 message(STATUS "Apple M-series chip detected")
-#                add_compile_options(-march=arm64)
-                # add_compile_options(--fast-math) # may mess up the results
-            else ()
-                message(STATUS "Non-M-series ARM chip detected: enabling neon vectorization")
-                #add_compile_options(-mfpu=neon)
+                add_compile_options(-mcpu=apple-m1)
+            elseif(RASPBERRY_PI_ZERO)
+                #message(STATUS "Non-M-series ARM chip detected: enabling neon vectorization")
+                add_compile_options(-mcpu=cortex-a53 -O3 -flto=auto)
+            else()
+                message(FATAL_ERROR "Could not determine compiler flags for native build")
             endif ()
-
         else()
             message(STATUS "x86 chip detected: enabling AVX vectorization.")
-            add_compile_options(-mavx -mavx2 -mfma -O3)
+            add_compile_options(-march=native -flto=auto -mavx -mavx2 -mfma -O3)
+            set(ENABLE_TEST TRUE)
+            set(ENABLE_AUTO_TEST TRUE)
+            set(ENABLE_BENCHMARK TRUE)
         endif()
     elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
         add_compile_options(/arch:AVX2 /O2)
     endif()
+else()
+    message(FATAL_ERROR "Specified compilation mode is not defined")
 endif ()
 
 # Add the source directory
 add_subdirectory(${PROJECT_SOURCE_DIR}/src)
+
 # Add the test and benchmark directories
 if (ENABLE_TEST)
+    message(STATUS "Compiling Unit Tests")
+    
     # Set the build options to skip Google Mock
     set(BUILD_GMOCK OFF CACHE BOOL "" FORCE)
     set(INSTALL_GMOCK OFF CACHE BOOL "" FORCE)
     set(BUILD_GTEST ON CACHE BOOL "" FORCE)
     set(INSTALL_GTEST ON CACHE BOOL "" FORCE)
-    # current googletest version is on release-1.10.0
+    
     add_subdirectory(${PROJECT_SOURCE_DIR}/libs/googletest)
     add_subdirectory(${PROJECT_SOURCE_DIR}/tests)
 endif()
-#set(ENABLE_BENCHMARK FALSE)
 if(ENABLE_BENCHMARK)
+    message(STATUS "Compiling Benchmark Tests")
     set(BENCHMARK_ENABLE_TESTING off)
-    # current benchmark version is on v1.8.5
     add_subdirectory(${PROJECT_SOURCE_DIR}/libs/benchmark)
     add_subdirectory(${PROJECT_SOURCE_DIR}/benchmark)
 endif()
@@ -278,11 +142,12 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
                 RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/debug
         )
     endif ()
-#    add_compile_options(-Og -g -Wall -Wextra -fsanitize=address)
 else ()
     message(STATUS "Building tests in Release mode.")
     if(CMAKE_CROSSCOMPILING)
         set_property(TARGET HarpListen PROPERTY OUTPUT_NAME HarpListenX)
+        set_property(TARGET UnitTests PROPERTY OUTPUT_NAME UnitTestsX)
+        set_property(TARGET Benchmark PROPERTY OUTPUT_NAME BenchmarkX)
     endif()
     # Set the output directory for the executable
     set_target_properties(HarpListen PROPERTIES
