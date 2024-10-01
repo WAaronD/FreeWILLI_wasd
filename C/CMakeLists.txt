@@ -16,9 +16,9 @@ endif()
 message(STATUS "CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
 
 # GLOBAL VARIABLES FOR SETTINGS
-set(ENABLE_TEST FALSE)
-set(ENABLE_AUTO_TEST FALSE)
-set(ENABLE_BENCHMARK FALSE)
+set(ENABLE_TEST TRUE)
+set(ENABLE_AUTO_TEST TRUE)
+set(ENABLE_BENCHMARK TRUE)
 
 # Check for a build type
 if(NOT CMAKE_BUILD_TYPE)
@@ -35,8 +35,7 @@ link_directories(${CMAKE_LIBRARY_PATH})
 
 # Find and append third-party libraries
 if(CMAKE_CROSSCOMPILING) # assuming we are building on Ubuntu x86 and targeting R Pi Zero 2W
-    set(ENABLE_TEST TRUE)
-    set(ENABLE_BENCHMARK TRUE)
+    set(ENABLE_AUTO_TEST FALSE)
     include("${CMAKE_SOURCE_DIR}/CrossCompileSettings.cmake")
 else ()
     include("${CMAKE_SOURCE_DIR}/NativeCompileSettings.cmake")
@@ -56,7 +55,9 @@ endif()
 
 # Define Optimization flags according to mode
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    if (MACOSX)
+    if(CMAKE_CROSSCOMPILING) # assuming we are always cross-compiling for R Pi Zero 2W
+        add_compile_options(-mcpu=cortex-a53 -O0 -g -Wall -fno-inline -flto=auto)
+    elseif(MACOSX)
         add_compile_options(-O0 -g -Wall -fno-inline -fsanitize=address)
     else ()
         add_compile_options(-O0 -g -Wall -fno-inline)
@@ -73,6 +74,9 @@ elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
                 add_compile_options(-mcpu=apple-m1)
             elseif(RASPBERRY_PI_ZERO)
                 #message(STATUS "Non-M-series ARM chip detected: enabling neon vectorization")
+                set(ENABLE_TEST FALSE)
+                set(ENABLE_AUTO_TEST FALSE)
+                set(ENABLE_BENCHMARK FALSE)
                 add_compile_options(-mcpu=cortex-a53 -O3 -flto=auto)
             else()
                 message(FATAL_ERROR "Could not determine compiler flags for native build")
@@ -80,9 +84,6 @@ elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
         else()
             message(STATUS "x86 chip detected: enabling AVX vectorization.")
             add_compile_options(-march=native -flto=auto -mavx -mavx2 -mfma -O3)
-            set(ENABLE_TEST TRUE)
-            set(ENABLE_AUTO_TEST TRUE)
-            set(ENABLE_BENCHMARK TRUE)
         endif()
     elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
         add_compile_options(/arch:AVX2 /O2)
@@ -127,17 +128,26 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 
     # Set the output directory for the executable
     set_property(TARGET HarpListen PROPERTY OUTPUT_NAME HarpListenDebug)
+    if(CMAKE_CROSSCOMPILING)
+        set_property(TARGET HarpListen PROPERTY OUTPUT_NAME HarpListenDebugX)
+    endif()
     set_target_properties(HarpListen PROPERTIES
             RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/debug
     )
     if (ENABLE_TEST)
         set_property(TARGET UnitTests PROPERTY OUTPUT_NAME UnitTestsDebug)
+        if(CMAKE_CROSSCOMPILING)
+            set_property(TARGET UnitTests PROPERTY OUTPUT_NAME UnitTestsDebugX)
+        endif()
         set_target_properties(UnitTests PROPERTIES
                 RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/debug
         )
     endif ()
     if (ENABLE_BENCHMARK)
         set_property(TARGET Benchmark PROPERTY OUTPUT_NAME BenchmarkDebug)
+        if(CMAKE_CROSSCOMPILING)
+            set_property(TARGET Benchmark PROPERTY OUTPUT_NAME BenchmarkDebugX)
+        endif()
         set_target_properties(Benchmark PROPERTIES
                 RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/debug
         )
