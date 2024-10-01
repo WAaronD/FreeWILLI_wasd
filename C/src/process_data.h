@@ -24,8 +24,8 @@ void FrequencyDomainFIRFiltering(
     fftwf_plan &FFTPlan,                // FFT plan
     Eigen::MatrixXcf &savedFFTs);       // Output of FFT transformed time-domain data
 
-void ConvertData(std::vector<float> &dataSegment, std::span<uint8_t> dataBytes, const int &DATA_SIZE, const int &HEAD_SIZE);
-void GenerateTimestamps(std::vector<TimePoint> &dataTimes, std::span<uint8_t> dataBytes, const int MICRO_INCR,
+void ConvertAndAppend(std::vector<float> &dataSegment, std::span<uint8_t> dataBytes, const int &DATA_SIZE, const int &HEAD_SIZE);
+bool GenerateTimestamps(std::vector<TimePoint> &dataTimes, std::span<uint8_t> dataBytes, const int MICRO_INCR,
                         bool &previousTimeSet, std::chrono::time_point<std::chrono::system_clock> &previousTime,
                         std::string &detectionOutputFile, const int NUM_CHAN);
 

@@ -125,26 +125,34 @@ void DataProcessor(Session &sess, ExperimentConfig &expConfig, ExperimentRuntime
 
                 sess.dataBytesSaved.push_back(dataBytes); // save bytes in case they need to be saved to a file in case of error
 
-                // Convert byte data to floats
-                auto startCDTime = std::chrono::steady_clock::now();
-                ConvertData(sess.dataSegment, dataBytes, expConfig.DATA_SIZE, expConfig.HEAD_SIZE); // bytes data is decoded and appended to sess.dataSegment
-                auto endCDTime = std::chrono::steady_clock::now();
-                std::chrono::duration<double> durationCD = endCDTime - startCDTime;
-                // std::cout << "Convert data: " << durationCD.count() << std::endl;
-
                 auto startTimestamps = std::chrono::steady_clock::now();
-                GenerateTimestamps(sess.dataTimes, dataBytes, expConfig.MICRO_INCR,
-                                   previousTimeSet, previousTime, expRuntime.detectionOutputFile, expConfig.NUM_CHAN);
+                bool timestampErrOccured = GenerateTimestamps(sess.dataTimes, dataBytes, expConfig.MICRO_INCR,
+                                           previousTimeSet, previousTime, expRuntime.detectionOutputFile, expConfig.NUM_CHAN);
                 auto endTimestamps = std::chrono::steady_clock::now();
                 std::chrono::duration<double> durationGenerate = endTimestamps - startTimestamps;
                 // std::cout << "durationGenerate: " << durationGenerate.count() << std::endl;
+                
 
-                // Check if the amount of bytes in packet is what is expected
-                if (dataBytes.size() != expConfig.PACKET_SIZE)
-                {
+                if (timestampErrOccured){ // Check if the sequential timestamps differ by unexpected amount 
+                    WriteDataToCerr(sess.dataTimes, sess.dataBytesSaved);
+                    sess.dataTimes.clear();
+                    sess.dataSegment.clear();
+                    sess.dataBytesSaved.clear();
+                    previousTime = std::chrono::time_point<std::chrono::system_clock>::min();
+                    previousTimeSet = false;
+                }
+                else if (dataBytes.size() != expConfig.PACKET_SIZE){ // Check if the amount of bytes in packet is what is expected
                     std::stringstream msg; // compose message to dispatch
                     msg << "Error: incorrect number of bytes in packet: " << "PACKET_SIZE: " << expConfig.PACKET_SIZE << " dataBytes size: " << dataBytes.size() << std::endl;
                     throw std::runtime_error(msg.str());
+                }
+                else {
+                    // Convert byte data to floats
+                    auto startCDTime = std::chrono::steady_clock::now();
+                    ConvertAndAppend(sess.dataSegment, dataBytes, expConfig.DATA_SIZE, expConfig.HEAD_SIZE); // bytes data is decoded and appended to sess.dataSegment
+                    auto endCDTime = std::chrono::steady_clock::now();
+                    std::chrono::duration<double> durationCD = endCDTime - startCDTime;
+                    // std::cout << "Convert data: " << durationCD.count() << std::endl;
                 }
             }
 
@@ -180,7 +188,6 @@ void DataProcessor(Session &sess, ExperimentConfig &expConfig, ExperimentRuntime
              *  Pulse detected. Now process the channels filtering, TDOA & DOA estimation.
              */
 
-            std::cout << "filter: " << durationFilter << std::endl;
             sess.detectionCounter++;
             std::cout << "Filter runtime: " << durationFilter.count() << std::endl;
 

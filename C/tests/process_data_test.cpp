@@ -38,7 +38,7 @@ TEST(ConvertDataTest, ValidData) {
   std::vector<float> dataSegment;
 
   // Call the function under test
-  ConvertData(dataSegment, dataBytes, DATA_SIZE, HEAD_SIZE);
+  ConvertAndAppend(dataSegment, dataBytes, DATA_SIZE, HEAD_SIZE);
 
   // Assert that the converted data matches the expectation
   EXPECT_EQ(dataSegment, expectedResult);

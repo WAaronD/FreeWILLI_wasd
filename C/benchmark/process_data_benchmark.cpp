@@ -17,7 +17,7 @@ static void BM_ConvertDataSmall(benchmark::State& state) {
     std::vector<float> dataSegment;
 
     for (auto _ : state)
-        ConvertData(dataSegment, dataBytes, DATA_SIZE, HEAD_SIZE);
+        ConvertAndAppend(dataSegment, dataBytes, DATA_SIZE, HEAD_SIZE);
 }
 
 static void BM_ConvertData(benchmark::State& state) {
@@ -32,7 +32,7 @@ static void BM_ConvertData(benchmark::State& state) {
     // Create an empty vector to store the converted data
     std::vector<float> dataSegment;
     for (auto _ : state)
-        ConvertData(dataSegment, dataBytes, DATA_SIZE, HEAD_SIZE);
+        ConvertAndAppend(dataSegment, dataBytes, DATA_SIZE, HEAD_SIZE);
 }
 
 static void BM_ConvertDataSimulation(benchmark::State& state) {
@@ -48,7 +48,7 @@ static void BM_ConvertDataSimulation(benchmark::State& state) {
         vector<float> dataSegment;
         for (unsigned int i = 0; i < receivedData.size(); i += DATA_SIZE) {
             auto dataBytes = std::vector<uint8_t>(receivedData.begin() + i, receivedData.begin() + i + 496);
-            ConvertData(
+            ConvertAndAppend(
                     dataSegment,
                     dataBytes,
                     reinterpret_cast<unsigned int &>(DATA_SIZE),

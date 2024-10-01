@@ -26,7 +26,7 @@ void FrequencyDomainFIRFiltering(
     
 }
 
-void ConvertData(std::vector<float> &dataSegment, std::span<uint8_t> dataBytes, const int &DATA_SIZE, const int &HEAD_SIZE)
+void ConvertAndAppend(std::vector<float> &dataSegment, std::span<uint8_t> dataBytes, const int &DATA_SIZE, const int &HEAD_SIZE)
 {
     /**
      * @brief Converts raw data bytes to double values and stores them in the provided data segment.
@@ -51,7 +51,7 @@ void ConvertData(std::vector<float> &dataSegment, std::span<uint8_t> dataBytes, 
     }
 }
 
-void GenerateTimestamps(std::vector<TimePoint> &dataTimes, std::span<uint8_t> dataBytes, const int MICRO_INCR,
+bool GenerateTimestamps(std::vector<TimePoint> &dataTimes, std::span<uint8_t> dataBytes, const int MICRO_INCR,
                         bool &previousTimeSet, std::chrono::time_point<std::chrono::system_clock> &previousTime,
                         std::string &detectionOutputFile, const int NUM_CHAN)
 {
@@ -91,7 +91,10 @@ void GenerateTimestamps(std::vector<TimePoint> &dataTimes, std::span<uint8_t> da
     {
         std::stringstream msg; // compose message to dispatch
         msg << "Error: Time not incremented by " << MICRO_INCR << " " << elapsedTime << std::endl;
-        throw std::runtime_error(msg.str());
+        
+        std::cerr << msg.str() << std::endl;
+        return true;
+        //throw std::runtime_error(msg.str());
     }
 
     previousTime = currentTime;
@@ -102,6 +105,7 @@ void GenerateTimestamps(std::vector<TimePoint> &dataTimes, std::span<uint8_t> da
         std::string feature = "detection";
         InitiateOutputFile(detectionOutputFile, timeStruct, microSec, feature, NUM_CHAN);
     }
+    return false;
 }
 
 DetectionResult ThresholdDetect(const Eigen::VectorXf &data, const std::span<TimePoint> times, const float &threshold, const int &SAMPLE_RATE)
