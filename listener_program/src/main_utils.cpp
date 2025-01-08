@@ -1,16 +1,51 @@
-#include "io/socket_manager.h"
-#include "runtime_config.h"
-#include "firmware_config.h"
-#include "pch.h"
-#include "ML/onnx_model.h"
-#include "algorithms/IMU_processor.h"
-#include "algorithms/fir_filter.h"
+#include "main_utils.h"
 
-using TimePoint = std::chrono::system_clock::time_point;
+#include "pch.h"
 
 /**
- * @brief prints the mode (Release or Debug) that the program was compiled with
- *
+ * @brief Parses the JSON configuration file to initialize socket and pipeline variables.
+ */
+auto parseJsonConfig(const std::string& jsonFilePath) -> std::tuple<SocketVariables, PipelineVariables>
+{
+    std::ifstream inputFile(jsonFilePath);
+    if (!inputFile.is_open())
+    {
+        throw std::runtime_error("Unable to open JSON file: " + jsonFilePath);
+    }
+
+    nlohmann::json jsonConfig;
+    inputFile >> jsonConfig;
+
+    SocketVariables socketVariables;
+    PipelineVariables pipelineVariables;
+
+    // Configure SocketVariables parameters
+    socketVariables.udpIp = jsonConfig.at("IPAddress").get<std::string>();
+    socketVariables.udpPort = jsonConfig.at("Port").get<int>();
+
+    // Configure PipelineVariables parameters
+    pipelineVariables.useImu = jsonConfig.at("Firmware1240_with_IMU").get<bool>();
+    pipelineVariables.speedOfSound = jsonConfig.at("SpeedOfSound").get<float>();
+    pipelineVariables.timeDomainDetector = jsonConfig.at("Time_Domain_Detector").get<std::string>();
+    pipelineVariables.timeDomainThreshold = jsonConfig.at("Time_Domain_Threshold").get<float>();
+    pipelineVariables.frequencyDomainStrategy = jsonConfig.at("Frequency_Domain_Strategy").get<std::string>();
+    pipelineVariables.frequencyDomainDetector = jsonConfig.at("Frequency_Domain_Detector").get<std::string>();
+    pipelineVariables.energyDetectionThreshold = jsonConfig.at("Frequency_Domain_Threshold").get<float>();
+    pipelineVariables.filterWeightsPath = jsonConfig.at("FilterWeights").get<std::string>();
+    pipelineVariables.receiverPositionsPath = jsonConfig.at("ReceiverPositions").get<std::string>();
+    pipelineVariables.enableTracking = jsonConfig.at("Enable_Tracking").get<bool>();
+    pipelineVariables.clusterFrequencyInSeconds =
+        std::chrono::seconds(jsonConfig.at("Cluster_Frequency_In_Seconds").get<int>());
+    pipelineVariables.clusterWindowInSeconds =
+        std::chrono::seconds(jsonConfig.at("Cluster_Window_In_Seconds").get<int>());
+    pipelineVariables.onnxModelPath = jsonConfig.at("ONNX_model_path").get<std::string>();
+    pipelineVariables.onnxModelNormalizationPath = jsonConfig.at("ONNX_model_normalization").get<std::string>();
+
+    return std::make_tuple(socketVariables, pipelineVariables);
+}
+
+/**
+ * @brief Prints whether the program is running in Debug or Release mode.
  */
 void printMode()
 {
@@ -22,77 +57,32 @@ void printMode()
 }
 
 /**
- * @brief Parses a JSON configuration file and initializes session and runtime parameters.
+ * @brief Converts a `TimePoint` object to a formatted string representation.
  *
- * This function reads a JSON configuration file, extracts parameters for the `SocketManager`
- * and `RuntimeConfig` objects, and sets up runtime values from command-line arguments.
- * If the configuration file or required fields are missing, the function throws exceptions.
+ * This function converts a `TimePoint` object into a string representation that
+ * includes the date, time, and microseconds. The output is formatted as
+ * "YYYY-MM-DD HH:MM:SS.mmmmmm".
  *
- * @param socketManager A reference to a `SocketManager` object to configure network settings.
- * @param runtimeConfig A reference to an `RuntimeConfig` object to initialize runtime settings.
- * @param argv Command-line arguments, where `argv[1]` is the JSON file path and `argv[2]` is the program runtime in seconds.
- * @throws std::runtime_error If the JSON file cannot be opened or required fields are missing.
+ * @param timePoint A `TimePoint` object representing the time to be converted.
+ * @return A string representing the formatted date and time with microseconds.
  */
-void parseJsonConfig(FirmwareConfig &firmwareConfig, RuntimeConfig &runtimeConfig, const std::string &jsonFilePath)
+std::string convertTimePointToString(const TimePoint& timePoint)
 {
-    std::ifstream inputFile(jsonFilePath);
-    if (!inputFile.is_open())
-    {
-        throw std::runtime_error("Unable to open JSON file: " + jsonFilePath);
-    }
+    // Convert TimePoint to time_t to get calendar time
+    std::time_t calendarTime = std::chrono::system_clock::to_time_t(timePoint);
+    std::tm* utcTime = std::gmtime(&calendarTime);  // Convert to UTC (or use std::localtime
+                                                    // for local time)
 
-    nlohmann::json jsonConfig;
-    inputFile >> jsonConfig;
+    // Format the calendar time (year, month, day, hour, minute, second)
+    std::ostringstream formattedTimeStream;
+    formattedTimeStream << std::put_time(utcTime, "%y%m%d_%H%M%S");
 
-    // Configure SocketManager parameters
-    std::string udpIp = jsonConfig.at("IPAddress").get<std::string>();
-    if (udpIp == "self")
-    {
-        udpIp = "127.0.0.1";
-    }
-    int udpPort = jsonConfig.at("Port").get<int>();
+    // Extract the microseconds from the TimePoint
+    auto durationSinceEpoch = timePoint.time_since_epoch();
+    auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(durationSinceEpoch) % 1000000;
 
-    runtimeConfig.socketManger = std::make_unique<SocketManager>(udpPort, udpIp);
+    // Add the microseconds to the formatted time string
+    formattedTimeStream << "_" << std::setw(6) << std::setfill('0') << microseconds.count();  // Zero-pad to 6 digits
 
-    // Configure RuntimeConfig parameters
-    runtimeConfig.speedOfSound = jsonConfig.at("SpeedOfSound").get<float>();
-    runtimeConfig.energyDetectionThreshold = jsonConfig.at("EnergyDetectionThreshold").get<float>();
-    runtimeConfig.amplitudeDetectionThreshold = jsonConfig.at("AmplitudeDetectionThreshold").get<float>();
-
-    // filtering
-    std::string filterWeightsPath = jsonConfig.at("FilterWeights").get<std::string>();
-    
-    if (filterWeightsPath.empty()){
-        std::cout << "no filter" << std::endl;
-        runtimeConfig.filter = std::make_unique<FrequencyDomainNoFilterStrategy>(firmwareConfig.CHANNEL_SIZE, firmwareConfig.NUM_CHAN);
-    }
-    else{
-        runtimeConfig.filter = std::make_unique<FrequencyDomainFilterStrategy>(filterWeightsPath, firmwareConfig.CHANNEL_SIZE, firmwareConfig.NUM_CHAN);
-        std::cout << "using filter" << std::endl;
-    }
-
-    runtimeConfig.receiverPositionsPath = jsonConfig.at("ReceiverPositions").get<std::string>();
-
-    if (jsonConfig.at("Enable_Tracking").get<bool>())
-    {
-        std::chrono::seconds trackerClusteringFrequency = std::chrono::seconds(jsonConfig.at("Cluster_Frequency_In_Seconds").get<int>());
-        std::chrono::seconds trackerClusteringWindow = std::chrono::seconds(jsonConfig.at("Cluster_Window_In_Seconds").get<int>());
-        runtimeConfig.tracker = std::make_unique<Tracker>(0.04f, 15, 4, "",
-                                                          trackerClusteringFrequency,
-                                                          trackerClusteringWindow);
-    }
-    
-    if (jsonConfig.at("Firmware_with_IMU").get<bool>())
-    {
-        firmwareConfig.imuManager = std::make_unique<ImuProcessor>(firmwareConfig.IMU_BYTE_SIZE);
-    }
-    
-
-    // Initialize ONNX model if model path provided
-    std::string onnxModelPath = jsonConfig.at("ONNX_model_path").get<std::string>();
-    if (!onnxModelPath.empty())
-    {
-        std::string onnxModelNormalizationPath = jsonConfig.at("ONNX_model_normalization").get<std::string>();
-        runtimeConfig.onnxModel = std::make_unique<ONNXModel>(onnxModelPath, onnxModelNormalizationPath);
-    }
+    return formattedTimeStream.str();
 }

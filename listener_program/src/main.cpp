@@ -1,39 +1,34 @@
+#include "firmware_1240.h"
+#include "io/socket_manager.h"
 #include "main_utils.h"
-#include "runtime_config.h"
-#include "firmware_config.h"
 #include "shared_data_manager.h"
 #include "threads/listener_thread.h"
-#include "threads/processor_thread.h"
-#include "io/socket_manager.h"
+#include "threads/pipeline.h"
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-    printMode(); // print debug or release mode
+    printMode();
 
-    // Instantiate firmware configuration varaibles
-    FirmwareConfig firmwareConfig;
+    auto [socketVariables, pipelineVars] = parseJsonConfig(std::string(argv[1]));
 
-    // Main processing loop
+    std::unique_ptr<ISocketManager> socketManager = std::make_unique<SocketManager>(socketVariables);
+
     while (true)
     {
-        SharedDataManager sess;
-        RuntimeConfig runtimeConfig;
-        runtimeConfig.programRuntime = std::chrono::seconds(std::stoi(argv[2])); // program run duration
+        socketManager->restartListener();
 
-        // Initialize the socket and populate runtimeConfig entries
-        parseJsonConfig(firmwareConfig, runtimeConfig, std::string(argv[1]));
+        SharedDataManager sharedDataManager;
+        OutputManager outputManager(std::chrono::seconds(std::stoi(argv[2])));
 
-        runtimeConfig.socketManger->restartListener();
+        Pipeline pipeline(outputManager, sharedDataManager, pipelineVars);
 
-        runtimeConfig.programStartTime = std::chrono::system_clock::now(); // Start experiment timer
-
-        // Create threads for listening to UDP packets and processing data
-        std::thread listenerThread(udpListener, std::ref(sess), runtimeConfig.socketManger.get(), firmwareConfig.PACKET_SIZE);
-        std::thread processorThread(dataProcessor, std::ref(sess), std::ref(firmwareConfig), std::ref(runtimeConfig));
+        // Create threads for listening for incoming data packets and processing data
+        std::thread producerThread(runListenerLoop, std::ref(sharedDataManager), socketManager.get());
+        std::thread consumerThread(&Pipeline::process, &pipeline);
 
         // Wait for threads to finish
-        listenerThread.join();
-        processorThread.join();
+        producerThread.join();
+        consumerThread.join();
 
         std::cout << "Restarting threads..." << std::endl;
     }

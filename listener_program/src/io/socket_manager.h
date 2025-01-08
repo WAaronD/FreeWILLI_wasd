@@ -3,13 +3,14 @@
 #include "isocket_manager.h"
 #include <string>
 
+class SocketVariables;
 /**
  * @brief Manages UDP socket operations, including creating, restarting, and configuring the listener.
  */
 class SocketManager : public ISocketManager
 {
 public:
-    SocketManager(int udpPort, const std::string &udpIp);
+    explicit SocketManager(const SocketVariables& socketVariables);
 
     void restartListener() override;
 
