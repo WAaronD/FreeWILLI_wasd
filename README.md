@@ -17,7 +17,7 @@
 
   </div>
   <div style="flex: 1; text-align: center; padding-left: 20px;">
-    <img src="supplemental/images/freeWILLIlogo.png" alt="Free WILLI Logo" width="80%">
+    <img src="supplemental/images/freeWILLIlogo.png" alt="Free WILLI Logo" width="30%">
   </div>
 </div>
 
