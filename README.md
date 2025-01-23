@@ -1,6 +1,5 @@
-| ![Free WILLI Logo](supplemental/images/freeWILLIlogo.png) |
-|:--------------------------------------------------------:|
-| **Free WILLI Logo**                                      |
+<div style="display: flex; align-items: flex-start;">
+  <div style="flex: 2;">
          
 ## Table of Contents
 
@@ -16,7 +15,11 @@
 
 5. [simulator_program](#simulator_program)
 
-
+  </div>
+  <div style="flex: 1; text-align: center; padding-left: 20px;">
+    <img src="supplemental/images/freeWILLIlogo.png" alt="Free WILLI Logo" width="80%">
+  </div>
+</div>
 
 # Overview
 ### FreeWILLI: Free software for Whale Identification and Localization with Low-power Implementation:
