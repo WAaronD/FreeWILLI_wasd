@@ -5,7 +5,7 @@
 
 2. [Repository Structure](#repository-structure)
 
-3. [Installation and Build for HarpListen](#installation-and-build-for-harplisten)
+3. [HarpListen](#harplisten)
    - [Prerequisites](#prerequisites)
    - [Installing Dependencies](#installing-dependencies)
      - [Ubuntu/Debian](#installing-dependencies-on-ubuntudebian)
@@ -40,7 +40,7 @@ The repository is organized as follows:
 - README.md: The main README file, providing an overview of the project and setup instructions.
 
 
-## Installation and build for HarpListen
+## HarpListen
 
 ### Prerequisites
 
