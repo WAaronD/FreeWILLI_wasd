@@ -1,7 +1,7 @@
 #include "fir_filter.h"
 
-FrequencyDomainFilterStrategy::FrequencyDomainFilterStrategy(const std::string& filterPath,
-                                                             Eigen::MatrixXf& channelData, int numChannels)
+FrequencyDomainFilterStrategy::FrequencyDomainFilterStrategy(
+    const std::string& filterPath, Eigen::MatrixXf& channelData, int numChannels)
     : mNumChannels(numChannels)
 {
     // 1) Read filter from file, compute final length
@@ -11,7 +11,8 @@ FrequencyDomainFilterStrategy::FrequencyDomainFilterStrategy(const std::string& 
 
     // 2) Resize the user's channelData to match the new padded length
     //    Make sure we are resizing columns if channels are rows or vice versa
-    //    For this example, assume channelData has shape (numChannels, originalLength)
+    //    For this example, assume channelData has shape (numChannels,
+    //    originalLength)
     channelData.conservativeResize(channelData.rows(), mPaddedLength);
     channelData.setZero();
 
@@ -37,6 +38,7 @@ FrequencyDomainFilterStrategy::~FrequencyDomainFilterStrategy()
 void FrequencyDomainFilterStrategy::apply()
 {
     // std::cout << "apply addr mSavedFFTs: " << mSavedFFTs.data() << std::endl;
+
     fftwf_execute(mForwardFftPlan);
     mBeforeFilter = mSavedFFTs;
     for (int channelIndex = 0; channelIndex < mNumChannels; ++channelIndex)
@@ -52,9 +54,9 @@ Eigen::MatrixXcf& FrequencyDomainFilterStrategy::getFrequencyDomainData() { retu
 void FrequencyDomainFilterStrategy::createFftPlan(Eigen::MatrixXf& channelData)
 {
     // channelData now has the final size we need
-    mForwardFftPlan = fftwf_plan_many_dft_r2c(1, &mPaddedLength, mNumChannels, channelData.data(), nullptr,
-                                              mNumChannels, 1, reinterpret_cast<fftwf_complex*>(mSavedFFTs.data()),
-                                              nullptr, 1, mFftOutputSize, FFTW_ESTIMATE);
+    mForwardFftPlan = fftwf_plan_many_dft_r2c(
+        1, &mPaddedLength, mNumChannels, channelData.data(), nullptr, mNumChannels, 1,
+        reinterpret_cast<fftwf_complex*>(mSavedFFTs.data()), nullptr, 1, mFftOutputSize, FFTW_ESTIMATE);
 }
 
 void FrequencyDomainFilterStrategy::initializeFilterWeights(const std::vector<float>& filterWeights)
@@ -63,8 +65,8 @@ void FrequencyDomainFilterStrategy::initializeFilterWeights(const std::vector<fl
     std::vector<float> paddedFilter(mPaddedLength, 0.0f);
     std::copy(filterWeights.begin(), filterWeights.end(), paddedFilter.begin());
 
-    fftwf_plan fftFilter = fftwf_plan_dft_r2c_1d(mPaddedLength, paddedFilter.data(),
-                                                 reinterpret_cast<fftwf_complex*>(mFilterFreq.data()), FFTW_ESTIMATE);
+    fftwf_plan fftFilter = fftwf_plan_dft_r2c_1d(
+        mPaddedLength, paddedFilter.data(), reinterpret_cast<fftwf_complex*>(mFilterFreq.data()), FFTW_ESTIMATE);
     fftwf_execute(fftFilter);
     fftwf_destroy_plan(fftFilter);
 }
@@ -88,7 +90,8 @@ std::vector<float> FrequencyDomainFilterStrategy::readFirFilterFile(const std::s
             try
             {
                 filterCoefficients.push_back(std::stof(token));
-            } catch (...)
+            }
+            catch (...)
             {
                 // ...
             }

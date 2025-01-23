@@ -41,7 +41,7 @@ std::tuple<Eigen::VectorXf, Eigen::VectorXf> GCC_PHAT::process(const Eigen::Matr
 void GCC_PHAT::calculateNormalizedCrossSpectra(const Eigen::VectorXcf& s1, const Eigen::VectorXcf& s2)
 {
     Eigen::VectorXcf crossSpectrum = s1.array() * s2.conjugate().array();
-    Eigen::VectorXf magnitudes = crossSpectrum.cwiseAbs().unaryExpr([](float x) { return (x == 0.0f) ? 1.0f : x; });
+    /*Eigen::VectorXf magnitudes = crossSpectrum.cwiseAbs().unaryExpr([](float x) { return (x == 0.0f) ? 1.0f : x; });
 
     if (!magnitudes.allFinite())
     {
@@ -49,7 +49,9 @@ void GCC_PHAT::calculateNormalizedCrossSpectra(const Eigen::VectorXcf& s1, const
     }
     assert(mNormalizedCrossSpectra.size() == crossSpectrum.size() &&
            "Sizes of mNormalizedCrossSpectra and crossSpectrum do not match");
-    mNormalizedCrossSpectra.array() = crossSpectrum.array() / magnitudes.array();
+    */
+    // mNormalizedCrossSpectra.array() = crossSpectrum.array() / magnitudes.array();
+    mNormalizedCrossSpectra.array() = crossSpectrum.array();
 }
 
 std::tuple<float, float> GCC_PHAT::estimateTdoaAndPeak()

@@ -10,25 +10,26 @@
  * resources.
  * @param pipelineVariables Configuration parameters for the pipeline.
  */
-Pipeline::Pipeline(OutputManager& outputManager, SharedDataManager& sharedDataManager,
-                   const PipelineVariables& pipelineVariables)
+Pipeline::Pipeline(
+    OutputManager& outputManager, SharedDataManager& sharedDataManager, const PipelineVariables& pipelineVariables)
     : mFirmwareConfig(FirmwareFactory::create(pipelineVariables.useImu)),
       mOutputManager(outputManager),
       mSharedDataManager(sharedDataManager),
       mSpeedOfSound(pipelineVariables.speedOfSound),
       mReceiverPositionsPath(pipelineVariables.receiverPositionsPath),
-      mFilter(IFrequencyDomainStrategyFactory::create(pipelineVariables.frequencyDomainStrategy,
-                                                      pipelineVariables.filterWeightsPath, mChannelData,
-                                                      mFirmwareConfig->NUM_CHAN)),
-      mTimeDomainDetector(ITimeDomainDetectorFactory::create(pipelineVariables.timeDomainDetector,
-                                                             pipelineVariables.timeDomainThreshold)),
-      mFrequencyDomainDetector(IFrequencyDomainDetectorFactory::create(pipelineVariables.frequencyDomainDetector,
-                                                                       pipelineVariables.energyDetectionThreshold)),
+      mFilter(IFrequencyDomainStrategyFactory::create(
+          pipelineVariables.frequencyDomainStrategy, pipelineVariables.filterWeightsPath, mChannelData,
+          mFirmwareConfig->NUM_CHAN)),
+      mTimeDomainDetector(ITimeDomainDetectorFactory::create(
+          pipelineVariables.timeDomainDetector, pipelineVariables.timeDomainThreshold)),
+      mFrequencyDomainDetector(IFrequencyDomainDetectorFactory::create(
+          pipelineVariables.frequencyDomainDetector, pipelineVariables.energyDetectionThreshold)),
       mTracker(ITracker::create(pipelineVariables)),
       mOnnxModel(IONNXModel::create(pipelineVariables)),
       mChannelData(Eigen::MatrixXf::Zero(mFirmwareConfig->NUM_CHAN, mFirmwareConfig->CHANNEL_SIZE)),
-      mComputeTDOAs(mFilter->getPaddedLength(), mFilter->getFrequencyDomainData().rows(), mFirmwareConfig->NUM_CHAN,
-                    mFirmwareConfig->SAMPLE_RATE)
+      mComputeTDOAs(
+          mFilter->getPaddedLength(), mFilter->getFrequencyDomainData().rows(), mFirmwareConfig->NUM_CHAN,
+          mFirmwareConfig->SAMPLE_RATE)
 
 {
 }
@@ -42,7 +43,8 @@ void Pipeline::process()
     try
     {
         dataProcessor();
-    } catch (const std::exception& e)
+    }
+    catch (const std::exception& e)
     {
         handleProcessingError(e);
     }
@@ -82,11 +84,13 @@ void Pipeline::dataProcessor()
             continue;
         }
 
-        // std::cout << "apply addr channelData: " << mChannelData.data() << std::endl;
+        // std::cout << "apply addr channelData: " << mChannelData.data() <<
+        // std::endl;
         mFilter->apply();
         Eigen::MatrixXcf savedFFTs = mFilter->getFrequencyDomainData();
 
-        // std::cout << "creat addr mSavedFFTs: " << savedFFTs.data() << std::endl;
+        // std::cout << "creat addr mSavedFFTs: " << savedFFTs.data() <<
+        // std::endl;
         Eigen::MatrixXcf beforeFilter = mFilter->mBeforeFilter;
 
         if (!mFrequencyDomainDetector->detect(savedFFTs.col(0)))
@@ -107,8 +111,9 @@ void Pipeline::dataProcessor()
         Eigen::VectorXf AzEl = convertDoaToElAz(DOAs);
         std::cout << "AzEl: " << AzEl << std::endl;
 
-        mOutputManager.appendToBuffer(mTimeDomainDetector->getLastDetection(), DOAs[0], DOAs[1], DOAs[2], tdoaVector,
-                                      std::get<1>(tdoasAndXCorrAmps), dataTimes[0]);
+        mOutputManager.appendToBuffer(
+            mTimeDomainDetector->getLastDetection(), DOAs[0], DOAs[1], DOAs[2], tdoaVector,
+            std::get<1>(tdoasAndXCorrAmps), dataTimes[0]);
 
         if (mTracker)
         {
@@ -144,8 +149,9 @@ void Pipeline::obtainAndProcessByteData(bool& previousTimeSet, TimePoint& previo
 
     dataTimes = mFirmwareConfig->generateTimestamp(dataBytes, mFirmwareConfig->NUM_CHAN);
 
-    mFirmwareConfig->throwIfDataErrors(dataBytes, mFirmwareConfig->MICRO_INCR, previousTimeSet, previousTime, dataTimes,
-                                       mFirmwareConfig->packetSize());
+    mFirmwareConfig->throwIfDataErrors(
+        dataBytes, mFirmwareConfig->MICRO_INCR, previousTimeSet, previousTime, dataTimes,
+        mFirmwareConfig->packetSize());
 
     auto before2l = std::chrono::steady_clock::now();
     mFirmwareConfig->insertDataIntoChannelMatrix(mChannelData, dataBytes);
@@ -172,7 +178,8 @@ void Pipeline::handleProcessingError(const std::exception& e)
     try
     {
         mOutputManager.writeDataToCerr(dataTimes, dataBytes);
-    } catch (...)
+    }
+    catch (...)
     {
         std::cerr << "Failed to write data to cerr\n";
     }

@@ -1,17 +1,19 @@
+Language:        Cpp
 BasedOnStyle: Google
-IndentWidth: 4
+# ---
+AlignAfterOpenBracket: AlwaysBreak # Values: Align, DontAlign, AlwaysBreak
+AlignTrailingComments: false # Should be off, causes many dummy problems!!
+BreakBeforeBraces: Allman
+ColumnLimit: 120
+IndentCaseLabels: true
+IndentWidth:     4
+IndentWrappedFunctionNames: true
+MaxEmptyLinesToKeep: 1
+NamespaceIndentation: None
 DerivePointerAlignment: false
-PointerAlignment: Left
-BreakBeforeBraces: Custom
-BraceWrapping:
-  AfterFunction: true
-  AfterClass: true
-  AfterNamespace: true
-  AfterControlStatement: true
-  AfterEnum: true
-  AfterStruct: true
-  SplitEmptyFunction: true
-  SplitEmptyRecord: true
-  SplitEmptyNamespace: true
-ColumnLimit: 120  # Override Google style column limit
-
+ReflowComments:  true # Should be true, otherwise clang-format doesn't touch comments
+SortIncludes:    true
+SpaceBeforeAssignmentOperators: true
+Standard:        Cpp11
+TabWidth:        4
+UseTab:          Never # Available options are Never, Always, ForIndentation
