@@ -7,8 +7,8 @@
 
 3. [listener_program](#listener_program)
    - [Installing Dependencies](#installing-dependencies)
-     - [Ubuntu/Debian](#installing-dependencies-on-ubuntudebian)
-     - [macOS](#installing-dependencies-on-macos)
+     - [Installing Dependencies on Ubuntu/Debian](#installing-dependencies-on-ubuntudebian)
+     - [Installing Dependencies on macOS](#installing-dependencies-on-macos)
    - [Build Program](#build-program-ubuntudebian--macos)
 
 5. [simulator_program](#simulator_program)
