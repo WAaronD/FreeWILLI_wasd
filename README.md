@@ -15,15 +15,9 @@ The FreeWILLI project aims to provide a modular suite of real-time algorithms an
   <div style="flex: 2;">
     </div>
   <div style="flex: 1; text-align: center; padding-left: 20px;">
-    <img src="supplemental/images/Schematic.jpg" alt="Free WILLI Logo" width="30%">
+    <img src="supplemental/images/Schematic.jpg" alt="Free WILLI Logo" width="100%">
   </div>
 </div>
-
-This repo consists of two programs:
-
-1. **listener_program**: A multi-target tracking and ML application for receiving and processing acoustic data.
-
-2. **simulator_program**: A utility for simulating a four-channel data logger by sending pre-recorded data as UDP packets for testing and development purposes
 
 ## Table of Contents
 
@@ -35,11 +29,15 @@ This repo consists of two programs:
    - [Build Program (Ubuntu/Debian & macOS)](#build-program-ubuntudebian--macos)  
 3. [simulator_program](#simulator_program)
 
-
-
 ## Repository Structure
-The repository is organized as follows:
 
+This repo consists of two programs:
+
+1. **listener_program**: A multi-target tracking and ML application for receiving and processing acoustic data.
+
+2. **simulator_program**: A utility for simulating a four-channel data logger by sending pre-recorded data as UDP packets for testing and development purposes
+
+The repository is organized as follows:
 - .github/workflows/: Contains GitHub Actions workflows for continuous integration and deployment. 
 - .vscode/: Configuration files for Visual Studio Code, including workspace settings and extensions.
 - analysis/: Scripts and tools for analyzing and visualizing data outputs from HarpListen.
