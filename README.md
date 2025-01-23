@@ -1,4 +1,8 @@
-
+<div align="center">
+  <table>
+    <tr>
+      <td width="70%">
+         
 ## Table of Contents
 
 1. [Overview](#overview)
@@ -12,6 +16,14 @@
    - [Build program (Ubuntu/Debian & macOS)](#build-program-ubuntudebian--macos)
 
 5. [simulator_program](#simulator_program)
+
+</td>
+      <td width="30%">
+        <img src="supplemental/images/freeWILLIlogo.png" alt="Free WILLI Logo" width="100%">
+      </td>
+    </tr>
+  </table>
+</div>
 
 # Overview
 ### FreeWILLI: Free software for Whale Identification and Localization with Low-power Implementation:
