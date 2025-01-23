@@ -1,25 +1,16 @@
 <div style="display: flex; align-items: flex-start;">
   <div style="flex: 2;">
          
-## Table of Contents
-
-1. [Overview](#overview)
-
-2. [Repository Structure](#repository-structure)
-
-3. [listener_program](#listener_program)
-   - [Installing Dependencies](#installing-dependencies)
-     - [Installing Dependencies on Ubuntu/Debian](#installing-dependencies-on-ubuntudebian)
-     - [Installing Dependencies on macOS](#installing-dependencies-on-macos)
-   - [Build program (Ubuntu/Debian & macOS)](#build-program-ubuntudebian--macos)
-
-5. [simulator_program](#simulator_program)
-
-  </div>
-  <div style="flex: 1; text-align: center; padding-left: 2px;">
-    <img src="supplemental/images/freeWILLIlogo.png" alt="Free WILLI Logo" width="30%">
-  </div>
-</div>
+| **Table of Contents**                                                                                     | ![Free WILLI Logo](supplemental/images/freeWILLIlogo.png) |
+|-----------------------------------------------------------------------------------------------------------|----------------------------------------------------------|
+| 1. [Overview](#overview)                                                                                  |                                                          |
+| 2. [Repository Structure](#repository-structure)                                                          |                                                          |
+| 3. [listener_program](#listener_program)                                                                  |                                                          |
+|    - [Installing Dependencies](#installing-dependencies)                                                  |                                                          |
+|      - [Installing Dependencies on Ubuntu/Debian](#installing-dependencies-on-ubuntudebian)               |                                                          |
+|      - [Installing Dependencies on macOS](#installing-dependencies-on-macos)                              |                                                          |
+|    - [Build Program (Ubuntu/Debian & macOS)](#build-program-ubuntudebian--macos)                          |                                                          |
+| 4. [simulator_program](#simulator_program)                                                                |                                                          |
 
 # Overview
 ### FreeWILLI: Free software for Whale Identification and Localization with Low-power Implementation:
