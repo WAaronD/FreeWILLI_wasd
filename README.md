@@ -42,7 +42,7 @@ The repository is organized as follows:
 
 ## HarpListen
 
-### Prerequisites
+### Dependencies
 
 - **CMake**: A build system generator used to configure and build the project across multiple platforms.
 - **FFTW3**: Required for performing fast Fourier transforms.
