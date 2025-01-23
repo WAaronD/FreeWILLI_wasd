@@ -15,11 +15,6 @@
    - [Build Program](#build-program-ubuntudebian--macos)
 
 4. [Datalogger Simulator](#datalogger-simulator)
-   - [Install Dependencies](#install-dependencies)
-   - [Download Data](#download-data)
-   - [Run Example](#run-example)
-
-
 
 # Overview
 ### Free software for Whale Identification and Localization with Low-power Implementation:
