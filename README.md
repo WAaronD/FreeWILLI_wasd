@@ -1,5 +1,10 @@
 <div style="display: flex; align-items: flex-start;">
   <div style="flex: 2;">
+    </div>
+  <div style="flex: 1; text-align: center; padding-left: 20px;">
+    <img src="supplemental/images/freeWILLIlogo.png" alt="Free WILLI Logo" width="30%">
+  </div>
+</div>
     
 ## Table of Contents
 
@@ -12,11 +17,7 @@
    - [Build Program (Ubuntu/Debian & macOS)](#build-program-ubuntudebian--macos)  
 4. [simulator_program](#simulator_program)
 
-  </div>
-  <div style="flex: 1; text-align: center; padding-left: 20px;">
-    <img src="supplemental/images/freeWILLIlogo.png" alt="Free WILLI Logo" width="80%">
-  </div>
-</div>
+
 # Overview
 ### FreeWILLI: Free software for Whale Identification and Localization with Low-power Implementation:
 
