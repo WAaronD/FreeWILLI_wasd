@@ -9,7 +9,15 @@
 
 ### FreeWILLI: Free software for Whale Identification and Localization with Low-power Implementation:
 
-The FreeWILLI project aims to deliver high-performance C++ software for soft real-time, low-power underwater passive acoustic array data processing. It supports automated multi-target tracking from small volumetric four-channel hydrophone arrays and offers integrated functionality for neural network inference. Designed for efficiency and flexibility, the system enables advanced acoustic analyses on resource-constrained devices.
+The FreeWILLI project aims to provide a modular suite of real-time algorithms and tools for passive acoustic array data processing, including detection and filtering, multi-target tracking, and support for neural network inference. An example signal-processing pipeline is shown here:
+
+<div style="display: flex; align-items: flex-start;">
+  <div style="flex: 2;">
+    </div>
+  <div style="flex: 1; text-align: center; padding-left: 20px;">
+    <img src="supplemental/images/Schematic.png" alt="Free WILLI Logo" width="30%">
+  </div>
+</div>
 
 This repo consists of two programs:
 
@@ -35,8 +43,8 @@ The repository is organized as follows:
 - .github/workflows/: Contains GitHub Actions workflows for continuous integration and deployment. 
 - .vscode/: Configuration files for Visual Studio Code, including workspace settings and extensions.
 - analysis/: Scripts and tools for analyzing and visualizing data outputs from HarpListen.
-- listener_program/: Source code and resources for the HarpListen program.
-- simulator_program/: Source code and resources for the DataLogger Simulator program. 
+- listener_program/: Source code and resources for the listener_program program.
+- simulator_program/: Source code and resources for the simulator_program program. 
 - supplemental/: Additional files, documentation, or supporting scripts.
 - .gitignore: Specifies files and directories to be ignored by Git.
 - .gitmodules: Configuration for managing Git submodules.
