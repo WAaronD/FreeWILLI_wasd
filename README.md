@@ -14,9 +14,9 @@
 5. [simulator_program](#simulator_program)
 
 # Overview
-### Free software for Whale Identification and Localization with Low-power Implementation:
+### FreeWILLI: Free software for Whale Identification and Localization with Low-power Implementation:
 
-The Free WILLI project aims to deliver high-performance C++ software for soft real-time, low-power underwater passive acoustic array data processing. It supports automated multi-target tracking from small volumetric four-channel hydrophone arrays and offers integrated functionality for neural network inference. Designed for efficiency and flexibility, the system enables advanced acoustic analyses on resource-constrained devices.
+The FreeWILLI project aims to deliver high-performance C++ software for soft real-time, low-power underwater passive acoustic array data processing. It supports automated multi-target tracking from small volumetric four-channel hydrophone arrays and offers integrated functionality for neural network inference. Designed for efficiency and flexibility, the system enables advanced acoustic analyses on resource-constrained devices.
 
 This repo consists of two programs:
 
