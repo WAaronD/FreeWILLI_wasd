@@ -5,25 +5,25 @@
 
 2. [Repository Structure](#repository-structure)
 
-3. [HarpListen](#harplisten)
+3. [listener_program](#listener_program)
    - [Prerequisites](#prerequisites)
    - [Installing Dependencies](#installing-dependencies)
      - [Ubuntu/Debian](#installing-dependencies-on-ubuntudebian)
      - [macOS](#installing-dependencies-on-macos)
    - [Build Program](#build-program-ubuntudebian--macos)
 
-4. [Datalogger Simulator](#datalogger-simulator)
+5. [simulator_program](#simulator_program)
 
 # Overview
 ### Free software for Whale Identification and Localization with Low-power Implementation:
 
 The Free WILLI project aims to deliver high-performance C++ software for soft real-time, low-power underwater passive acoustic array data processing. It supports automated multi-target tracking from small volumetric four-channel hydrophone arrays and offers integrated functionality for neural network inference. Designed for efficiency and flexibility, the system enables advanced acoustic analyses on resource-constrained devices.
 
-This repo consists of two main programs:
+This repo consists of two programs:
 
-1. **HarpListen**: A multi-target tracking application for receiving and processing acoustic data.
+1. **listener_program**: A multi-target tracking and ML application for receiving and processing acoustic data.
 
-2. **DataLogger Simulator**: A utility for simulating a four-channel data logger by sending pre-recorded data as UDP packets for testing and development purposes
+2. **simulator_program**: A utility for simulating a four-channel data logger by sending pre-recorded data as UDP packets for testing and development purposes
 
 ## Repository Structure
 The repository is organized as follows:
@@ -40,7 +40,7 @@ The repository is organized as follows:
 - README.md: The main README file, providing an overview of the project and setup instructions.
 
 
-## HarpListen
+## listener_program
 
 ### Dependencies
 
@@ -232,6 +232,7 @@ python datalogger_simulator.py \
 **High Priority**: The simulator can set high priority for the process (using SetHighPriority in utils.py) if your system supports it.
 **Multiprocessing**: Uses multiple processes to preload the next .npy file while the current one is streaming. This helps achieve smoother, more real-time data streaming.
 
+# simulator_program
 
 ### Installation and build for DataLogger Simulator
 1. Install dependencies:
