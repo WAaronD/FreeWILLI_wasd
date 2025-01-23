@@ -1,3 +1,26 @@
+
+## Table of Contents
+
+1. [Overview](#overview)
+   - [Project Description](#free-software-for-whale-identification-and-localization-with-low-power-implementation)
+   - [Main Programs](#main-programs)
+
+2. [Repository Structure](#repository-structure)
+
+3. [Installation and Build for HarpListen](#installation-and-build-for-harplisten)
+   - [Prerequisites](#prerequisites)
+   - [Installing Dependencies](#installing-dependencies)
+     - [Ubuntu/Debian](#installing-dependencies-on-ubuntudebian)
+     - [macOS](#installing-dependencies-on-macos)
+   - [Build Program](#build-program-ubuntudebian--macos)
+
+4. [Installation and Build for DataLogger Simulator](#installation-and-build-for-datalogger-simulator)
+   - [Install Dependencies](#install-dependencies)
+   - [Download Data](#download-data)
+   - [Run Example](#run-example)
+
+
+
 # Overview
 ### Free software for Whale Identification and Localization with Low-power Implementation:
 
