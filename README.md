@@ -9,7 +9,7 @@
    - [Installing Dependencies](#installing-dependencies)
      - [Installing Dependencies on Ubuntu/Debian](#installing-dependencies-on-ubuntudebian)
      - [Installing Dependencies on macOS](#installing-dependencies-on-macos)
-   - [Build Program](#build-program-ubuntudebian--macos)
+   - [Build program (Ubuntu/Debian & macOS)](#build-program-ubuntudebian--macos)
 
 5. [simulator_program](#simulator_program)
 
