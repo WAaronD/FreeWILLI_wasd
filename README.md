@@ -5,20 +5,8 @@
     <img src="supplemental/images/freeWILLIlogo.png" alt="Free WILLI Logo" width="30%">
   </div>
 </div>
-    
-## Table of Contents
-
-1. [Overview](#overview)  
-2. [Repository Structure](#repository-structure)  
-3. [listener_program](#listener_program)  
-   - [Installing Dependencies](#installing-dependencies)  
-     - [Installing Dependencies on Ubuntu/Debian](#installing-dependencies-on-ubuntudebian)  
-     - [Installing Dependencies on macOS](#installing-dependencies-on-macos)  
-   - [Build Program (Ubuntu/Debian & macOS)](#build-program-ubuntudebian--macos)  
-4. [simulator_program](#simulator_program)
 
 
-# Overview
 ### FreeWILLI: Free software for Whale Identification and Localization with Low-power Implementation:
 
 The FreeWILLI project aims to deliver high-performance C++ software for soft real-time, low-power underwater passive acoustic array data processing. It supports automated multi-target tracking from small volumetric four-channel hydrophone arrays and offers integrated functionality for neural network inference. Designed for efficiency and flexibility, the system enables advanced acoustic analyses on resource-constrained devices.
@@ -28,6 +16,18 @@ This repo consists of two programs:
 1. **listener_program**: A multi-target tracking and ML application for receiving and processing acoustic data.
 
 2. **simulator_program**: A utility for simulating a four-channel data logger by sending pre-recorded data as UDP packets for testing and development purposes
+
+## Table of Contents
+
+1. [Repository Structure](#repository-structure)  
+2. [listener_program](#listener_program)  
+   - [Installing Dependencies](#installing-dependencies)  
+     - [Installing Dependencies on Ubuntu/Debian](#installing-dependencies-on-ubuntudebian)  
+     - [Installing Dependencies on macOS](#installing-dependencies-on-macos)  
+   - [Build Program (Ubuntu/Debian & macOS)](#build-program-ubuntudebian--macos)  
+3. [simulator_program](#simulator_program)
+
+
 
 ## Repository Structure
 The repository is organized as follows:
