@@ -16,7 +16,7 @@
 5. [simulator_program](#simulator_program)
 
   </div>
-  <div style="flex: 1; text-align: center; padding-left: 20px;">
+  <div style="flex: 1; text-align: center; padding-left: 2px;">
     <img src="supplemental/images/freeWILLIlogo.png" alt="Free WILLI Logo" width="30%">
   </div>
 </div>
