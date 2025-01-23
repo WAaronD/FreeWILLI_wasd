@@ -6,7 +6,6 @@
 2. [Repository Structure](#repository-structure)
 
 3. [listener_program](#listener_program)
-   - [Prerequisites](#prerequisites)
    - [Installing Dependencies](#installing-dependencies)
      - [Ubuntu/Debian](#installing-dependencies-on-ubuntudebian)
      - [macOS](#installing-dependencies-on-macos)
