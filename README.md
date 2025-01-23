@@ -15,7 +15,7 @@ The FreeWILLI project aims to provide a modular suite of real-time algorithms an
   <div style="flex: 2;">
     </div>
   <div style="flex: 1; text-align: center; padding-left: 20px;">
-    <img src="supplemental/images/Schematic.png" alt="Free WILLI Logo" width="30%">
+    <img src="supplemental/images/Schematic.jpg" alt="Free WILLI Logo" width="30%">
   </div>
 </div>
 
