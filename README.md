@@ -36,8 +36,6 @@ The repository is organized as follows:
 - .gitignore: Specifies files and directories to be ignored by Git.
 - .gitmodules: Configuration for managing Git submodules.
 - CONTRIBUTING.md: Guidelines for contributing to the project.
-- README.md: The main README file, providing an overview of the project and setup instructions.
-
 
 ## listener_program
 
