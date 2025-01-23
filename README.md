@@ -2,8 +2,6 @@
 ## Table of Contents
 
 1. [Overview](#overview)
-   - [Project Description](#free-software-for-whale-identification-and-localization-with-low-power-implementation)
-   - [Main Programs](#main-programs)
 
 2. [Repository Structure](#repository-structure)
 
