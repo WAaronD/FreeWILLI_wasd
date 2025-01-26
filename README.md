@@ -26,9 +26,9 @@ The FreeWILLI project aims to provide a modular suite of real-time algorithms fo
 
 This repo consists of two programs:
 
-1. **listener_program**: A multi-target tracking and ML application for receiving and processing acoustic data.
+1. **listener_program**: The real-time acoustic data processing program.
 
-2. **simulator_program**: A program for simulating a four-channel data logger.  Sending pre-recorded data as UDP packets to a specified IP address and port. Used for testing and development of the listener_program.
+2. **simulator_program**: A program for simulating a hydrophone array.  Sends pre-recorded data as UDP packets to a specified IP address and port. Used for testing and development of the listener_program.
 
 The repository is organized as follows:
 - ```.github/workflows/```: Contains GitHub Actions workflows for continuous integration and deployment. 
