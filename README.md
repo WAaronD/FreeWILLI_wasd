@@ -188,9 +188,9 @@ make -j$(nproc)
 cd ..
 ./bin/HarpListen config_files/volumetric.json 50000
 ```
-# Datalogger Simulator
+# simulator_program
 
-A Python-based simulator (datalogger_simulator.py) that streams simulated data packets over UDP. The simulator mimics the behavior of firmware-based data logging systems. It can read .npy files, process their contents (e.g., apply channel offsets for TDOA testing, scale the data, etc.), and send out structured UDP packets for testing HarpListener program.
+A Python-based simulator (datalogger_simulator.py) that streams simulated data packets over UDP. The simulator mimics the behavior of firmware-based data logging systems. It can read .npy files, process their contents (e.g., apply channel offsets for TDOA testing, scale the data, etc.), and send out structured UDP packets for testing listener_program.
 
 ## File Structure
 ```bash
@@ -210,19 +210,6 @@ The main entry point for the simulator. It handles:
 2. Loading data from .npy files.
 3. (Optionally) applying channel duplication, shifting, stretching, glitches, and more.
 4. Sending the processed data over UDP.
-
-- **firmware_config/**
-1. Contains firmware-specific configurations for different firmware versions (e.g., firmware_1240.py, firmware_1550.py).
-2. These Python files define constants used by the simulator (packet size, sample rate, etc.), so the simulator can mimic each firmware version’s data format.
-
-- **simulator_data/**
-Holds .npy files to be streamed by the simulator. You can store multiple .npy data files here to simulate longer runs or multiple scenarios.
-
-- **utils.py**
-Contains helper functions (e.g., reading binary data, applying channel shifts, data scaling, sleeping, etc.) that are shared by the simulator.
-
-- **requirements.txt**
-Defines the Python dependencies needed to run this simulator (e.g., NumPy, psutil, argparse, etc.).
 
 ## Program Description
 The simulator is designed to emulate a real-time data capture and logging system:
