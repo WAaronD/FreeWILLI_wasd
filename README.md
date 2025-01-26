@@ -22,12 +22,14 @@ The FreeWILLI project aims to provide a modular suite of real-time algorithms an
 ## Table of Contents
 
 1. [Repository Structure](#repository-structure)  
-2. [listener_program](#listener_program)  
+2. [listener_program](#listener_program)
+   - [Technical Overview](#technical-overview)
+   - [Directory Structure](#directory-structure)   
    - [Installing Dependencies](#installing-dependencies)  
      - [Installing Dependencies on Ubuntu/Debian](#installing-dependencies-on-ubuntudebian)  
      - [Installing Dependencies on macOS](#installing-dependencies-on-macos)  
    - [Build Program (Ubuntu/Debian & macOS)](#build-program-ubuntudebian--macos)  
-3. [simulator_program](#simulator_program)
+4. [simulator_program](#simulator_program)
 
 ## Repository Structure
 
@@ -49,6 +51,19 @@ The repository is organized as follows:
 - ```CONTRIBUTING.md```: Guidelines for contributing to the project.
 
 ## listener_program
+
+## Technical Overview
+
+It employs a **producer/consumer execution model**, where different threads are responsible for producing and consuming data in parallel. These threads are created in ```src/main.cpp```.
+
+Key architectural features include:
+
+**Pipeline Execution Model**: Signal processing steps are executed sequentially using the Pipeline Pattern. The Pipeline class is created and initialized in ```src/main.cpp``` and it's method ```process()``` calls the main signal processing loop ```dataProcess()``` and wraps it in a ```try/catch``` block.
+
+**Factory Pattern**: Objects for various algorithms (e.g., filters, detection modules) are dynamically created using a factory, enabling flexibility and runtime behavior selection.
+
+
+## Directory Structure
 Top-level Directories:
 - ```benchmark```: Contains source code for autmated benchmark tests.
 - ```bin```: Stores compiled executables of the program.
