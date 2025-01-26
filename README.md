@@ -6,18 +6,9 @@
   </div>
 </div>
 
-
 ### FreeWILLI: Free software for Whale Identification and Localization with Low-power Implementation:
 
-The FreeWILLI project aims to provide a modular suite of real-time algorithms and tools for passive acoustic array data processing, including detection and filtering, multi-target tracking, and support for neural network inference. An example signal-processing pipeline is shown here:
-
-<div style="display: flex; align-items: flex-start;">
-  <div style="flex: 2;">
-    </div>
-  <div style="flex: 1; text-align: center; padding-left: 20px;">
-    <img src="supplemental/images/Schematic.jpg" alt="Free WILLI Logo" width="100%">
-  </div>
-</div>
+The FreeWILLI project aims to provide a modular suite of real-time algorithms for passive acoustic array data processing, including detection and filtering, multi-target tracking, and support for neural network inference. The original intent of this software was for real-time analysis of marine mammals, but feel free to use this code in your own application! 
 
 ## Table of Contents
 
