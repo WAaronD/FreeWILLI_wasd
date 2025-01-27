@@ -53,6 +53,20 @@ Key architectural features include:
 
 **Factory Pattern**: Objects for various algorithms (e.g., filters, detection modules) are dynamically created using a factory, enabling flexibility and runtime behavior selection.
 
+## Signal Processing Workflow ##
+
+The signal processing pipeline consists of the following main steps, executed sequentially:
+
+1. *Time Domain Detection*: Initial energy detection is performed in the time domain to identify segments of interest. This step reduces computational overhead by filtering irrelevant data.
+
+2. *Filtering*: FIR filters are applied in frequency domain to focus on bands of interest. Filter coefficients are read from specified file in ```filters``` directory and frequency domain representation is computed at runtime.
+
+3. *Frequency Domain Detection*: Fast Fourier Transform (FFT) is applied to detect spectral features in the frequency domain, enabling further refinement of detected signals.
+
+4. *TDOA Estimation with GCC-PHAT*:
+Time Difference of Arrival (TDOA) is calculated using the Generalized Cross-Correlation with Phase Transform (GCC-PHAT) algorithm. This method provides robust TDOA estimation for broadband signals in reverberant environments.
+
+5. *DOA estimation*: The Direction of Arrival (DOA) is estimated using Singular Value Decomposition (SVD) and precomputed matrices (e.g., P and U). This step uses hydrophone array geometry to localize sound sources accurately.
 
 ## Directory Structure
 Top-level Directories:
