@@ -52,7 +52,7 @@ Key architectural features include:
 
 **Pipeline Execution Model**: Signal processing steps are executed sequentially using the Pipeline Pattern. The Pipeline class is created and initialized in ```src/main.cpp``` and it's method ```process()``` calls the main signal processing loop ```dataProcess()``` and wraps it in a ```try/catch``` block.
 
-**Factory Pattern**: Objects for various algorithms (e.g., filters, detection modules) are dynamically created using a factory, enabling flexibility and runtime behavior selection.
+**Factory Pattern**: Objects for various algorithms (e.g., filters, detection modules) are dynamically created using a factory.
 
 ## Signal Processing Pipeline ##
 
