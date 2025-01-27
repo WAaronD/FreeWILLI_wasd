@@ -46,7 +46,7 @@ The repository is organized as follows:
 
 ## Technical Overview
 
-It employs a **producer/consumer execution model**, where different threads are responsible for producing and consuming data in parallel. These threads are created in ```src/main.cpp```.
+Uses a **producer/consumer concurrency pattern** with threads created in src/main.cpp. Shared data and synchronization are handled by ```SharedDataManager()``` from src/shared_data_manager.h
 
 Key architectural features include:
 
