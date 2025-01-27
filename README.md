@@ -15,6 +15,7 @@ The FreeWILLI project aims to provide a modular suite of real-time algorithms fo
 1. [Repository Structure](#repository-structure)  
 2. [listener_program](#listener_program)
    - [Technical Overview](#technical-overview)
+   - [Signal Processing Pipeline](#signal-processing-pipeline)
    - [Directory Structure](#directory-structure)   
    - [Dependencies](#dependencies)  
      - [Installing Dependencies on Ubuntu/Debian](#installing-dependencies-on-ubuntudebian)  
@@ -53,7 +54,7 @@ Key architectural features include:
 
 **Factory Pattern**: Objects for various algorithms (e.g., filters, detection modules) are dynamically created using a factory, enabling flexibility and runtime behavior selection.
 
-## Signal Processing Workflow ##
+## Signal Processing Pipeline ##
 
 The signal processing pipeline consists of the following main steps, executed sequentially:
 
