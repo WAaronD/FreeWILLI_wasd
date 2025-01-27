@@ -16,7 +16,7 @@ The FreeWILLI project aims to provide a modular suite of real-time algorithms fo
 2. [listener_program](#listener_program)
    - [Technical Overview](#technical-overview)
    - [Directory Structure](#directory-structure)   
-   - [Installing Dependencies](#installing-dependencies)  
+   - [Dependencies](#dependencies)  
      - [Installing Dependencies on Ubuntu/Debian](#installing-dependencies-on-ubuntudebian)  
      - [Installing Dependencies on macOS](#installing-dependencies-on-macos)  
    - [Build Program (Ubuntu/Debian & macOS)](#build-program-ubuntudebian--macos)  
