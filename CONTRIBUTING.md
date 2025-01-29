@@ -42,18 +42,5 @@ git branch -d feature/your-feature-name    # Delete locally
 git push origin --delete feature/your-feature-name  # Delete remotely
 ```
 
-
-## Branches
-
-* Main branch is protected: direct commits are not possible. 
- All changes to the main branch must go through pull requests.
-* Branch Naming Conventions: 
-        - feature/<feature-name> for new features.
-        - bugfix/<bug-name> for bug fixes.
-        - hotfix/<hotfix-name> for urgent fixes.
-
-## Commit Messages
-* Provide descriptive commit messages:
-    - Format: Type(scope): Description
-        * Types: feat, fix, docs, test, refactor, chore.
-        * Example: feat(tracking): Add Kalman filter for smoother tracking.
+## Code Formatting
+To maintain a consistent code style across the project, we use Clang-Format. All contributors must ensure their code adheres to the formatting rules specified in the .clang-format file located in the project root.
