@@ -1,14 +1,65 @@
 version: 2.1
-jobs:
-  build:
+
+executors:
+  ubuntu-executor:
     docker:
-      - image: cimg/base:stable
+      - image: cimg/base:current  # Use a base Ubuntu image
+
+jobs:
+  build-and-test:
+    executor: ubuntu-executor
+
     steps:
-      - checkout
+      - checkout  # Checkout the repository
+
       - run:
-          name: "Hello World"
-          command: echo "Hello World"
+          name: Install Dependencies
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y libfftw3-dev libblas-dev libeigen3-dev nlohmann-json3-dev
+
+      - run:
+          name: Download ONNX Runtime
+          command: |
+            wget https://github.com/microsoft/onnxruntime/releases/download/v1.14.1/onnxruntime-linux-x64-1.14.1.tgz
+            tar -xzf onnxruntime-linux-x64-1.14.1.tgz
+            sudo cp -r onnxruntime-linux-x64-1.14.1/include/* /usr/local/include/
+            sudo cp -r onnxruntime-linux-x64-1.14.1/lib/* /usr/local/lib/
+
+      - run:
+          name: Include Git Submodules
+          command: git submodule update --init --recursive
+
+      - run:
+          name: Configure CMake
+          working_directory: ~/project/listener_program
+          command: |
+            mkdir -p build
+            cmake -B ~/project/listener_program/build -S ~/project/listener_program \
+              -DCMAKE_BUILD_TYPE=Release \
+              -DCMAKE_C_COMPILER=/usr/bin/gcc \
+              -DCMAKE_CXX_COMPILER=/usr/bin/g++
+
+      - run:
+          name: Build Project
+          working_directory: ~/project/listener_program
+          command: |
+            CORES=$(nproc)
+            cmake --build ~/project/listener_program/build --config Release -- -j$CORES
+
+      - run:
+          name: Clean Up Build Directory
+          working_directory: ~/project/listener_program
+          command: rm -rf build
+
+      - run:
+          name: Run Unit Tests
+          working_directory: ~/project/listener_program/bin
+          command: ./UnitTests
+
 workflows:
-  sample:
+  version: 2
+  test:
     jobs:
-      - build
+      - build-and-test
+
