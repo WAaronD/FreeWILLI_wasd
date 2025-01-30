@@ -23,7 +23,8 @@ jobs:
           command: |
             wget https://github.com/Kitware/CMake/releases/download/v3.29.7/cmake-3.29.7-linux-x86_64.tar.gz
             tar -xzf cmake-3.29.7-linux-x86_64.tar.gz
-            echo 'export PATH=$PWD/cmake-3.29.7-linux-x86_64/bin:$PATH' >> $BASH_ENV
+            sudo mv cmake-3.29.7-linux-x86_64 /opt/cmake
+            echo 'export PATH=/opt/cmake/bin:$PATH' >> $BASH_ENV
             source $BASH_ENV
             cmake --version  # Verify installation
 
@@ -43,6 +44,7 @@ jobs:
           name: Configure CMake
           working_directory: ~/project/listener_program
           command: |
+            source $BASH_ENV  # Ensure PATH is updated
             mkdir -p build
             cmake -B ~/project/listener_program/build -S ~/project/listener_program \
               -DCMAKE_BUILD_TYPE=Release \
@@ -53,6 +55,7 @@ jobs:
           name: Build Project
           working_directory: ~/project/listener_program
           command: |
+            source $BASH_ENV  # Ensure PATH is updated
             CORES=$(nproc)
             cmake --build ~/project/listener_program/build --config Release -- -j$CORES
 
@@ -64,7 +67,9 @@ jobs:
       - run:
           name: Run Unit Tests
           working_directory: ~/project/listener_program/bin
-          command: ./UnitTests
+          command: |
+            source $BASH_ENV  # Ensure PATH is updated
+            ./UnitTests
 
 workflows:
   version: 2
