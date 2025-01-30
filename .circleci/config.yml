@@ -19,6 +19,15 @@ jobs:
             sudo apt-get install -y libfftw3-dev libblas-dev libeigen3-dev nlohmann-json3-dev
 
       - run:
+          name: Install CMake 3.29.7
+          command: |
+            sudo apt-get remove --purge --auto-remove cmake  # Remove old CMake
+            wget https://github.com/Kitware/CMake/releases/download/v3.29.7/cmake-3.29.7-linux-x86_64.tar.gz
+            tar -xzf cmake-3.29.7-linux-x86_64.tar.gz
+            sudo cp -r cmake-3.29.7-linux-x86_64/* /usr/local/
+            cmake --version  # Verify installation
+
+      - run:
           name: Download ONNX Runtime
           command: |
             wget https://github.com/microsoft/onnxruntime/releases/download/v1.14.1/onnxruntime-linux-x64-1.14.1.tgz
@@ -62,4 +71,3 @@ workflows:
   test:
     jobs:
       - build-and-test
-
