@@ -8,7 +8,12 @@
 
 ### FreeWILLI: Free software for Whale Identification and Localization with Low-power Implementation:
 
-The FreeWILLI project aims to provide a modular suite of algorithms for real-time passive acoustic array data processing, including detection and filtering, multi-target tracking, and support for neural network inference. Originally developed for real-time marine mammal monitoring, FreeWILLI is adaptable for a wide range of applications. Feel free to leverage and customize this software for your needs!
+The FreeWILLI project aims to provide a modular suite of algorithms for real-time passive acoustic array data processing, including:
+🔍 **Detection and Filtering** – Identify and isolate relevant acoustic signals efficiently.
+🎯 **Multi-Target Tracking** – Track multiple sources in real-time using a novel hybrid cluster-filter approach.
+🧠 **Neural Network Inference** – Leverage machine learning models for classification and analysis.
+ 
+ Originally developed for real-time marine mammal monitoring, FreeWILLI is adaptable for a wide range of applications. Feel free to leverage and customize this software for your needs!
 
 ## Table of Contents
 
