@@ -29,7 +29,7 @@ This repo consists of two programs:
 
 1. **Listener**: The real-time acoustic data processing program.
 
-2. **Simulator**: A program for simulating a hydrophone array.  Sends pre-recorded data as UDP packets to a specified IP address and port. Used for testing and development of the listener_program.
+2. **Simulator**: A program for simulating a hydrophone array.  Sends pre-recorded data as UDP packets to a specified IP address and port. Used for testing and development of the Listener program.
 
 The repository is organized as follows:
 - ```.github/workflows/```: Contains GitHub Actions workflows for continuous integration and deployment. 
@@ -46,7 +46,7 @@ The repository is organized as follows:
 
 ## Technical Overview
 
-Uses a **producer/consumer concurrency pattern** with threads created in src/main.cpp. Shared data and synchronization are handled by ```SharedDataManager()``` from src/shared_data_manager.h
+Uses a **producer/consumer concurrency pattern** with threads created in src/main.cpp. Shared data and synchronization are handled by ```SharedDataManager()``` from ```src/shared_data_manager.h```
 
 Key architectural features include:
 
@@ -67,7 +67,7 @@ The signal processing pipeline consists of the following main steps, executed se
 4. *TDOA Estimation with GCC-PHAT*:
 Time Difference of Arrival (TDOA) is calculated using the Generalized Cross-Correlation with Phase Transform (GCC-PHAT) algorithm. 
 
-5. *DOA Estimation*: The Direction of Arrival (DOA) of detected signals is estimated using a computationally efficient approach. This step leverages precomputed matrices derived from the Singular Value Decomposition (SVD) of the hydrophone position matrix. The hydrophone position matrix is loaded from a file in the receiver_pos/ directory.
+5. *DOA Estimation*: The Direction of Arrival (DOA) of detected signals is estimated using a computationally efficient approach. This step leverages precomputed matrices derived from the Singular Value Decomposition (SVD) of the hydrophone position matrix. The hydrophone position matrix is loaded from a file in the ```receiver_pos/``` directory.
 
 ## Directory Structure
 Top-level Directories:
@@ -89,7 +89,7 @@ Top-level Files:
 - ```CMakeLists.txt```: The main build configuration file for CMake.
 - ```compile_commands.json```: A file for enabling IntelliSense or static analysis in IDEs like VS Code, containing compile options.
 - ```CrossCompileSettings.cmake```: CMake configuration for cross-compiling (e.g., for ARM-based devices like Raspberry Pi).
-- ```NativeCompileSettings.cmake```: - CMake configuration for native compilation on the host system.
+- ```NativeCompileSettings.cmake```: CMake configuration for native compilation on the host system.
 - ```run_program.sh```: A script for running the program with pre-defined arguments and setup steps.
 - ```toolchain.cmake```: Specifies the toolchain file for cross-compilation.
 - ```unblock_wifi_bluetooth.sh```: A shell script to re-enable Wi-Fi and Bluetooth.
