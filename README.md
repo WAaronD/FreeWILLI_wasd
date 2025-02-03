@@ -14,7 +14,7 @@ The FreeWILLI project aims to provide a modular suite of algorithms for real-tim
 
 🎯: **Multi-Target Tracking** – Track multiple sources in real-time using a novel hybrid cluster-filter approach.
 
-🧠: **Neural Network Inference** – Runtime environment for running machine learning models for classification and analysis.
+🧠: **Neural Network Inference** – Run machine learning models for classification and analysis.
  
  Originally developed for real-time marine mammal monitoring, FreeWILLI is adaptable for a wide range of applications. Feel free to leverage and customize this software for your needs!
 
@@ -68,7 +68,7 @@ The signal processing pipeline consists of the following main steps, executed se
 
 1. *Time Domain Detection*: A time domain detector is applied to identify segments of interest. This step reduces computational overhead by filtering irrelevant data.
 
-2. *Frequency Domain Transformation and Filtering*: The detected signal segments are transformed into the frequency domain using the Fast Fourier Transform (FFT). If filtering is enabled, Finite Impulse Response (FIR) filters are applied in the frequency domain to isolate frequency bands of interest. The filter coefficients are loaded from a configuration file in the filters directory, and the frequency-domain representation is computed dynamically at runtime.
+2. *Frequency Domain Transformation and Filtering*: The detected signal segments are transformed into the frequency domain using the Fast Fourier Transform (FFT). If filtering is enabled, Finite Impulse Response (FIR) filters are applied in the frequency domain to isolate frequency bands of interest. The filter coefficients are loaded from a configuration file in the ```filters/``` directory, and the frequency-domain representation is computed dynamically at runtime.
 
 3. *Frequency Domain Detection*: A frequency domain detector is applied to identify segments of interest. This step reduces computational overhead by filtering irrelevant data.
 
@@ -213,7 +213,7 @@ cd ..
 ```
 # Simulator
 
-A Python-based simulator (datalogger_simulator.py) that streams simulated data packets over UDP. The simulator mimics the behavior of firmware-based data logging systems. It can read .npy files, process their contents (e.g., apply channel offsets for TDOA testing, scale the data, etc.), and send out structured UDP packets for testing the Listener program.
+A Python-based simulator that streams prerecorded data packets over UDP. The simulator mimics the behavior of firmware-based data logging systems. It can read .npy files, process their contents (e.g., apply channel offsets for TDOA testing, scale the data, etc.), and send out structured UDP packets for testing the Listener program.
 
 ## File Structure
 ```bash
@@ -228,7 +228,7 @@ A Python-based simulator (datalogger_simulator.py) that streams simulated data p
 ```
 
 - **datalogger_simulator.py**
-The main entry point for the simulator. It handles:
+This script is the simulator itself. It performs the following tasks:
 1. Command-line argument parsing (to customize data streaming IP, port, etc.).
 2. Loading data from .npy files.
 3. (Optionally) applying channel duplication, shifting, stretching, glitches, and more.
@@ -238,9 +238,9 @@ The main entry point for the simulator. It handles:
 The simulator is designed to emulate a real-time data capture and logging system:
 
 1. **Firmware Emulation:**
-Selects firmware configuration (e.g., firmware_1240.py) based on user arguments to determine packet structure and timing intervals.
+Selects firmware configuration (e.g., ```firmware_1240.py```) based on user arguments to determine packet structure and timing intervals.
 
-2. **Data Streaming:**:
+2. **Data Streaming:**
 Reads .npy data files (which contain raw sample data).
 Preprocesses the data (e.g., interleaving, scaling, time-stamping).
 Sends packets over UDP to a specified IP and port.
@@ -261,12 +261,12 @@ pip install -r requirements.txt
 
 2. **Prepare Data Files**
 
-Place your .npy data files in the simulator_data/ directory (or wherever you prefer).
+Place your .npy data files in the ```simulator_data/``` directory.
 If using IMU functionality, ensure you have the correct IMU data files referenced in the script (adjust path in the arguments or within utils.py if needed).
 
 3. **Run the Simulator**
-Execute datalogger_simulator.py with your desired arguments.
-This example will load data from simulator_data/track132_5minchunks/ and organize the data according to the firmware version 1240. The data is sent to to port 1045 at IP address 192.168.100.235 
+Execute ```datalogger_simulator.py``` with your desired arguments.
+This example will load data from ```simulator_data/track132_5minchunks/``` and organize the data according to the firmware version 1240. The data is sent to to port 1045 at IP address 192.168.100.235 
 
 ```bash
 python datalogger_simulator.py \
@@ -276,7 +276,7 @@ python datalogger_simulator.py \
     --fw 1240 \
 ```
 ## Notes
-**High Priority**: The simulator can set high priority for the process (using SetHighPriority in utils.py) if your system supports it.
+**High Priority**: The simulator can set high priority for the process (using ```SetHighPriority()``` in ```utils.py```) if your system supports it.
 **Multiprocessing**: Uses multiple processes to preload the next .npy file while the current one is streaming. This helps achieve smoother, more real-time data streaming.
 
 ### Installation and build for DataLogger Simulator
