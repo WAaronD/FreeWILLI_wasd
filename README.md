@@ -8,12 +8,12 @@
 
 ### FreeWILLI: Free software for Whale Identification and Localization with Low-power Implementation:
 
-The FreeWILLI project aims to provide a modular suite of real-time algorithms for passive acoustic array data processing, including detection and filtering, multi-target tracking, and support for neural network inference. The original intent of this software was for real-time analysis of marine mammals, but feel free to use this code in your own application! 
+The FreeWILLI project aims to provide a modular suite of algorithms for real-time passive acoustic array data processing, including detection and filtering, multi-target tracking, and support for neural network inference. Originally developed for real-time marine mammal monitoring, FreeWILLI is adaptable for a wide range of applications. Feel free to leverage and customize this software for your needs!
 
 ## Table of Contents
 
 1. [Repository Structure](#repository-structure)  
-2. [listener_program](#listener_program)
+2. [Listener](#listener)
    - [Technical Overview](#technical-overview)
    - [Signal Processing Pipeline](#signal-processing-pipeline)
    - [Directory Structure](#directory-structure)   
@@ -21,28 +21,28 @@ The FreeWILLI project aims to provide a modular suite of real-time algorithms fo
      - [Installing Dependencies on Ubuntu/Debian](#installing-dependencies-on-ubuntudebian)  
      - [Installing Dependencies on macOS](#installing-dependencies-on-macos)  
    - [Build Program (Ubuntu/Debian & macOS)](#build-program-ubuntudebian--macos)  
-4. [simulator_program](#simulator_program)
+4. [Simulator](#simulator)
 
 ## Repository Structure
 
 This repo consists of two programs:
 
-1. **listener_program**: The real-time acoustic data processing program.
+1. **Listener**: The real-time acoustic data processing program.
 
-2. **simulator_program**: A program for simulating a hydrophone array.  Sends pre-recorded data as UDP packets to a specified IP address and port. Used for testing and development of the listener_program.
+2. **Simulator**: A program for simulating a hydrophone array.  Sends pre-recorded data as UDP packets to a specified IP address and port. Used for testing and development of the listener_program.
 
 The repository is organized as follows:
 - ```.github/workflows/```: Contains GitHub Actions workflows for continuous integration and deployment. 
 - ```.vscode/```: Configuration files for Visual Studio Code, including workspace settings and extensions.
 - ```analysis/```: Scripts and tools for analyzing and visualizing data outputs from HarpListen.
-- ```listener_program/```: Source code and resources for the listener_program program.
-- ```simulator_program/```: Source code and resources for the simulator_program program. 
+- ```listener_program/```: Source code and resources for the Listener program.
+- ```simulator_program/```: Source code and resources for the Simulator program. 
 - ```supplemental/```: Additional files, documentation, or supporting scripts.
 - ```.gitignore```: Specifies files and directories to be ignored by Git.
 - ```.gitmodules```: Configuration for managing Git submodules.
 - ```CONTRIBUTING.md```: Guidelines for contributing to the project.
 
-## listener_program
+## Listener
 
 ## Technical Overview
 
@@ -58,31 +58,31 @@ Key architectural features include:
 
 The signal processing pipeline consists of the following main steps, executed sequentially:
 
-1. *Time Domain Detection*: Initial energy detection is performed in the time domain to identify segments of interest. This step reduces computational overhead by filtering irrelevant data.
+1. *Time Domain Detection*: A time domain detector is applied to identify segments of interest. This step reduces computational overhead by filtering irrelevant data.
 
-2. *Filtering*: FIR filters are applied in frequency domain to focus on bands of interest. Filter coefficients are read from specified file in ```filters``` directory and frequency domain representation is computed at runtime.
+2. *Frequency Domain Transformation and Filtering*: The detected signal segments are transformed into the frequency domain using the Fast Fourier Transform (FFT). If filtering is enabled, Finite Impulse Response (FIR) filters are applied in the frequency domain to isolate frequency bands of interest. The filter coefficients are loaded from a configuration file in the filters directory, and the frequency-domain representation is computed dynamically at runtime.
 
-3. *Frequency Domain Detection*: Fast Fourier Transform (FFT) is applied to detect spectral features in the frequency domain, enabling further refinement of detected signals.
+3. *Frequency Domain Detection*: A frequency domain detector is applied to identify segments of interest. This step reduces computational overhead by filtering irrelevant data.
 
 4. *TDOA Estimation with GCC-PHAT*:
-Time Difference of Arrival (TDOA) is calculated using the Generalized Cross-Correlation with Phase Transform (GCC-PHAT) algorithm. This method provides robust TDOA estimation for broadband signals in reverberant environments.
+Time Difference of Arrival (TDOA) is calculated using the Generalized Cross-Correlation with Phase Transform (GCC-PHAT) algorithm. 
 
-5. *DOA estimation*: The Direction of Arrival (DOA) is estimated using Singular Value Decomposition (SVD) and precomputed matrices (e.g., P and U). This step uses hydrophone array geometry to localize sound sources accurately.
+5. *DOA Estimation*: The Direction of Arrival (DOA) of detected signals is estimated using a computationally efficient approach. This step leverages precomputed matrices derived from the Singular Value Decomposition (SVD) of the hydrophone position matrix. The hydrophone position matrix is loaded from a file in the receiver_pos/ directory.
 
 ## Directory Structure
 Top-level Directories:
-- ```benchmark```: Contains source code for autmated benchmark tests.
-- ```bin```: Stores compiled executables of the program.
-- ```config_files```: JSON files for specifiying runtime configuration 
-- ```debug```: Contains debug builds of the program and tests.
-- ```deployment_files```: Stores data and files produced by the program at runtime
-- ```filters```: Contains filter coefficients used for signal processing, which are loaded into the program during runtime.
-- ```libs```: Contains git submodules.
-- ```ML_models```: Stores pre-trained machine learning models.
-- ```out```: Stores build artifacts generated by the build system (e.g., CMake).
-- ```receiver_pos```: Stores receiver/hydrophone position data used for TDOA and DOA calculations.
-- ```src```: Main source code of the program.
-- ```tests```: Contains unit test source code.
+- ```benchmark/```: Contains source code for autmated benchmark tests.
+- ```bin/```: Stores compiled executables of the program.
+- ```config_files/```: JSON files for specifiying runtime configuration 
+- ```debug/```: Contains debug builds of the program and tests.
+- ```deployment_files/```: Stores data and files produced by the program at runtime
+- ```filters/```: Contains filter coefficients used for signal processing, which are loaded into the program during runtime.
+- ```libs/```: Contains git submodules.
+- ```ML_models/```: Stores pre-trained machine learning models.
+- ```out/```: Stores build artifacts generated by the build system (e.g., CMake).
+- ```receiver_pos/```: Stores receiver/hydrophone position data used for TDOA and DOA calculations.
+- ```src/```: Main source code of the program.
+- ```tests/```: Contains unit test source code.
 
 Top-level Files:
 - ```block_wifi_bluetooth.sh```: A shell script to disable Wi-Fi and Bluetooth on Raspberry Pi Zero 2W.
@@ -178,8 +178,8 @@ sudo cp -r onnxruntime-osx-arm64-1.19.2/lib/* /usr/local/lib/
 1. Clone the repository:
 
 ``` bash
-git clone https://github.com/JosephLWalker96/Embedded_miniHarp.git
-cd Embedded_miniHarp
+git clone https://github.com/JosephLWalker96/FreeWILLI.git
+cd FreeWILLI
 ```
 
 2. Initialize and Update Submodules:
@@ -201,11 +201,11 @@ make -j$(nproc)
 4. Run the binary:
 ```bash
 cd ..
-./bin/HarpListen config_files/volumetric.json 50000
+./bin/Listener config_files/volumetric.json 50000
 ```
-# simulator_program
+# Simulator
 
-A Python-based simulator (datalogger_simulator.py) that streams simulated data packets over UDP. The simulator mimics the behavior of firmware-based data logging systems. It can read .npy files, process their contents (e.g., apply channel offsets for TDOA testing, scale the data, etc.), and send out structured UDP packets for testing listener_program.
+A Python-based simulator (datalogger_simulator.py) that streams simulated data packets over UDP. The simulator mimics the behavior of firmware-based data logging systems. It can read .npy files, process their contents (e.g., apply channel offsets for TDOA testing, scale the data, etc.), and send out structured UDP packets for testing the Listener program.
 
 ## File Structure
 ```bash
@@ -270,8 +270,6 @@ python datalogger_simulator.py \
 ## Notes
 **High Priority**: The simulator can set high priority for the process (using SetHighPriority in utils.py) if your system supports it.
 **Multiprocessing**: Uses multiple processes to preload the next .npy file while the current one is streaming. This helps achieve smoother, more real-time data streaming.
-
-# simulator_program
 
 ### Installation and build for DataLogger Simulator
 1. Install dependencies:
