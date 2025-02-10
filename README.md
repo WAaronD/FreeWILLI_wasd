@@ -6,7 +6,7 @@
   </div>
 </div>
 
-### FreeWILLI: Free software for Whale Identification and Localization with Low-power Implementation:
+### FreeWILLI: Free software for Whale Identification and Localization with Low-power Implementation
 
 The FreeWILLI project aims to provide a modular suite of algorithms for real-time passive acoustic array data processing, including:
 
@@ -30,6 +30,8 @@ The FreeWILLI project aims to provide a modular suite of algorithms for real-tim
      - [Installing Dependencies on macOS](#installing-dependencies-on-macos)  
    - [Build Program (Ubuntu/Debian & macOS)](#build-program-ubuntudebian--macos)  
 4. [Simulator](#simulator)
+5. [Run Example](#run-example)
+6. [Announcements](#announcements)
 
 ## Repository Structure
 
@@ -42,7 +44,7 @@ This repo consists of two programs:
 The repository is organized as follows:
 - ```.github/workflows/```: Contains GitHub Actions workflows for continuous integration and deployment. 
 - ```.vscode/```: Configuration files for Visual Studio Code, including workspace settings and extensions.
-- ```analysis/```: Scripts and tools for analyzing and visualizing data outputs from HarpListen.
+- ```analysis/```: Scripts and tools for analyzing and visualizing data outputs from the Listener program.
 - ```listener_program/```: Source code and resources for the Listener program.
 - ```simulator_program/```: Source code and resources for the Simulator program. 
 - ```supplemental/```: Additional files, documentation, or supporting scripts.
@@ -54,7 +56,7 @@ The repository is organized as follows:
 
 ## Technical Overview
 
-Uses a **producer/consumer concurrency pattern** with threads created in src/main.cpp. Shared data and synchronization are handled by ```SharedDataManager()``` from ```src/shared_data_manager.h```
+Uses a **producer/consumer concurrency pattern** with threads created in ```src/main.cpp```. Shared data and synchronization are handled by ```SharedDataManager()``` from ```src/shared_data_manager.h```
 
 Key architectural features include:
 
@@ -252,34 +254,13 @@ Sends packets over UDP to a specified IP and port.
 - **Glitches**: Intentionally modifies timestamps or data packets to test receiver robustness.
 - **IMU Data**: Appends IMU packets if enabled, to simulate additional sensor data.
 
-## How to Run
-1. **Install Dependencies**
-From the same directory, install required dependencies:
-```bash
-pip install -r requirements.txt
-```
 
-2. **Prepare Data Files**
-
-Place your .npy data files in the ```simulator_data/``` directory.
-If using IMU functionality, ensure you have the correct IMU data files referenced in the script (adjust path in the arguments or within utils.py if needed).
-
-3. **Run the Simulator**
-Execute ```datalogger_simulator.py``` with your desired arguments.
-This example will load data from ```simulator_data/track132_5minchunks/``` and organize the data according to the firmware version 1240. The data is sent to to port 1045 at IP address 192.168.100.235 
-
-```bash
-python datalogger_simulator.py \
-    --ip 192.168.100.235 \
-    --port 1045 \
-    --data_dir simulator_data/track132_5minchunks/ \
-    --fw 1240 \
-```
 ## Notes
-**High Priority**: The simulator can set high priority for the process (using ```SetHighPriority()``` in ```utils.py```) if your system supports it.
+**High Priority**: The simulator can set high priority (low niceness) for the process (using ```SetHighPriority()``` in ```utils.py```) if using a Unix based system.
+
 **Multiprocessing**: Uses multiple processes to preload the next .npy file while the current one is streaming. This helps achieve smoother, more real-time data streaming.
 
-### Installation and build for DataLogger Simulator
+### Installation and build for Simulator
 1. Install dependencies:
 ```bash
 cd simulator_program/
@@ -290,7 +271,7 @@ pip install -r requirements.txt
 
 2. Download data:
 
-By default, the program reads in data from folder **simulator_data/track132_5minchunks/**
+By default, the program reads in data from folder ```simulator_data/track132_5minchunks/```
 
 [Download](https://drive.google.com/drive/folders/1v8sgYyQATcsUkzAI6AcUaiMpq5Wi37y1?usp=sharing) the track132_5minchunks/ folder and place it in the simulator_data/ directory.
 
@@ -304,3 +285,43 @@ python datalogger_simulator.py --ip self --fw 1240 --port 1045
 ```
 
 Otherwise, specify the correct IP address (--ip) and port (--port).
+
+## Run Example
+
+1. **Prepare Data Files**
+
+Place your .npy data files in the ```simulator_data/``` directory.
+If using IMU functionality, ensure you have the correct IMU data files referenced in the script (adjust path in the arguments or within utils.py if needed).
+
+
+1. **Run the Listener**
+
+```bash
+cd listener_program
+./bin/Listener config_files/volumetric.json 50000
+```
+
+This will run the Listener program according to the specifications of the ```config_files/volumetric.json``` configuration file. The program will auomatically terminate after ```50000``` seconds.
+
+3. **Run the Simulator**
+
+```bash
+python datalogger_simulator.py \
+    --ip self \
+    --port 1045 \
+    --data_dir simulator_data/track132_5minchunks/ \
+    --fw 1240 \
+```
+
+This example will by default load data from ```simulator_data/track132_5minchunks/``` and organize the data according to the firmware version ```1240```. The data is sent to to port ```1045``` at IP address ```self```, which is translated to the loopback address.
+
+## Announcements
+12/11/2014: FreeWILLI was successfully deployed on a [Wirewalker](https://www.delmarocean.com/) using a planar hydrophone configuration.
+Location: San Diego Trough, (32°51'14.2"N 117°37'05.2"W)
+<div style="display: flex; align-items: flex-start;">
+  <div style="flex: 2;">
+    </div>
+  <div style="flex: 1; text-align: center; padding-left: 20px;">
+    <img src="supplemental/images/deployment_12_11_24.jpg" alt="Deployment121124" width="80%">
+  </div>
+</div>
