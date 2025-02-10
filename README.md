@@ -20,18 +20,37 @@ The FreeWILLI project aims to provide a modular suite of algorithms for real-tim
 
 ## Table of Contents
 
-1. [Repository Structure](#repository-structure)  
-2. [Listener](#listener)
+1. [Download FreeWILLI](#download-freewilli)
+2. [Repository Structure](#repository-structure)
+3. [Listener](#listener)
    - [Technical Overview](#technical-overview)
    - [Signal Processing Pipeline](#signal-processing-pipeline)
    - [Directory Structure](#directory-structure)   
-   - [Dependencies](#dependencies)  
-     - [Installing Dependencies on Ubuntu/Debian](#installing-dependencies-on-ubuntudebian)  
-     - [Installing Dependencies on macOS](#installing-dependencies-on-macos)  
+   - [Dependencies](#dependencies)
+     - [Installing with Docker (Recommended)](#installing-with-docker-(recommended))
+     - [Manual Installation on Ubuntu/Debian](#manual-installation-on-ubuntudebian)  
+     - [Manual Installation on macOS](#manual-installation-on-macos)  
    - [Build Program (Ubuntu/Debian & macOS)](#build-program-ubuntudebian--macos)  
 4. [Simulator](#simulator)
 5. [Run Example](#run-example)
 6. [Announcements](#announcements)
+
+## Download FreeWILLI
+
+1. Clone the repository:
+
+``` bash
+git clone https://github.com/JosephLWalker96/FreeWILLI.git
+cd FreeWILLI
+```
+
+2. Initialize and Update Submodules:
+Run the following commands from the root of the repository:
+
+```bash
+git submodule init
+git submodule update --init --recursive
+```
 
 ## Repository Structure
 
@@ -112,7 +131,28 @@ Top-level Files:
 - **nlohmann-json**: A JSON library for parsing and managing configuration files.
 - **ONNX Runtime**: Used for running machine learning models in the program.
 
-### Installing Dependencies on Ubuntu/Debian
+### Installing with Docker (Recommended)
+
+1. Build Docker Image with a Custom Port
+
+By default, it will use port 1045, but you can specify a custom port at build time:
+```bash
+cd listener_program/
+docker build --build-arg PORT=1045 -t freewilli-exec .
+```
+
+2. Run the Container
+
+You can run the container and explicitly map the port if needed:
+```bash
+docker run --rm -it --network host -v $(pwd)/FreeWILLI:/app freewilli-exec
+```
+or with explicit port mapping:
+```bash
+docker run --rm -it -p 1045:1045 --network host -v $(pwd)/FreeWILLI:/app freewilli-exec
+```
+
+### Manual Installation on Ubuntu/Debian
 1. Example Installing CMake 3.29.7 on Linux x86
 Use wget to download the precompiled binary from the official CMake website:
 ```bash
@@ -144,7 +184,7 @@ sudo cp -r onnxruntime-linux-x64-1.14.1/include/* /usr/local/include/
 sudo cp -r onnxruntime-linux-x64-1.14.1/lib/* /usr/local/lib/
 ```
 
-### Installing Dependencies on macOS
+### Manual Installation on macOS
 1. Example Installing CMake 3.29.7 on macOS
 Use curl to download the precompiled binary from the official CMake website:
 ```bash
@@ -185,22 +225,7 @@ sudo cp -r onnxruntime-osx-arm64-1.19.2/lib/* /usr/local/lib/
 
 ### Build program (Ubuntu/Debian & macOS)
 
-1. Clone the repository:
-
-``` bash
-git clone https://github.com/JosephLWalker96/FreeWILLI.git
-cd FreeWILLI
-```
-
-2. Initialize and Update Submodules:
-Run the following commands from the root of the repository:
-
-```bash
-git submodule init
-git submodule update --init --recursive
-```
-
-3. Build the program:
+1. Build the program:
 ```bash
 cd listener_program/
 mkdir out/ && cd out
@@ -208,7 +233,7 @@ cmake ..
 make -j$(nproc)
 ```
 
-4. Run the binary:
+2. Run the binary:
 ```bash
 cd ..
 ./bin/Listener config_files/volumetric.json 50000
