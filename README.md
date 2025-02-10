@@ -32,8 +32,10 @@ The FreeWILLI project aims to provide a modular suite of algorithms for real-tim
      - [Manual Installation on macOS](#manual-installation-on-macos)  
    - [Build Program (Ubuntu/Debian & macOS)](#build-program-ubuntudebian--macos)  
 4. [Simulator](#simulator)
-5. [Run Example](#run-example)
-6. [Announcements](#announcements)
+   - [Installing with Docker (Recommended)](#installing-with-docker-(recommended))
+   - [Manual Installation on Ubuntu/Debian](#manual-installation-on-ubuntudebian) 
+6. [Run Example](#run-example)
+7. [Announcements](#announcements)
 
 ## Download FreeWILLI
 
@@ -285,7 +287,29 @@ Sends packets over UDP to a specified IP and port.
 
 **Multiprocessing**: Uses multiple processes to preload the next .npy file while the current one is streaming. This helps achieve smoother, more real-time data streaming.
 
-### Installation and build for Simulator
+### Installing with Docker (Recommended)
+
+1. Build Docker Image with a Custom Port
+
+By default, it will use port 1045, but you can specify a custom port at build time:
+```bash
+cd listener_program/
+docker build --build-arg PORT=1045 -t freewilli-exec .
+```
+
+2. Run the Container
+
+You can run the container and explicitly map the port if needed:
+```bash
+docker run --rm -it --network host -v $(pwd)/FreeWILLI:/app freewilli-exec
+```
+or with explicit port mapping:
+```bash
+docker run --rm -it -p 1045:1045 --network host -v $(pwd)/FreeWILLI:/app freewilli-exec
+```
+
+
+### Manual Installation on Ubuntu/Debian
 1. Install dependencies:
 ```bash
 cd simulator_program/
