@@ -6,7 +6,7 @@
   </div>
 </div>
 
-### FreeWILLI: Free software for Whale Identification and Localization with Low-power Implementation
+## FreeWILLI: Free software for Whale Identification and Localization with Low-power Implementation
 
 The FreeWILLI project aims to provide a modular suite of algorithms for real-time passive acoustic array data processing, including:
 
@@ -14,7 +14,7 @@ The FreeWILLI project aims to provide a modular suite of algorithms for real-tim
 
 🎯: **Multi-Target Tracking** – Track multiple sources in real-time using a novel hybrid cluster-filter approach.
 
-🧠: **Neural Network Inference** – Run machine learning models for classification and analysis.
+🧠: **Neural Network Inference** – Perform real-time inference using ONNX-based deep learning models.
  
  Originally developed for real-time marine mammal monitoring, FreeWILLI is adaptable for a wide range of applications. Feel free to leverage and customize this software for your needs!
 
@@ -27,12 +27,12 @@ The FreeWILLI project aims to provide a modular suite of algorithms for real-tim
    - [Signal Processing Pipeline](#signal-processing-pipeline)
    - [Directory Structure](#directory-structure)   
    - [Dependencies](#dependencies)
-     - [Installing with Docker (Recommended)](#installing-with-docker-(recommended))
+     - [Installing with Docker (Recommended)](#installing-with-docker-recommended-listener)
      - [Manual Installation on Ubuntu/Debian](#manual-installation-on-ubuntudebian)  
      - [Manual Installation on macOS](#manual-installation-on-macos)  
    - [Build Program (Ubuntu/Debian & macOS)](#build-program-ubuntudebian--macos)  
 4. [Simulator](#simulator)
-   - [Installing with Docker (Recommended)](#installing-with-docker-(recommended))
+   - [Installing with Docker (Recommended)](#installing-with-docker-recommended-simulator)
    - [Manual Installation on Ubuntu/Debian](#manual-installation-on-ubuntudebian) 
 6. [Run Example](#run-example)
 7. [Announcements](#announcements)
@@ -75,7 +75,7 @@ The repository is organized as follows:
 
 ## Listener
 
-## Technical Overview
+### Technical Overview
 
 Uses a **producer/consumer concurrency pattern** with threads created in ```src/main.cpp```. Shared data and synchronization are handled by ```SharedDataManager()``` from ```src/shared_data_manager.h```
 
@@ -85,7 +85,7 @@ Key architectural features include:
 
 **Factory Pattern**: Objects for various algorithms (e.g., filters, detection modules) are dynamically created using a factory.
 
-## Signal Processing Pipeline ##
+### Signal Processing Pipeline
 
 The signal processing pipeline consists of the following main steps, executed sequentially:
 
@@ -100,7 +100,7 @@ Time Difference of Arrival (TDOA) is calculated using the Generalized Cross-Corr
 
 5. *DOA Estimation*: The Direction of Arrival (DOA) of detected signals is estimated using a computationally efficient approach. This step leverages precomputed matrices derived from the Singular Value Decomposition (SVD) of the hydrophone position matrix. The hydrophone position matrix is loaded from a file in the ```receiver_pos/``` directory.
 
-## Directory Structure
+### Directory Structure
 Top-level Directories:
 - ```benchmark/```: Contains source code for autmated benchmark tests.
 - ```bin/```: Stores compiled executables of the program.
@@ -133,7 +133,7 @@ Top-level Files:
 - **nlohmann-json**: A JSON library for parsing and managing configuration files.
 - **ONNX Runtime**: Used for running machine learning models in the program.
 
-### Installing with Docker (Recommended)
+#### Installing with Docker (Recommended) {#installing-with-docker-recommended-listener}
 
 1. Build Docker Image with a Custom Port
 
@@ -147,14 +147,14 @@ docker build --build-arg PORT=1045 -t freewilli-exec .
 
 You can run the container and explicitly map the port if needed:
 ```bash
-docker run --rm -it --network host -v $(pwd)/FreeWILLI:/app freewilli-exec
+docker run --rm -it --network host -v $(pwd):/app freewilli-exec
 ```
 or with explicit port mapping:
 ```bash
 docker run --rm -it -p 1045:1045 --network host -v $(pwd)/FreeWILLI:/app freewilli-exec
 ```
 
-### Manual Installation on Ubuntu/Debian
+#### Manual Installation on Ubuntu/Debian
 1. Example Installing CMake 3.29.7 on Linux x86
 Use wget to download the precompiled binary from the official CMake website:
 ```bash
@@ -186,7 +186,7 @@ sudo cp -r onnxruntime-linux-x64-1.14.1/include/* /usr/local/include/
 sudo cp -r onnxruntime-linux-x64-1.14.1/lib/* /usr/local/lib/
 ```
 
-### Manual Installation on macOS
+#### Manual Installation on macOS
 1. Example Installing CMake 3.29.7 on macOS
 Use curl to download the precompiled binary from the official CMake website:
 ```bash
@@ -240,11 +240,11 @@ make -j$(nproc)
 cd ..
 ./bin/Listener config_files/volumetric.json 50000
 ```
-# Simulator
+## Simulator
 
 A Python-based simulator that streams prerecorded data packets over UDP. The simulator mimics the behavior of firmware-based data logging systems. It can read .npy files, process their contents (e.g., apply channel offsets for TDOA testing, scale the data, etc.), and send out structured UDP packets for testing the Listener program.
 
-## File Structure
+### File Structure
 ```bash
 .
 ├── datalogger_simulator.py   # The main simulation script
@@ -282,12 +282,12 @@ Sends packets over UDP to a specified IP and port.
 - **IMU Data**: Appends IMU packets if enabled, to simulate additional sensor data.
 
 
-## Notes
+### Notes
 **High Priority**: The simulator can set high priority (low niceness) for the process (using ```SetHighPriority()``` in ```utils.py```) if using a Unix based system.
 
 **Multiprocessing**: Uses multiple processes to preload the next .npy file while the current one is streaming. This helps achieve smoother, more real-time data streaming.
 
-### Installing with Docker (Recommended)
+### Installing with Docker (Recommended) {#installing-with-docker-recommended-simulator}
 
 1. Build Docker Image with a Custom Port
 
@@ -335,7 +335,7 @@ python datalogger_simulator.py --ip self --fw 1240 --port 1045
 
 Otherwise, specify the correct IP address (--ip) and port (--port).
 
-## Run Example
+### Run Example
 
 1. **Prepare Data Files**
 
@@ -365,7 +365,7 @@ python datalogger_simulator.py \
 This example will by default load data from ```simulator_data/track132_5minchunks/``` and organize the data according to the firmware version ```1240```. The data is sent to to port ```1045``` at IP address ```self```, which is translated to the loopback address.
 
 ## Announcements
-12/11/2014: FreeWILLI was successfully deployed on a [Wirewalker](https://www.delmarocean.com/) using a planar hydrophone configuration.
+12/11/2024: FreeWILLI was successfully deployed on a [Wirewalker](https://www.delmarocean.com/) using a planar hydrophone configuration.
 Location: San Diego Trough, (32°51'14.2"N 117°37'05.2"W)
 <div style="display: flex; align-items: flex-start;">
   <div style="flex: 2;">
