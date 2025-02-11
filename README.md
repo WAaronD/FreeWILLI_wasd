@@ -27,13 +27,13 @@ The FreeWILLI project aims to provide a modular suite of algorithms for real-tim
    - [Signal Processing Pipeline](#signal-processing-pipeline)
    - [Directory Structure](#directory-structure)   
    - [Dependencies](#dependencies)
-     - [Installing with Docker (Recommended)](#installing-with-docker-recommended-listener)
-     - [Manual Installation on Ubuntu/Debian](#manual-installation-on-ubuntudebian)  
-     - [Manual Installation on macOS](#manual-installation-on-macos)  
+     - [Installing Listener Dependencies with Docker (Recommended)](#installing-listener-dependencies-with-docker-recommended)
+     - [Installing Listener Dependencies Manually on Ubuntu/Debian](#installing-listener-dependencies-with-docker-ubuntudebian)  
+     - [Installing Listener Dependencies Manually on macOS](#installing-listener-dependencies-with-docker-macos)  
    - [Build Program (Ubuntu/Debian & macOS)](#build-program-ubuntudebian--macos)  
 4. [Simulator](#simulator)
-   - [Installing with Docker (Recommended)](#installing-with-docker-recommended-simulator)
-   - [Manual Installation on Ubuntu/Debian](#manual-installation-on-ubuntudebian) 
+   - [Installing Simulator Dependencies with Docker (Recommended)](#installing-simulator-dependencies-with-docker-recommended)
+   - [Installing Simulator Dependencies Manually on Ubuntu/Debian](#installing-simulator-dependencies-with-docker-ubuntudebian) 
 6. [Run Example](#run-example)
 7. [Announcements](#announcements)
 
@@ -133,7 +133,7 @@ Top-level Files:
 - **nlohmann-json**: A JSON library for parsing and managing configuration files.
 - **ONNX Runtime**: Used for running machine learning models in the program.
 
-#### Installing with Docker (Recommended) {#installing-with-docker-recommended-listener}
+#### Installing Listener Dependencies with Docker (Recommended)
 
 1. Build Docker Image with a Custom Port
 
@@ -154,7 +154,7 @@ or with explicit port mapping:
 docker run --rm -it -p 1045:1045 --network host -v $(pwd)/FreeWILLI:/app freewilli-exec
 ```
 
-#### Manual Installation on Ubuntu/Debian
+#### Installing Listener Dependencies Manually on Ubuntu/Debian
 1. Example Installing CMake 3.29.7 on Linux x86
 Use wget to download the precompiled binary from the official CMake website:
 ```bash
@@ -186,7 +186,7 @@ sudo cp -r onnxruntime-linux-x64-1.14.1/include/* /usr/local/include/
 sudo cp -r onnxruntime-linux-x64-1.14.1/lib/* /usr/local/lib/
 ```
 
-#### Manual Installation on macOS
+#### Installing Listener Dependencies Manually on macOS
 1. Example Installing CMake 3.29.7 on macOS
 Use curl to download the precompiled binary from the official CMake website:
 ```bash
@@ -287,7 +287,7 @@ Sends packets over UDP to a specified IP and port.
 
 **Multiprocessing**: Uses multiple processes to preload the next .npy file while the current one is streaming. This helps achieve smoother, more real-time data streaming.
 
-### Installing with Docker (Recommended) {#installing-with-docker-recommended-simulator}
+### Installing Simulator Dependencies with Docker (Recommended)
 
 1. Build Docker Image with a Custom Port
 
@@ -309,7 +309,7 @@ docker run --rm -it -p 1045:1045 --network host -v $(pwd)/FreeWILLI:/app freewil
 ```
 
 
-### Manual Installation on Ubuntu/Debian
+### Installing Simulator Dependencies Manually on Ubuntu/Debian
 1. Install dependencies:
 ```bash
 cd simulator_program/
