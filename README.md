@@ -30,7 +30,8 @@ The FreeWILLI project aims to provide a modular suite of algorithms for real-tim
      - [Installing Listener Dependencies with Docker (Recommended)](#installing-listener-dependencies-with-docker-recommended)
      - [Installing Listener Dependencies Manually on Ubuntu/Debian](#installing-listener-dependencies-manually-on-ubuntudebian)  
      - [Installing Listener Dependencies Manually on macOS](#installing-listener-dependencies-manually-on-macos)  
-   - [Build Program (Ubuntu/Debian & macOS)](#build-program-ubuntudebian--macos)  
+   - [Native Build: Ubuntu/Debian & macOS](#native-build-ubuntudebian--macos)
+   - [Cross-Compilation with Docker: Raspberry Pi Zero2W](#cross-compilation-with-docker-raspberry-pi-zero2w)
 4. [Simulator](#simulator)
    - [Installing Simulator Dependencies with Docker (Recommended)](#installing-simulator-dependencies-with-docker-recommended)
    - [Installing Simulator Dependencies Manually on Ubuntu/Debian](#installing-simulator-dependencies-manually-on-ubuntudebian) 
@@ -222,7 +223,7 @@ sudo cp -r onnxruntime-osx-arm64-1.19.2/include/* /usr/local/include/onnxruntime
 sudo cp -r onnxruntime-osx-arm64-1.19.2/lib/* /usr/local/lib/
 ```
 
-### Build program (Ubuntu/Debian & macOS)
+### Native Build: Ubuntu/Debian & macOS
 
 1. Build the program:
 ```bash
@@ -237,6 +238,42 @@ make -j$(nproc)
 cd ..
 ./bin/Listener config_files/volumetric.json 50000
 ```
+
+### Cross-Compilation with Docker: Raspberry Pi Zero2W
+This section provides step-by-step instructions to cross-compile your program for the Raspberry Pi Zero 2W using Docker.
+
+By using a prebuilt Docker image, you avoid manually setting up a cross-compilation toolchain on your local machine.
+
+1. First, pull the prebuilt cross-compiler Docker image from Docker Hub:
+```bash
+docker pull josephlwalker96/cross-compiler:latest
+```
+
+2. Navigate to the ```listener_program/``` directory and run the container:
+```bash
+cd listener_program/
+docker run --rm -it -v $(pwd):/app josephlwalker96/cross-compiler:latest
+```
+
+3. Inside the container, create a build directory and compile the program:
+```bash
+mkdir out/ && cd out
+cmake -DCMAKE_TOOLCHAIN_FILE=../toolchain.cmake ..
+make -j$(nproc)
+```
+
+4. After compilation, verify the generated binaries:
+Cross-compiled binaries are denoted with an 'X' appended to their names.
+
+```bash
+ls ../bin/*
+```
+
+Expected output:
+```bash
+../bin/ListenX  ../bin/UnitTestsX
+```
+
 ## Simulator
 
 A Python-based simulator that streams prerecorded data packets over UDP. The simulator mimics the behavior of firmware-based data logging systems. It can read .npy files, process their contents (e.g., apply channel offsets for TDOA testing, scale the data, etc.), and send out structured UDP packets for testing the Listener program.
