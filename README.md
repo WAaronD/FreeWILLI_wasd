@@ -140,19 +140,16 @@ Top-level Files:
 By default, it will use port 1045, but you can specify a custom port at build time:
 ```bash
 cd listener_program/
-docker build --build-arg PORT=1045 -t freewilli-exec .
+docker build -t freewilli-exec .
 ```
 
 2. Run the Container
 
-You can run the container and explicitly map the port if needed:
+You can run the container:
 ```bash
 docker run --rm -it --network host -v $(pwd):/app freewilli-exec
 ```
-or with explicit port mapping:
-```bash
-docker run --rm -it -p 1045:1045 --network host -v $(pwd)/FreeWILLI:/app freewilli-exec
-```
+See section on installing simulator with docker. Then see section on running track example.
 
 #### Installing Listener Dependencies Manually on Ubuntu/Debian
 1. Example Installing CMake 3.29.7 on Linux x86
@@ -293,21 +290,19 @@ Sends packets over UDP to a specified IP and port.
 
 By default, it will use port 1045, but you can specify a custom port at build time:
 ```bash
-cd listener_program/
-docker build --build-arg PORT=1045 -t freewilli-exec .
+cd simulator_program/
+docker build -t datalogger-simulator .
 ```
 
 2. Run the Container
 
-You can run the container and explicitly map the port if needed:
+You can run the container and explicitly map the port:
 ```bash
-docker run --rm -it --network host -v $(pwd)/FreeWILLI:/app freewilli-exec
-```
-or with explicit port mapping:
-```bash
-docker run --rm -it -p 1045:1045 --network host -v $(pwd)/FreeWILLI:/app freewilli-exec
+docker run --rm -it --network host -v $(pwd):/app -v $(pwd)/simulator_data:/app/simulator_data datalogger-simulator /bin/bash
 ```
 
+3. Run the Simulator
+python datalogger_simulator.py --ip self --fw 1240 --port 1045
 
 ### Installing Simulator Dependencies Manually on Ubuntu/Debian
 1. Install dependencies:
