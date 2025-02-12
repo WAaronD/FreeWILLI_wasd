@@ -109,9 +109,9 @@ void OutputManager::clearBuffer()
 /**
  * @brief Appends a single data row to the buffer.
  */
-void OutputManager::appendToBuffer(const float peakAmp, const float doaX, const float doaY, const float doaZ,
-                                   const Eigen::VectorXf& tdoaVector, const Eigen::VectorXf& xCorrAmps,
-                                   const TimePoint& peakTime)
+void OutputManager::appendToBuffer(
+    const float peakAmp, const float doaX, const float doaY, const float doaZ, const Eigen::VectorXf& tdoaVector,
+    const Eigen::VectorXf& xCorrAmps, const TimePoint& peakTime)
 {
     mBuffer.mAmps.push_back(peakAmp);
     mBuffer.mDoaX.push_back(doaX);
@@ -214,8 +214,8 @@ void OutputManager::flushBufferIfNecessary()
  * standard error stream.
  *
  */
-void OutputManager::writeDataToCerr(std::span<TimePoint> errorTimestamps,
-                                    const std::vector<std::vector<uint8_t>>& erroredDataBytes)
+void OutputManager::writeDataToCerr(
+    std::span<TimePoint> errorTimestamps, const std::vector<std::vector<uint8_t>>& erroredDataBytes)
 {
     std::stringstream errorMessage;  // Compose message to dispatch
 
@@ -253,11 +253,15 @@ void OutputManager::writeDataToCerr(std::span<TimePoint> errorTimestamps,
  * @param label The label to save as the first column.
  * @param frequencyDomainData The frequency domain data (complex values).
  */
-void OutputManager::saveSpectraForTraining(const std::string& filename, int label,
-                                           const Eigen::VectorXcf& frequencyDomainData)
+void OutputManager::saveSpectraForTraining(
+    const std::string& filename, int label, const Eigen::VectorXcf& frequencyDomainData)
 {
     // Compute the magnitude of the spectra
     Eigen::VectorXf spectraToSave = frequencyDomainData.array().abs();
+
+    std::cout << "Saved spectra: " << std::endl;
+    std::cout << spectraToSave.tail(500).head(5).transpose() << std::endl;
+    std::cout << spectraToSave.tail(500).tail(5).transpose() << std::endl;
 
     // Check if the file exists
     std::ifstream fileCheck(filename);

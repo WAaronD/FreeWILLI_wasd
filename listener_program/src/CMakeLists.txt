@@ -25,13 +25,13 @@ target_link_libraries(MainLib PRIVATE
 )
 
 # Add executable target
-add_executable(HarpListen main.cpp)
+add_executable(Listen main.cpp)
 
 # Precompiled headers
 target_precompile_headers(MainLib PRIVATE pch.h)
-get_target_property(PCH_SOURCES HarpListen PRECOMPILE_HEADERS)
+get_target_property(PCH_SOURCES Listen PRECOMPILE_HEADERS)
 message(STATUS "Precompiled headers: ${PCH_SOURCES}")
 
-# Include directories and link libraries for HarpListen
-target_include_directories(HarpListen PRIVATE ${THIRD_PARTY_INCLUDE_DIRS})
-target_link_libraries(HarpListen PRIVATE MainLib ${THIRD_PARTY_LIBRARIES})
+# Include directories and link libraries for Listen
+target_include_directories(Listen PRIVATE ${THIRD_PARTY_INCLUDE_DIRS})
+target_link_libraries(Listen PRIVATE MainLib ${THIRD_PARTY_LIBRARIES})

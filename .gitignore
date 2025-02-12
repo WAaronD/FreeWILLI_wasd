@@ -1,4 +1,5 @@
 Presentations/
+supplemental/crosscomp/
 ML_models/*
 !ML_models/model_quantized_static.onnx
 Private/
