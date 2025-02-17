@@ -36,6 +36,7 @@ COPY simulator_program/requirements.txt .
 COPY simulator_program/datalogger_simulator.py .
 COPY simulator_program/utils.py .
 COPY simulator_program/firmware_config/ firmware_config/
+COPY integration_testing/ integration_testing/
 COPY README.md .
 
 # Install Python dependencies
