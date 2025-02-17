@@ -3,9 +3,9 @@ Presentations/
 # Ignore everything inside simulator_data/
 simulator_program/simulator_data/*
 
-# But keep everything inside integration_test/
+# But keep the integration_test/ directory and its contents
 !simulator_program/simulator_data/integration_test/
-!simulator_program/simulator_data/integration_test/*
+!simulator_program/simulator_data/integration_test/**  # Track all subdirectories and files
 
 
 supplemental/crosscomp/
