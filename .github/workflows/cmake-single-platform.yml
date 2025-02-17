@@ -28,8 +28,8 @@ jobs:
     #    sudo cp -r onnxruntime-linux-x64-1.14.1/include/* /usr/local/include/
     #    sudo cp -r onnxruntime-linux-x64-1.14.1/lib/* /usr/local/lib/#
 
-    #- name: Include submodules
-    #  run: git submodule update --init --recursive
+    - name: Include submodules
+      run: git submodule update --init --recursive
 
     #- name: Configure CMake
     #  working-directory: ${{github.workspace}}/listener_program
