@@ -1,19 +1,18 @@
-# Use an official Ubuntu base image
+# Use an official Ubuntu base image with Python support
 FROM ubuntu:22.04
-
-# Set default argument value (can be overridden at build time)
-#ARG PORT=1045
 
 # Set non-interactive mode for APT to avoid prompts
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install necessary dependencies
+# Install necessary system dependencies
 RUN apt-get update && apt-get install -y \
     wget \
     build-essential \
     libfftw3-dev \
     libeigen3-dev \
     nlohmann-json3-dev \
+    python3.9 \
+    python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
 # Install CMake 3.29.7
@@ -29,11 +28,15 @@ RUN wget https://github.com/microsoft/onnxruntime/releases/download/v1.14.1/onnx
     cp -r onnxruntime-linux-x64-1.14.1/lib/* /usr/local/lib/ && \
     rm -rf onnxruntime-linux-x64-1.14.1.tgz onnxruntime-linux-x64-1.14.1
 
-# Set working directory (this will be overridden when mounting)
+# Set working directory
 WORKDIR /app
 
-# Use the build argument to expose the port dynamically
-#EXPOSE ${PORT}
+# Copy relevant files from the correct locations
+COPY simulator_program/requirements.txt .
+COPY simulator_program/datalogger_simulator.py .
+COPY simulator_program/utils.py .
+COPY simulator_program/firmware_config/ firmware_config/
+COPY README.md .
 
-# Default entrypoint: just start a shell for interactive use
-CMD ["/bin/bash"]
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt

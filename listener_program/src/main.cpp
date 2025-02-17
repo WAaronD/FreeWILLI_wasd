@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
         socketManager->restartListener();
 
         SharedDataManager sharedDataManager;
-        OutputManager outputManager(std::chrono::seconds(std::stoi(argv[2])));
+        OutputManager outputManager(std::chrono::seconds(std::stoi(argv[2])), pipelineVars.integrationTesting, pipelineVars.loggingDirectory);
 
         Pipeline pipeline(outputManager, sharedDataManager, pipelineVars);
 

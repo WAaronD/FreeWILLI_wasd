@@ -1,11 +1,13 @@
 #include "output_manager.h"
 
-OutputManager::OutputManager(std::chrono::seconds programRuntime)
+OutputManager::OutputManager(std::chrono::seconds programRuntime, bool integrationTesting, const std::string& loggingDirectory)
     : mFlushInterval(std::chrono::seconds(30)),
       mBufferSizeThreshold(1000),
       mLastFlushTime(std::chrono::steady_clock::now()),
       mProgramRuntime(programRuntime),
-      mProgramStartTime(std::chrono::system_clock::now())
+      mProgramStartTime(std::chrono::system_clock::now()),
+      mIntegrationTesting(integrationTesting),
+      mLoggingDirectory(loggingDirectory)
 {
 }
 
@@ -21,7 +23,7 @@ OutputManager::OutputManager(std::chrono::seconds programRuntime)
  */
 void OutputManager::initializeOutputFile(const TimePoint& timestamp, const int numChannels)
 {
-    mDetectionOutputFile = "deployment_files/" + convertTimePointToString(timestamp);
+    mDetectionOutputFile = mLoggingDirectory + convertTimePointToString(timestamp);
     // initializeOutputFile(numChannels);
     std::cout << "Creating and writing to file: " << mDetectionOutputFile << std::endl;
 
@@ -202,7 +204,7 @@ void OutputManager::flushBufferIfNecessary()
     auto timeSinceLastFlush =
         std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - mLastFlushTime);
 
-    if (bufferSize >= mBufferSizeThreshold || mFlushInterval <= timeSinceLastFlush)
+    if (mIntegrationTesting || bufferSize >= mBufferSizeThreshold || mFlushInterval <= timeSinceLastFlush)
     {
         write();
         clearBuffer();

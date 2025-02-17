@@ -3,7 +3,9 @@
 
 struct PipelineVariables
 {
+    bool integrationTesting = false;
     float timeDomainThreshold = 0;
+    std::string loggingDirectory = "";
     std::string timeDomainDetector = "";
     std::string frequencyDomainDetector = "";
     float energyDetectionThreshold = 0;
