@@ -1,9 +1,17 @@
 Presentations/
+
+# Ignore everything inside simulator_data/
+simulator_program/simulator_data/*
+
+# But keep everything inside integration_test/
+!simulator_program/simulator_data/integration_test/
+!simulator_program/simulator_data/integration_test/*
+
+
 supplemental/crosscomp/
 ML_models/*
 !ML_models/model_quantized_static.onnx
 Private/
-simulator_data/
 __pycache__/
 *.o
 nohup.out
