@@ -14,4 +14,4 @@ jobs:
       - run:
           name: Run Integration Test
           command: |
-            docker run --rm --network host -v $(pwd):/app your-dockerhub-username/freewilli-exec ./integration_testing/test_integration.sh
+            docker run --rm --network host -v $(pwd):/app josephlwalker96/freewilli-exec ./integration_testing/test_integration.sh
