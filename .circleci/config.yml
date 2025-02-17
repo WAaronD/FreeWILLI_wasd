@@ -18,12 +18,15 @@ jobs:
           version: 20.10  # Enable Docker inside CircleCI
       - checkout
       - run:
+          name: Debug - Check Mounted Files
+          command: ls -l $(pwd)/integration_testing
+      - run:
           name: Pull Docker Image
           command: docker pull josephlwalker96/freewilli-exec:latest
       - run:
           name: Run Integration Test
           command: |
-            docker run --rm -v $(pwd):/app -w /app josephlwalker96/freewilli-exec ./integration_testing/test_integration.sh
+            docker run --rm -v $(pwd):/app josephlwalker96/freewilli-exec bash -c "ls -l /app/integration_testing && ./integration_testing/test_integration.sh"
 
 workflows:
   version: 2
