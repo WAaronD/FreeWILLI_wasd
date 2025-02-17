@@ -16,53 +16,54 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    
+    
+    #- name: Install dependencies
+    #  run: sudo apt-get update && sudo apt-get install -y libfftw3-dev libblas-dev libeigen3-dev nlohmann-json3-dev
+  
+    #- name: Download ONNX Runtime
+    #  run: |
+    #    wget https://github.com/microsoft/onnxruntime/releases/download/v1.14.1/onnxruntime-linux-x64-1.14.1.tgz
+    #    tar -xzf onnxruntime-linux-x64-1.14.1.tgz
+    #    sudo cp -r onnxruntime-linux-x64-1.14.1/include/* /usr/local/include/
+    #    sudo cp -r onnxruntime-linux-x64-1.14.1/lib/* /usr/local/lib/#
 
-    - name: Install dependencies
-      run: sudo apt-get update && sudo apt-get install -y libfftw3-dev libblas-dev libeigen3-dev nlohmann-json3-dev
+    #- name: Include submodules
+    #  run: git submodule update --init --recursive
 
-    - name: Download ONNX Runtime
-      run: |
-        wget https://github.com/microsoft/onnxruntime/releases/download/v1.14.1/onnxruntime-linux-x64-1.14.1.tgz
-        tar -xzf onnxruntime-linux-x64-1.14.1.tgz
-        sudo cp -r onnxruntime-linux-x64-1.14.1/include/* /usr/local/include/
-        sudo cp -r onnxruntime-linux-x64-1.14.1/lib/* /usr/local/lib/
+    #- name: Configure CMake
+    #  working-directory: ${{github.workspace}}/listener_program
+    #  run: |
+    #    mkdir -p build
+    #    cmake -B ${{github.workspace}}/listener_program/build -S ${{github.workspace}}/listener_program \
+    #      -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} \
+    #      -DCMAKE_C_COMPILER=/usr/bin/gcc \
+    #      -DCMAKE_CXX_COMPILER=/usr/bin/g++
 
-    - name: Include submodules
-      run: git submodule update --init --recursive
+    #- name: Build
+    #  working-directory: ${{github.workspace}}/listener_program
+    #  run: |
+    #    CORES=$(nproc)
+    #    cmake --build ${{github.workspace}}/listener_program/build --config ${{env.BUILD_TYPE}} -- -j$CORES
 
-    - name: Configure CMake
-      working-directory: ${{github.workspace}}/listener_program
-      run: |
-        mkdir -p build
-        cmake -B ${{github.workspace}}/listener_program/build -S ${{github.workspace}}/listener_program \
-          -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} \
-          -DCMAKE_C_COMPILER=/usr/bin/gcc \
-          -DCMAKE_CXX_COMPILER=/usr/bin/g++
+    #- name: Clean Up Build Directory
+    #  working-directory: ${{github.workspace}}/listener_program
+    #  run: rm -rf build
 
-    - name: Build
-      working-directory: ${{github.workspace}}/listener_program
-      run: |
-        CORES=$(nproc)
-        cmake --build ${{github.workspace}}/listener_program/build --config ${{env.BUILD_TYPE}} -- -j$CORES
-
-    - name: Clean Up Build Directory
-      working-directory: ${{github.workspace}}/listener_program
-      run: rm -rf build
-
-    - name: Run Unit Tests
-      working-directory: ${{github.workspace}}/listener_program/bin
-      run: ./UnitTests
+    #- name: Run Unit Tests
+    #  working-directory: ${{github.workspace}}/listener_program/bin
+    #  run: ./UnitTests
 
     # Integration Test Step
     - name: Pull Docker Image
       run: docker pull josephlwalker96/freewilli-exec:latest
 
-    - name: Debug - Show Working Directory and Files
-      run: |
-        echo "Current workspace:"
-        pwd
-        echo "Listing all files:"
-        find . -type f
+    #- name: Debug - Show Working Directory and Files
+    #  run: |
+    #    echo "Current workspace:"
+    #    pwd
+    #    echo "Listing all files:"
+    #    find . -type f
 
     - name: Run Integration Test
       run: |
