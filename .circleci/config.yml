@@ -3,21 +3,15 @@ version: 2.1
 jobs:
   integration-test:
     docker:
-      - image: josephlwalker96/freewilli-exec:latest
-        network: host # Ensures UDP packets are sent/received
-        auth:
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_PASSWORD
+      - image: docker:20.10  # Use Docker-in-Docker
     steps:
+      - setup_remote_docker:
+          version: 20.10  # Enable Docker inside CircleCI
       - checkout
+      - run:
+          name: Load Docker Image
+          command: docker pull josephlwalker96/freewilli-exec:latest
       - run:
           name: Run Integration Test
           command: |
-            chmod +x integration_testing/test_integration.sh
-            ./integration_testing/test_integration.sh
-
-workflows:
-  version: 2
-  test:
-    jobs:
-      - integration-test
+            docker run --rm --network host -v $(pwd):/app your-dockerhub-username/freewilli-exec ./integration_testing/test_integration.sh
