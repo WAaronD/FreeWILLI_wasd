@@ -33,13 +33,33 @@ include_directories(${THIRD_PARTY_INCLUDE_DIRS})
 link_directories(${CMAKE_LIBRARY_PATH})
 
 # Find and append third-party libraries
+#if(CMAKE_CROSSCOMPILING) # assuming we are building on Ubuntu x86 and targeting R Pi Zero 2W
+#    set(ENABLE_AUTO_TEST FALSE)
+#    include("${CMAKE_SOURCE_DIR}/CrossCompileSettings.cmake")
+#    #include("${CMAKE_SOURCE_DIR}/VectorCompileSettings.cmake")
+#else ()
+#    include("${CMAKE_SOURCE_DIR}/NativeCompileSettings.cmake")
+#endif()
+
+
+# Detecting if we're cross-compiling
 if(CMAKE_CROSSCOMPILING) # assuming we are building on Ubuntu x86 and targeting R Pi Zero 2W
     set(ENABLE_AUTO_TEST FALSE)
-    include("${CMAKE_SOURCE_DIR}/CrossCompileSettings.cmake")
-    #include("${CMAKE_SOURCE_DIR}/VectorCompileSettings.cmake")
-else ()
+
+    # Check if we're doing static or dynamic linking
+    if (CMAKE_EXE_LINKER_FLAGS MATCHES "-static")
+        set(DynamicLinking FALSE)
+        include("${CMAKE_SOURCE_DIR}/CrossCompileSettingsStatic.cmake")
+    else()
+        set(DynamicLinking TRUE)
+        include("${CMAKE_SOURCE_DIR}/CrossCompileSettingsDynamic.cmake")
+    endif()
+
+else()
     include("${CMAKE_SOURCE_DIR}/NativeCompileSettings.cmake")
 endif()
+
+
 
 # Eigen3
 find_package (Eigen3 REQUIRED NO_MODULE)
