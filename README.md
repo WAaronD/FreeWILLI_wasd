@@ -148,8 +148,19 @@ docker build -t freewilli-exec .
 
 You can run the container:
 ```bash
-docker run --rm -it --network host -v $(pwd):/app freewilli-exec
+docker run --rm -it --network host --user $(id -u):$(id -g) -v $(pwd):/app freewilli-exec
 ```
+	
+| Argument | Description |
+| --------------- | --------------- |
+| --rm	| Removes the container after it exits to prevent leftover containers.|
+| -it	| Runs the container in interactive mode (-i for input, -t for a TTY).|
+| --network host	| Uses the host network instead of Docker's default bridge network. This allows the container to communicate with services on the host without port mapping.|
+| --user $(id -u):$(id -g) |	Runs the container as the current user (id -u for user ID, id -g for group ID), preventing root-owned files on the host system.|
+| -v $(pwd):/app	| Mounts the current directory ($(pwd)) to /app inside the container, allowing access to files from the host.|
+| freewilli-exec	| The name of the Docker image to run.|
+
+
 See section on installing simulator with docker. Then see section on running track example.
 
 #### Installing Listener Dependencies Manually on Ubuntu/Debian
@@ -321,25 +332,6 @@ Sends packets over UDP to a specified IP and port.
 
 **Multiprocessing**: Uses multiple processes to preload the next .npy file while the current one is streaming. This helps achieve smoother, more real-time data streaming.
 
-### Installing Simulator Dependencies with Docker (Recommended)
-
-1. Build Docker Image with a Custom Port
-
-By default, it will use port 1045, but you can specify a custom port at build time:
-```bash
-cd simulator_program/
-docker build -t datalogger-simulator .
-```
-
-2. Run the Container
-
-You can run the container and explicitly map the port:
-```bash
-docker run --rm -it --network host -v $(pwd):/app -v $(pwd)/simulator_data:/app/simulator_data datalogger-simulator /bin/bash
-```
-
-3. Run the Simulator
-python datalogger_simulator.py --ip self --fw 1240 --port 1045
 
 ### Installing Simulator Dependencies Manually on Ubuntu/Debian
 1. Install dependencies:
@@ -362,7 +354,7 @@ cd simulator_program/
 ```
 Assuming you are running the simulator on the same machine as the listener program, run the following:
 ```bash
-python datalogger_simulator.py --ip self --fw 1240 --port 1045
+python3 datalogger_simulator.py --ip self --fw 1240 --port 1045
 ```
 
 Otherwise, specify the correct IP address (--ip) and port (--port).
@@ -387,7 +379,7 @@ This will run the Listener program according to the specifications of the ```con
 3. **Run the Simulator**
 
 ```bash
-python datalogger_simulator.py \
+python3 datalogger_simulator.py \
     --ip self \
     --port 1045 \
     --data_dir simulator_data/track132_5minchunks/ \
