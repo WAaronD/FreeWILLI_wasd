@@ -22,19 +22,18 @@ The FreeWILLI project aims to provide a modular suite of algorithms for real-tim
 
 1. [Download FreeWILLI](#download-freewilli)
 2. [Repository Structure](#repository-structure)
-3. [Listener](#listener)
+3. [Dependencies](#dependencies)
+     - [Installing Dependencies with Docker (Recommended)](#installing-dependencies-with-docker-recommended)
+     - [Installing Dependencies Manually for Listener on Linux](#installing-dependencies-manually-for-listener-on-linux)  
+     - [Installing Dependencies Manually for Listener on macOS](#installing-dependencies-manually-for-listener-on-macos)
+     - [Installing Dependencies Manually for Simulator on Linux/macOS](#installing-dependencies-manually-for-simulator-on-linuxmacos) 
+4. [Listener](#listener)
    - [Technical Overview](#technical-overview)
    - [Signal Processing Pipeline](#signal-processing-pipeline)
    - [Directory Structure](#directory-structure)   
-   - [Dependencies](#dependencies)
-     - [Installing Listener Dependencies with Docker (Recommended)](#installing-listener-dependencies-with-docker-recommended)
-     - [Installing Listener Dependencies Manually on Ubuntu/Debian](#installing-listener-dependencies-manually-on-ubuntudebian)  
-     - [Installing Listener Dependencies Manually on macOS](#installing-listener-dependencies-manually-on-macos)  
-   - [Native Build: Ubuntu/Debian & macOS](#native-build-ubuntudebian--macos)
+   - [Native Build: Linux & macOS](#native-build-Linux--macos)
    - [Cross-Compilation with Docker: Raspberry Pi Zero2W](#cross-compilation-with-docker-raspberry-pi-zero2w)
-4. [Simulator](#simulator)
-   - [Installing Simulator Dependencies with Docker (Recommended)](#installing-simulator-dependencies-with-docker-recommended)
-   - [Installing Simulator Dependencies Manually on Ubuntu/Debian](#installing-simulator-dependencies-manually-on-ubuntudebian) 
+5. [Simulator](#simulator)
 6. [Run Example](#run-example)
 7. [Announcements](#announcements)
 
@@ -73,6 +72,124 @@ The repository is organized as follows:
 - ```.gitignore```: Specifies files and directories to be ignored by Git.
 - ```.gitmodules```: Configuration for managing Git submodules.
 - ```CONTRIBUTING.md```: Guidelines for contributing to the project.
+
+## Dependencies
+
+- **CMake**: A build system generator used to configure and build the project across multiple platforms.
+- **FFTW3**: Required for performing fast Fourier transforms.
+- **Eigen**: Used for advanced linear algebra operations, such as matrix manipulations and decompositions.
+- **nlohmann-json**: A JSON library for parsing and managing configuration files.
+- **ONNX Runtime**: Used for running machine learning models in the program.
+
+### Installing Dependencies with Docker (Recommended)
+
+1. Build Docker Image with a Custom Port
+
+By default, it will use port 1045, but you can specify a custom port at build time:
+```bash
+cd listener_program/
+docker build -t freewilli-exec .
+```
+
+2. Run the Container
+
+You can run the container:
+```bash
+docker run --rm -it --network host --user $(id -u):$(id -g) -v $(pwd):/app freewilli-exec
+```
+	
+| Argument | Description |
+| --------------- | --------------- |
+| --rm	| Removes the container after it exits to prevent leftover containers.|
+| -it	| Runs the container in interactive mode (-i for input, -t for a TTY).|
+| --network host	| Uses the host network instead of Docker's default bridge network. This allows the container to communicate with services on the host without port mapping.|
+| --user $(id -u):$(id -g) |	Runs the container as the current user (id -u for user ID, id -g for group ID), preventing root-owned files on the host system.|
+| -v $(pwd):/app	| Mounts the current directory ($(pwd)) to /app inside the container, allowing access to files from the host.|
+| freewilli-exec	| The name of the Docker image to run.|
+
+
+See section on installing simulator with docker. Then see section on running track example.
+
+### Installing Dependencies Manually for Listener on Linux
+1. Example Installing CMake 3.29.7 on Linux x86
+Use wget to download the precompiled binary from the official CMake website:
+```bash
+wget https://github.com/Kitware/CMake/releases/download/v3.29.7/cmake-3.29.7-linux-x86_64.sh
+```
+
+Make the downloaded file executable and run it to install CMake:
+```bash
+chmod +x cmake-3.29.7-linux-x86_64.sh
+sudo ./cmake-3.29.7-linux-x86_64.sh --skip-license --prefix=/usr/local
+```
+
+Confirm the installed version of CMake:
+```bash
+cmake --version
+```
+
+2. Install the required libraries using apt:
+```bash
+sudo apt-get update
+sudo apt-get install -y build-essential libfftw3-dev libeigen3-dev nlohmann-json3-dev
+```
+
+3. Download and install ONNX Runtime
+```bash
+wget https://github.com/microsoft/onnxruntime/releases/download/v1.14.1/onnxruntime-linux-x64-1.14.1.tgz
+tar -xzf onnxruntime-linux-x64-1.14.1.tgz
+sudo cp -r onnxruntime-linux-x64-1.14.1/include/* /usr/local/include/
+sudo cp -r onnxruntime-linux-x64-1.14.1/lib/* /usr/local/lib/
+```
+
+### Installing Dependencies Manually for Listener on macOS
+1. Example Installing CMake 3.29.7 on macOS
+Use curl to download the precompiled binary from the official CMake website:
+```bash
+curl -L -o cmake-3.29.7-macos-universal.dmg https://github.com/Kitware/CMake/releases/download/v3.29.7/cmake-3.29.7-macos-universal.dmg
+```
+
+Mount the .dmg file to access the installer:
+```bash
+hdiutil attach cmake-3.29.7-macos-universal.dmg
+```
+
+Open the mounted volume and drag the CMake application to your preferred location (e.g., /Applications
+
+Add CMake to PATH
+```bash
+sudo "/Applications/CMake.app/Contents/bin/cmake" /usr/local/bin/cmake
+```
+
+Confirm the installed version of CMake:
+```bash
+cmake --version
+```
+
+
+1. Install the required libraries using brew:
+```bash
+brew install fftw eigen nlohmann-json
+```
+
+2. Download and install ONNX Runtime
+```bash
+curl -L -o onnxruntime-osx-arm64-1.19.2.tgz https://github.com/microsoft/onnxruntime/releases/download/v1.19.2/onnxruntime-osx-arm64-1.19.2.tgz
+tar -xzf onnxruntime-osx-arm64-1.19.2.tgz
+sudo mkdir -p /usr/local/include/onnxruntime /usr/local/lib
+sudo cp -r onnxruntime-osx-arm64-1.19.2/include/* /usr/local/include/onnxruntime/
+sudo cp -r onnxruntime-osx-arm64-1.19.2/lib/* /usr/local/lib/
+```
+### Installing Dependencies Manually for Simulator on Linux/macOS
+Install dependencies:
+```bash
+cd simulator_program/
+conda create --name freewilli python=3.9
+conda activate freewilli
+pip install -r requirements.txt
+```
+
+
 
 ## Listener
 
@@ -126,115 +243,9 @@ Top-level Files:
 - ```toolchain.cmake```: Specifies the toolchain file for cross-compilation.
 - ```unblock_wifi_bluetooth.sh```: A shell script to re-enable Wi-Fi and Bluetooth.
   
-### Dependencies
-
-- **CMake**: A build system generator used to configure and build the project across multiple platforms.
-- **FFTW3**: Required for performing fast Fourier transforms.
-- **Eigen**: Used for advanced linear algebra operations, such as matrix manipulations and decompositions.
-- **nlohmann-json**: A JSON library for parsing and managing configuration files.
-- **ONNX Runtime**: Used for running machine learning models in the program.
-
-#### Installing Listener Dependencies with Docker (Recommended)
-
-1. Build Docker Image with a Custom Port
-
-By default, it will use port 1045, but you can specify a custom port at build time:
-```bash
-cd listener_program/
-docker build -t freewilli-exec .
-```
-
-2. Run the Container
-
-You can run the container:
-```bash
-docker run --rm -it --network host --user $(id -u):$(id -g) -v $(pwd):/app freewilli-exec
-```
-	
-| Argument | Description |
-| --------------- | --------------- |
-| --rm	| Removes the container after it exits to prevent leftover containers.|
-| -it	| Runs the container in interactive mode (-i for input, -t for a TTY).|
-| --network host	| Uses the host network instead of Docker's default bridge network. This allows the container to communicate with services on the host without port mapping.|
-| --user $(id -u):$(id -g) |	Runs the container as the current user (id -u for user ID, id -g for group ID), preventing root-owned files on the host system.|
-| -v $(pwd):/app	| Mounts the current directory ($(pwd)) to /app inside the container, allowing access to files from the host.|
-| freewilli-exec	| The name of the Docker image to run.|
 
 
-See section on installing simulator with docker. Then see section on running track example.
-
-#### Installing Listener Dependencies Manually on Ubuntu/Debian
-1. Example Installing CMake 3.29.7 on Linux x86
-Use wget to download the precompiled binary from the official CMake website:
-```bash
-wget https://github.com/Kitware/CMake/releases/download/v3.29.7/cmake-3.29.7-linux-x86_64.sh
-```
-
-Make the downloaded file executable and run it to install CMake:
-```bash
-chmod +x cmake-3.29.7-linux-x86_64.sh
-sudo ./cmake-3.29.7-linux-x86_64.sh --skip-license --prefix=/usr/local
-```
-
-Confirm the installed version of CMake:
-```bash
-cmake --version
-```
-
-2. Install the required libraries using apt:
-```bash
-sudo apt-get update
-sudo apt-get install -y build-essential libfftw3-dev libeigen3-dev nlohmann-json3-dev
-```
-
-3. Download and install ONNX Runtime
-```bash
-wget https://github.com/microsoft/onnxruntime/releases/download/v1.14.1/onnxruntime-linux-x64-1.14.1.tgz
-tar -xzf onnxruntime-linux-x64-1.14.1.tgz
-sudo cp -r onnxruntime-linux-x64-1.14.1/include/* /usr/local/include/
-sudo cp -r onnxruntime-linux-x64-1.14.1/lib/* /usr/local/lib/
-```
-
-#### Installing Listener Dependencies Manually on macOS
-1. Example Installing CMake 3.29.7 on macOS
-Use curl to download the precompiled binary from the official CMake website:
-```bash
-curl -L -o cmake-3.29.7-macos-universal.dmg https://github.com/Kitware/CMake/releases/download/v3.29.7/cmake-3.29.7-macos-universal.dmg
-```
-
-Mount the .dmg file to access the installer:
-```bash
-hdiutil attach cmake-3.29.7-macos-universal.dmg
-```
-
-Open the mounted volume and drag the CMake application to your preferred location (e.g., /Applications
-
-Add CMake to PATH
-```bash
-sudo "/Applications/CMake.app/Contents/bin/cmake" /usr/local/bin/cmake
-```
-
-Confirm the installed version of CMake:
-```bash
-cmake --version
-```
-
-
-1. Install the required libraries using brew:
-```bash
-brew install fftw eigen nlohmann-json
-```
-
-2. Download and install ONNX Runtime
-```bash
-curl -L -o onnxruntime-osx-arm64-1.19.2.tgz https://github.com/microsoft/onnxruntime/releases/download/v1.19.2/onnxruntime-osx-arm64-1.19.2.tgz
-tar -xzf onnxruntime-osx-arm64-1.19.2.tgz
-sudo mkdir -p /usr/local/include/onnxruntime /usr/local/lib
-sudo cp -r onnxruntime-osx-arm64-1.19.2/include/* /usr/local/include/onnxruntime/
-sudo cp -r onnxruntime-osx-arm64-1.19.2/lib/* /usr/local/lib/
-```
-
-### Native Build: Ubuntu/Debian & macOS
+### Native Build: Linux & macOS
 
 1. Build the program:
 ```bash
@@ -263,7 +274,7 @@ docker pull josephlwalker96/cross-compiler:latest
 2. Navigate to the ```listener_program/``` directory and run the container:
 ```bash
 cd listener_program/
-docker run --rm -it -v $(pwd):/app josephlwalker96/cross-compiler:latest
+docker run --rm -it --user $(id -u):$(id -g) -v $(pwd):/app josephlwalker96/cross-compiler:latest
 ```
 
 3. Inside the container, create a build directory and compile the program:
@@ -333,41 +344,16 @@ Sends packets over UDP to a specified IP and port.
 **Multiprocessing**: Uses multiple processes to preload the next .npy file while the current one is streaming. This helps achieve smoother, more real-time data streaming.
 
 
-### Installing Simulator Dependencies Manually on Ubuntu/Debian
-1. Install dependencies:
-```bash
-cd simulator_program/
-conda create --name freewilli python=3.9
-conda activate freewilli
-pip install -r requirements.txt
-```
-
-2. Download data:
-
-By default, the program reads in data from folder ```simulator_data/track132_5minchunks/```
-
-[Download](https://drive.google.com/drive/folders/1v8sgYyQATcsUkzAI6AcUaiMpq5Wi37y1?usp=sharing) the track132_5minchunks/ folder and place it in the simulator_data/ directory.
-
-3. Run example:
-```bash
-cd simulator_program/
-```
-Assuming you are running the simulator on the same machine as the listener program, run the following:
-```bash
-python3 datalogger_simulator.py --ip self --fw 1240 --port 1045
-```
-
-Otherwise, specify the correct IP address (--ip) and port (--port).
-
 ### Run Example
 
 1. **Prepare Data Files**
 
+By default, the simulator program reads in data from folder ```simulator_data/track132_5minchunks/```
+
+[Download](https://drive.google.com/drive/folders/1v8sgYyQATcsUkzAI6AcUaiMpq5Wi37y1?usp=sharing) the track132_5minchunks/ folder and place it in the simulator_data/ directory.
 Place your .npy data files in the ```simulator_data/``` directory.
-If using IMU functionality, ensure you have the correct IMU data files referenced in the script (adjust path in the arguments or within utils.py if needed).
 
-
-1. **Run the Listener**
+2. **Run the Listener**
 
 ```bash
 cd listener_program
