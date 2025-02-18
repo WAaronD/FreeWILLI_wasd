@@ -3,7 +3,7 @@
 # cmake -DCMAKE_TOOLCHAIN_FILE=../toolchain.cmake ..
 
 cmake_minimum_required(VERSION 3.29.7)
-project(Listen VERSION 1.0)
+project(Listener VERSION 1.0)
 
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 20)
@@ -160,18 +160,18 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 
     # the following line sets a variable `DEBUG` that
     # can be accessed in all cpp files in the project
-    target_compile_definitions(Listen PRIVATE DEBUG)
+    target_compile_definitions(Listener PRIVATE DEBUG)
     target_compile_definitions(UnitTests PRIVATE DEBUG)
     
     #BRING THIS BACK IN
     #target_compile_definitions(Benchmark PRIVATE DEBUG)
 
     # Set the output directory for the executable
-    set_property(TARGET Listen PROPERTY OUTPUT_NAME ListenDebug)
+    set_property(TARGET Listener PROPERTY OUTPUT_NAME ListenerDebug)
     if(CMAKE_CROSSCOMPILING)
-        set_property(TARGET Listen PROPERTY OUTPUT_NAME ListenDebugX)
+        set_property(TARGET Listener PROPERTY OUTPUT_NAME ListenerDebugX)
     endif()
-    set_target_properties(Listen PROPERTIES
+    set_target_properties(Listener PROPERTIES
             RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/debug
     )
     if (ENABLE_TEST)
@@ -195,19 +195,19 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 else ()
     message(STATUS "Building tests in Release mode.")
     if(CMAKE_CROSSCOMPILING)
-        set_property(TARGET Listen PROPERTY OUTPUT_NAME ListenX)
+        set_property(TARGET Listener PROPERTY OUTPUT_NAME ListenerX)
         set_property(TARGET UnitTests PROPERTY OUTPUT_NAME UnitTestsX)
         #set_property(TARGET Benchmark PROPERTY OUTPUT_NAME BenchmarkX)
     endif()
     # Set the output directory for the executable
-    set_target_properties(Listen PROPERTIES
+    set_target_properties(Listener PROPERTIES
             RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin
     )
 endif ()
 
 # Print the compile flags
-get_target_property(target_options Listen COMPILE_OPTIONS)
-message(STATUS "Compile options for Listen: ${target_options}")
+get_target_property(target_options Listener COMPILE_OPTIONS)
+message(STATUS "Compile options for Listener: ${target_options}")
 
 if (ENABLE_TEST)
     get_target_property(target_options UnitTests COMPILE_OPTIONS)

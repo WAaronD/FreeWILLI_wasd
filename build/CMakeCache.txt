@@ -147,7 +147,7 @@ CMAKE_PROJECT_DESCRIPTION:STATIC=
 CMAKE_PROJECT_HOMEPAGE_URL:STATIC=
 
 //Value Computed by CMake
-CMAKE_PROJECT_NAME:STATIC=HarpListen
+CMAKE_PROJECT_NAME:STATIC=Listener
 
 //Value Computed by CMake
 CMAKE_PROJECT_VERSION:STATIC=1.0
@@ -240,6 +240,24 @@ HarpListen_IS_TOP_LEVEL:STATIC=ON
 
 //Value Computed by CMake
 HarpListen_SOURCE_DIR:STATIC=/home/harp/Documents/Embedded_miniHarp/listener_program
+
+//Value Computed by CMake
+Listen_BINARY_DIR:STATIC=/home/harp/Documents/Embedded_miniHarp/build
+
+//Value Computed by CMake
+Listen_IS_TOP_LEVEL:STATIC=ON
+
+//Value Computed by CMake
+Listen_SOURCE_DIR:STATIC=/home/harp/Documents/Embedded_miniHarp/listener_program
+
+//Value Computed by CMake
+Listener_BINARY_DIR:STATIC=/home/harp/Documents/Embedded_miniHarp/build
+
+//Value Computed by CMake
+Listener_IS_TOP_LEVEL:STATIC=ON
+
+//Value Computed by CMake
+Listener_SOURCE_DIR:STATIC=/home/harp/Documents/Embedded_miniHarp/listener_program
 
 
 ########################
