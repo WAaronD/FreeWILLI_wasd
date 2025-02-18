@@ -274,7 +274,7 @@ docker pull josephlwalker96/cross-compiler:latest
 2. Navigate to the ```listener_program/``` directory and run the container:
 ```bash
 cd listener_program/
-docker run --rm -it -v $(pwd):/app josephlwalker96/cross-compiler:latest
+docker run --rm -it --user $(id -u):$(id -g) -v $(pwd):/app josephlwalker96/cross-compiler:latest
 ```
 
 3. Inside the container, create a build directory and compile the program:
