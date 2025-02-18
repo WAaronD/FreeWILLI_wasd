@@ -11,7 +11,7 @@ make -j$(nproc)
 cd ../../
 
 # Paths
-LISTENER_CMD="./listener_program/bin/Listen listener_program/config_files/integration_test.json 5000"
+LISTENER_CMD="./listener_program/bin/Listener listener_program/config_files/integration_test.json 5000"
 SIMULATOR_CMD="python3 simulator_program/datalogger_simulator.py --ip self --fw 1240 --port 1045 --data_dir simulator_program/simulator_data/integration_test/ --tdoa_sim 20"
 ARTIFACT_DIR="integration_testing/deployment_files/"
 GROUND_TRUTH="integration_testing/integrationTest.txt"
