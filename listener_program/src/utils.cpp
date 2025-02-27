@@ -1,4 +1,4 @@
-#include "main_utils.h"
+#include "utils.h"
 
 #include "pch.h"
 
@@ -24,7 +24,7 @@ auto parseJsonConfig(const std::string& jsonFilePath) -> std::tuple<SocketVariab
     socketVariables.udpPort = jsonConfig.at("Port").get<int>();
 
     // Configure PipelineVariables parameters
-    
+
     pipelineVariables.integrationTesting = jsonConfig.at("IntegrationTesting").get<bool>();
     pipelineVariables.useImu = jsonConfig.at("Firmware1240_with_IMU").get<bool>();
     pipelineVariables.speedOfSound = jsonConfig.at("SpeedOfSound").get<float>();
@@ -46,10 +46,6 @@ auto parseJsonConfig(const std::string& jsonFilePath) -> std::tuple<SocketVariab
 
     return std::make_tuple(socketVariables, pipelineVariables);
 }
-
-/**
- * @brief Prints whether the program is running in Debug or Release mode.
- */
 void printMode()
 {
 #ifdef DEBUG
@@ -58,6 +54,9 @@ void printMode()
     std::cout << "Running Release Mode" << std::endl;
 #endif
 }
+/**
+ * @brief Prints whether the program is running in Debug or Release mode.
+ */
 
 /**
  * @brief Converts a `TimePoint` object to a formatted string representation.
