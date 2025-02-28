@@ -348,10 +348,9 @@ Sends packets over UDP to a specified IP and port.
 
 1. **Prepare Data Files**
 
-By default, the simulator program reads in data from folder ```simulator_data/track132_5minchunks/```
+By default, the simulator program reads in data (.npy files) from the folder ```simulator_data/track132_5minchunks/```
 
-[Download](https://drive.google.com/drive/folders/1v8sgYyQATcsUkzAI6AcUaiMpq5Wi37y1?usp=sharing) the track132_5minchunks/ folder and place it in the simulator_data/ directory.
-Place your .npy data files in the ```simulator_data/``` directory.
+[Download](https://drive.google.com/drive/folders/1UHr5gYuFRVvfLXsXLfc5mc5AA_aJcf_5?usp=drive_link) the ```track132_5minchunks/``` folder and place it in the ```simulator_data/``` directory.
 
 2. **Run the Listener**
 
