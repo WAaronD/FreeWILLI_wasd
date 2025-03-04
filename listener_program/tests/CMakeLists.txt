@@ -9,10 +9,6 @@ file(GLOB_RECURSE TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 # Add the UnitTests target with all found test sources
 add_executable(UnitTests ${TEST_SOURCES})
 
-
-
-
-
 # Include directories properly set
 target_include_directories(UnitTests PRIVATE
         ${THIRD_PARTY_INCLUDE_DIRS}
@@ -35,7 +31,8 @@ set_target_properties(UnitTests PROPERTIES
 message(STATUS "ENABLE_AUTO_TEST: ${ENABLE_AUTO_TEST}")
 if (ENABLE_AUTO_TEST)
     enable_testing()
-    gtest_discover_tests(UnitTests)
+    #gtest_discover_tests(UnitTests)
+    add_test(NAME UnitTests COMMAND UnitTests)
     # Add a custom target that runs the tests every time the project is built
     add_custom_target(
       run_tests ALL                      # ALL means the target is built every time
