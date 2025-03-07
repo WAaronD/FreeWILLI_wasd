@@ -1,7 +1,6 @@
 # cmake -DCMAKE_BUILD_TYPE=Debug ..
 
 # cmake -DCMAKE_TOOLCHAIN_FILE=../toolchain.cmake ..
-
 cmake_minimum_required(VERSION 3.29.7)
 project(Listener VERSION 1.0)
 
@@ -125,27 +124,48 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/libs/dbscan)
 if (ENABLE_TEST)
     message(STATUS "Compiling Unit Tests")
 
-    # Enable Google Mock and Google Test
-    set(BUILD_GMOCK ON CACHE BOOL "" FORCE)
-    set(INSTALL_GMOCK ON CACHE BOOL "" FORCE)
-    set(BUILD_GTEST ON CACHE BOOL "" FORCE)
-    set(INSTALL_GTEST ON CACHE BOOL "" FORCE)
+    # Set GoogleTest paths from the submodule
+    set(GTEST_SOURCE_DIR "${PROJECT_SOURCE_DIR}/libs/googletest")
+    set(GTEST_BUILD_DIR "${CMAKE_BINARY_DIR}/googletest-build")
 
-    # Add Google Test and Google Mock to the project
-    add_subdirectory(${PROJECT_SOURCE_DIR}/libs/googletest)
-    
-    # Add your tests directory
+    # Prevent system-installed GoogleTest from interfering
+    set(GTest_FOUND FALSE)
+    set(GTEST_ROOT ${GTEST_SOURCE_DIR})  # Override default system paths
+
+    # Ensure correct architecture on macOS M1/M2
+    if (MACOSX)
+        set(CMAKE_OSX_ARCHITECTURES "arm64")
+        message(STATUS "Detected macOS: Setting CMAKE_OSX_ARCHITECTURES to arm64")
+    endif()
+
+    # Debugging message before adding GoogleTest
+    if (EXISTS "${GTEST_SOURCE_DIR}/CMakeLists.txt")
+        message(STATUS "✅ Found GoogleTest in submodule at: ${GTEST_SOURCE_DIR}")
+    else()
+        message(FATAL_ERROR "❌ GoogleTest submodule not found! Did you initialize submodules?")
+    endif()
+
+    # Add GoogleTest submodule before tests
+    if(NOT TARGET gtest_main)
+        message(STATUS "📢 Adding GoogleTest to the build system from: ${GTEST_SOURCE_DIR}")
+        add_subdirectory(${GTEST_SOURCE_DIR} ${GTEST_BUILD_DIR} EXCLUDE_FROM_ALL)
+    else()
+        message(STATUS "✅ GoogleTest already added: Skipping `add_subdirectory`")
+    endif()
+
+    # Debugging message before adding test directory
+    if (EXISTS "${PROJECT_SOURCE_DIR}/tests/CMakeLists.txt")
+        message(STATUS "✅ Found test directory: ${PROJECT_SOURCE_DIR}/tests")
+    else()
+        message(FATAL_ERROR "❌ Test directory not found! Check your repository structure.")
+    endif()
+
+    # Add the test directory after GoogleTest is built
+    message(STATUS "📢 Adding test directory to build system: ${PROJECT_SOURCE_DIR}/tests")
     add_subdirectory(${PROJECT_SOURCE_DIR}/tests)
 
-    # Explicitly add include directories to UnitTests target
-    target_include_directories(UnitTests PRIVATE
-        ${PROJECT_SOURCE_DIR}/libs/googletest/googletest/include
-        ${PROJECT_SOURCE_DIR}/libs/googletest/googlemock/include
-    )
-
-    # Link libraries for UnitTests
-    target_link_libraries(UnitTests PRIVATE gmock gmock_main gtest gtest_main pthread)
 endif()
+
 if(ENABLE_BENCHMARK)
     message(STATUS "Compiling Benchmark Tests")
     set(BENCHMARK_ENABLE_TESTING off)
