@@ -1,6 +1,7 @@
 #include "output_manager.h"
 
-OutputManager::OutputManager(std::chrono::seconds programRuntime, bool integrationTesting, const std::string& loggingDirectory)
+OutputManager::OutputManager(
+    std::chrono::seconds programRuntime, bool integrationTesting, const std::string& loggingDirectory)
     : mFlushInterval(std::chrono::seconds(30)),
       mBufferSizeThreshold(1000),
       mLastFlushTime(std::chrono::steady_clock::now()),
@@ -12,12 +13,7 @@ OutputManager::OutputManager(std::chrono::seconds programRuntime, bool integrati
 }
 
 /**
- * @brief Initializes an output file for storing computed values.
- *
- * This function generates an output file name based on the current timestamp and initializes the file
- * for writing. It writes column headers to the file, including labels for PeakTime, Amplitude, DOA, TDOA,
- * and XCorr.
- *
+ * @brief Initializes an output file (whose name is taken from first received timestamp) for storing computed values.
  * @param numChannels The number of channels in the data, used to generate TDOA and XCorr labels.
  * @throws std::runtime_error If the file cannot be opened for writing.
  */

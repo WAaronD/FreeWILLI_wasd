@@ -46,6 +46,10 @@ auto parseJsonConfig(const std::string& jsonFilePath) -> std::tuple<SocketVariab
 
     return std::make_tuple(socketVariables, pipelineVariables);
 }
+
+/**
+ * @brief Prints whether the program is running in Debug or Release mode.
+ */
 void printMode()
 {
 #ifdef DEBUG
@@ -54,9 +58,6 @@ void printMode()
     std::cout << "Running Release Mode" << std::endl;
 #endif
 }
-/**
- * @brief Prints whether the program is running in Debug or Release mode.
- */
 
 /**
  * @brief Converts a `TimePoint` object to a formatted string representation.

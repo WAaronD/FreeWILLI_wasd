@@ -61,7 +61,7 @@ void ImuProcessor::setRotationMatrix(const std::vector<uint8_t>& dataBytes)
  * @return std::optional<Eigen::VectorXf> Parsed IMU data in a 20-element vector, or std::nullopt if the header is
  * invalid.
  */
-std::optional<Eigen::VectorXf> ImuProcessor::getImuDataFromBytes(const std::vector<uint8_t>& byteBlock)
+auto ImuProcessor::getImuDataFromBytes(const std::vector<uint8_t>& byteBlock) -> std::optional<Eigen::VectorXf>
 {
     Eigen::VectorXf imuData(20);  // Reserve space for 20 elements
     std::vector<uint8_t> block(byteBlock.end() - mImuByteSize, byteBlock.end());
@@ -130,8 +130,8 @@ void ImuProcessor::calibrateImuData(Eigen::VectorXf& imuData)
  *         - Column 1 is the East vector (X-axis),
  *         - Column 2 is the Down vector (Z-axis).
  */
-Eigen::Matrix3f ImuProcessor::calculateRotationMatrix(const Eigen::Vector3f& accelerometerData,
-                                                      const Eigen::Vector3f& magnetometerData)
+Eigen::Matrix3f ImuProcessor::calculateRotationMatrix(
+    const Eigen::Vector3f& accelerometerData, const Eigen::Vector3f& magnetometerData)
 {
     Eigen::Vector3f gravityDirection = accelerometerData.normalized();
 
@@ -143,8 +143,8 @@ Eigen::Matrix3f ImuProcessor::calculateRotationMatrix(const Eigen::Vector3f& acc
 
     // Construct the rotation matrix
     Eigen::Matrix3f rotationMatrix;
-    rotationMatrix.col(0) = northVector;       // Y-axis (North)
-    rotationMatrix.col(1) = eastVector;        // X-axis (East)
+    rotationMatrix.col(0) = northVector;  // Y-axis (North)
+    rotationMatrix.col(1) = eastVector;  // X-axis (East)
     rotationMatrix.col(2) = gravityDirection;  // Z-axis (Down)
 
     return rotationMatrix;
@@ -160,8 +160,8 @@ Eigen::Matrix3f ImuProcessor::calculateRotationMatrix(const Eigen::Vector3f& acc
  *      sensor arrays" (2010).
  *
  */
-void ImuProcessor::madgwickUpdate(const Eigen::Vector3f& acc, const Eigen::Vector3f& mag, const Eigen::Vector3f& gyr,
-                                  float beta, float dt)
+void ImuProcessor::madgwickUpdate(
+    const Eigen::Vector3f& acc, const Eigen::Vector3f& mag, const Eigen::Vector3f& gyr, float beta, float dt)
 {
     // Extract the quaternion components for convenience
     float q1 = magFilterState.w();
@@ -284,7 +284,8 @@ void ImuProcessor::madgwickUpdate(const Eigen::Vector3f& acc, const Eigen::Vecto
         q2 /= normQ;
         q3 /= normQ;
         q4 /= normQ;
-    } else
+    }
+    else
     {
         // Fallback: if norm is tiny, reset to identity or skip
         q1 = 1.0f;

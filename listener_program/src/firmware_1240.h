@@ -10,17 +10,17 @@ class Firmware1240
 {
    public:
     // UDP packet information
-    static constexpr int HEAD_SIZE = 12;              // Packet head size (bytes)
-    static constexpr int NUM_CHAN = 4;                // Number of channels per packet
-    static constexpr int SAMPS_PER_CHANNEL = 124;     // Samples per packet per channel
-    static constexpr int BYTES_PER_SAMP = 2;          // Bytes per sample
-    static constexpr int MICRO_INCR = 1240;           // Time between packets
-    static constexpr int SAMPLE_RATE = 1e5;           // Sample rate in Hz
+    static constexpr int HEAD_SIZE = 12;  // Packet head size (bytes)
+    static constexpr int NUM_CHAN = 4;  // Number of channels per packet
+    static constexpr int SAMPS_PER_CHANNEL = 124;  // Samples per packet per channel
+    static constexpr int BYTES_PER_SAMP = 2;  // Bytes per sample
+    static constexpr int MICRO_INCR = 1240;  // Time between packets
+    static constexpr int SAMPLE_RATE = 1e5;  // Sample rate in Hz
     static constexpr float SAMPLE_OFFSET = 32768.0f;  // Define a named constant
                                                       // for the sample offset
 
     static constexpr int SAMPS_PER_PACKET = SAMPS_PER_CHANNEL * NUM_CHAN;  // Samples per packet
-    static constexpr int DATA_SIZE = SAMPS_PER_PACKET * BYTES_PER_SAMP;    // Packet data size (bytes)
+    static constexpr int DATA_SIZE = SAMPS_PER_PACKET * BYTES_PER_SAMP;  // Packet data size (bytes)
     static constexpr int REQUIRED_BYTES = DATA_SIZE + HEAD_SIZE;
     static constexpr int DATA_BYTES_PER_CHANNEL = SAMPS_PER_CHANNEL * BYTES_PER_SAMP;  // Data bytes per channel
 
@@ -33,29 +33,17 @@ class Firmware1240
 
     constexpr int packetSize() const { return DATA_SIZE + HEAD_SIZE + imuByteSize(); }
 
-    /**
-     * @brief Inserts data into a channel matrix.
-     */
-    void insertDataIntoChannelMatrix(Eigen::MatrixXf& channelMatrix, const std::vector<std::vector<uint8_t>>& dataBytes,
-                                     int headSize = HEAD_SIZE, int dataSize = DATA_SIZE,
-                                     int bytesPerSamp = BYTES_PER_SAMP, float sampleOffset = SAMPLE_OFFSET) const;
+    void insertDataIntoChannelMatrix(
+        Eigen::MatrixXf& channelMatrix, const std::vector<std::vector<uint8_t>>& dataBytes, int headSize = HEAD_SIZE,
+        int dataSize = DATA_SIZE, int bytesPerSamp = BYTES_PER_SAMP, float sampleOffset = SAMPLE_OFFSET) const;
 
-    /**
-     * @brief Generates a vector of timestamps from raw data bytes.
-     */
-    std::vector<TimePoint> generateTimestamp(std::vector<std::vector<uint8_t>>& dataBytes, int numChannels) const;
+    auto generateTimestamp(std::vector<std::vector<uint8_t>>& dataBytes, int numChannels) const
+        -> std::vector<TimePoint>;
 
-    /**
-     * @brief Checks for data errors in a session.
-     */
-    void throwIfDataErrors(const std::vector<std::vector<uint8_t>>& dataBytes, const int microIncrement,
-                           bool& isPreviousTimeSet, TimePoint& previousTime, const std::vector<TimePoint>& currentTime,
-                           const int packetSize) const;
+    void throwIfDataErrors(
+        const std::vector<std::vector<uint8_t>>& dataBytes, const int microIncrement, bool& isPreviousTimeSet,
+        TimePoint& previousTime, const std::vector<TimePoint>& currentTime, const int packetSize) const;
 
-    /**
-     * @brief Virtual function for IMU manager, returns nullptr
-     * by default
-     */
     virtual ImuProcessor* getImuManager() const { return nullptr; }
 };
 
@@ -82,7 +70,8 @@ class FirmwareFactory
         if (useImu)
         {
             return std::make_unique<const Firmware1240IMU>();
-        } else
+        }
+        else
         {
             return std::make_unique<const Firmware1240>();
         }

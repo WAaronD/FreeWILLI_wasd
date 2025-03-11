@@ -4,25 +4,17 @@ FrequencyDomainFilterStrategy::FrequencyDomainFilterStrategy(
     const std::string& filterPath, Eigen::MatrixXf& channelData, int numChannels)
     : mNumChannels(numChannels)
 {
-    // 1) Read filter from file, compute final length
     auto filterWeights = readFirFilterFile(filterPath);
     mPaddedLength = static_cast<int>(filterWeights.size() + channelData.cols() - 1);
     mFftOutputSize = (mPaddedLength / 2) + 1;
 
-    // 2) Resize the user's channelData to match the new padded length
-    //    Make sure we are resizing columns if channels are rows or vice versa
-    //    For this example, assume channelData has shape (numChannels,
-    //    originalLength)
     channelData.conservativeResize(channelData.rows(), mPaddedLength);
     channelData.setZero();
 
-    // 3) Allocate our frequency-domain buffer
     mSavedFFTs = Eigen::MatrixXcf::Zero(mFftOutputSize, mNumChannels);
 
-    // 4) Create the filter in frequency domain
     initializeFilterWeights(filterWeights);
 
-    // 5) Create the FFT plan once
     createFftPlan(channelData);
 }
 
@@ -87,14 +79,7 @@ std::vector<float> FrequencyDomainFilterStrategy::readFirFilterFile(const std::s
         std::string token;
         while (std::getline(lineStream, token, ','))
         {
-            try
-            {
-                filterCoefficients.push_back(std::stof(token));
-            }
-            catch (...)
-            {
-                // ...
-            }
+            filterCoefficients.push_back(std::stof(token));
         }
     }
     return filterCoefficients;

@@ -17,8 +17,9 @@ int packetCounter = 0;  // this should only be used inside the UDPListener
  * @param processedPackets Number of processed packets.
  * @param detectionCount Number of detections recorded by the session.
  */
-void logPacketStatistics(int packetCounter, int printInterval, std::chrono::steady_clock::time_point& startPacketTime,
-                         int queueSize, int processedPackets, int detectionCount)
+void logPacketStatistics(
+    int packetCounter, int printInterval, std::chrono::steady_clock::time_point& startPacketTime, int queueSize,
+    int processedPackets, int detectionCount)
 {
     auto endPacketTime = std::chrono::steady_clock::now();
     std::chrono::duration<double> durationPacketTime = endPacketTime - startPacketTime;
@@ -64,11 +65,6 @@ void runListenerLoop(SharedDataManager& sharedDataManager, ISocketManager* socke
 
             if (bytesReceived == -1) throw std::runtime_error("Error in receiveData: bytesReceived is -1");
 
-            // The data is already resized in the SocketManager after reception,
-            // or we can resize here if needed (commented out because
-            // SocketManager does it):
-            // socketManager.setReceiveBufferSize(bytesReceived);
-
             const std::vector<uint8_t>& dataBytes = socketManager->getReceivedData();
 
             int queueSize = sharedDataManager.pushDataToBuffer(dataBytes);
@@ -76,8 +72,9 @@ void runListenerLoop(SharedDataManager& sharedDataManager, ISocketManager* socke
             packetCounter += 1;
             if (packetCounter % printInterval == 0)
             {
-                logPacketStatistics(packetCounter, printInterval, startPacketTime, queueSize, packetCounter - queueSize,
-                                    sharedDataManager.detectionCounter);
+                logPacketStatistics(
+                    packetCounter, printInterval, startPacketTime, queueSize, packetCounter - queueSize,
+                    sharedDataManager.detectionCounter);
             }
 
             if (queueSize > 1000)
@@ -85,7 +82,8 @@ void runListenerLoop(SharedDataManager& sharedDataManager, ISocketManager* socke
                 throw std::runtime_error("Buffer overflowing \n");
             }
         }
-    } catch (const std::exception& e)
+    }
+    catch (const std::exception& e)
     {
         std::cerr << "Error occured in UDP Listener Thread: \n";
         std::stringstream msg;

@@ -14,26 +14,28 @@ int SharedDataManager::pushDataToBuffer(const std::vector<uint8_t>& data)
 }
 
 /**
- * @brief Waits for and retrieves data from the shared buffer, with periodic buffer flushing.
- *
+ * @brief Waits until the required number of packets are available and retrieves them.
+ * @param dataBytes Destination vector for the retrieved packets.
+ * @param numPacksToGet Number of packets to fetch from the buffer.
+ * @return None (blocks until data is available).
  */
 void SharedDataManager::waitForData(std::vector<std::vector<uint8_t>>& dataBytes, int numPacksToGet)
 {
     while (true)
     {
-        bool gotData = popDataFromBuffer(dataBytes, numPacksToGet);
-        if (gotData)
+        if (popDataFromBuffer(dataBytes, numPacksToGet))
         {
             return;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(15ms));
+        std::this_thread::sleep_for(std::chrono::milliseconds(15));
     }
 }
 
 /**
- * @brief Pop data from the shared buffer in a thread-safe manner.
- * @param data Reference to a vector where the popped data will be placed.
- * @return True if data was successfully popped, false if the buffer was empty.
+ * @brief Pops up to numPacksToGet packets from the shared buffer in a thread-safe manner.
+ * @param data Destination vector for the popped packets.
+ * @param numPacksToGet Number of packets to pop.
+ * @return True if enough packets were popped, otherwise false.
  */
 bool SharedDataManager::popDataFromBuffer(std::vector<std::vector<uint8_t>>& data, int numPacksToGet)
 {

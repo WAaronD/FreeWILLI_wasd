@@ -15,7 +15,7 @@ GCC_PHAT::GCC_PHAT(int paddedLength, int spectraLength, int numChannels, int sam
 
 GCC_PHAT::~GCC_PHAT() { fftwf_destroy_plan(mInverseFftPlan); }
 
-std::tuple<Eigen::VectorXf, Eigen::VectorXf> GCC_PHAT::process(const Eigen::MatrixXcf& savedFfts)
+auto GCC_PHAT::process(const Eigen::MatrixXcf& savedFfts) -> std::tuple<Eigen::VectorXf, Eigen::VectorXf>
 {
     Eigen::VectorXf tdoaEstimates(mNumTdoas);
     Eigen::VectorXf crossCorrPeaks(mNumTdoas);
@@ -55,7 +55,7 @@ void GCC_PHAT::calculateNormalizedCrossSpectra(const Eigen::VectorXcf& s1, const
     // mNormalizedCrossSpectra.array() = crossSpectrum.array();
 }
 
-std::tuple<float, float> GCC_PHAT::estimateTdoaAndPeak()
+auto GCC_PHAT::estimateTdoaAndPeak() -> std::tuple<float, float>
 {
     Eigen::VectorXf rearranged(2 * mMaxShift);
     rearranged.head(mMaxShift) = mCrossCorrBuffer.tail(mMaxShift);

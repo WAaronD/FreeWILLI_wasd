@@ -2,6 +2,6 @@
 
 #include <eigen3/Eigen/Dense>
 
-Eigen::JacobiSVD<Eigen::MatrixXf> computeSvd(const Eigen::MatrixXf &H);
-Eigen::MatrixXf precomputePseudoInverse(const Eigen::JacobiSVD<Eigen::MatrixXf> &svd);
-int computeRank(const Eigen::MatrixXf &H, double tolerance);
+auto computeSvd(const Eigen::MatrixXf& H) -> Eigen::JacobiSVD<Eigen::MatrixXf>;
+Eigen::MatrixXf precomputePseudoInverse(const Eigen::JacobiSVD<Eigen::MatrixXf>& svd);
+int computeRank(const Eigen::MatrixXf& H, double tolerance);

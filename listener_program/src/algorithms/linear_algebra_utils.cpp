@@ -6,7 +6,7 @@
  * @param matrix Input matrix to decompose.
  * @return The SVD decomposition of the matrix.
  */
-Eigen::JacobiSVD<Eigen::MatrixXf> computeSvd(const Eigen::MatrixXf &matrix)
+auto computeSvd(const Eigen::MatrixXf& matrix) -> Eigen::JacobiSVD<Eigen::MatrixXf>
 {
     return Eigen::JacobiSVD<Eigen::MatrixXf>(matrix, Eigen::ComputeThinU | Eigen::ComputeThinV);
 }
@@ -17,7 +17,7 @@ Eigen::JacobiSVD<Eigen::MatrixXf> computeSvd(const Eigen::MatrixXf &matrix)
  * @param svd The SVD decomposition of the matrix.
  * @return The precomputed matrix P = V * Sigma^+.
  */
-Eigen::MatrixXf precomputePseudoInverse(const Eigen::JacobiSVD<Eigen::MatrixXf> &svd)
+Eigen::MatrixXf precomputePseudoInverse(const Eigen::JacobiSVD<Eigen::MatrixXf>& svd)
 {
     // Extract matrices and singular values from the SVD decomposition
     const Eigen::MatrixXf& rightSingularVectors = svd.matrixV();
@@ -28,7 +28,7 @@ Eigen::MatrixXf precomputePseudoInverse(const Eigen::JacobiSVD<Eigen::MatrixXf> 
     Eigen::MatrixXf sigmaPseudoInverse = Eigen::MatrixXf::Zero(rightSingularVectors.cols(), leftSingularVectors.cols());
     for (int i = 0; i < singularValues.size(); ++i)
     {
-        if (singularValues(i) > 1e-10) // Threshold to avoid division by zero
+        if (singularValues(i) > 1e-10)  // Threshold to avoid division by zero
         {
             sigmaPseudoInverse(i, i) = 1.0 / singularValues(i);
         }
@@ -45,7 +45,7 @@ Eigen::MatrixXf precomputePseudoInverse(const Eigen::JacobiSVD<Eigen::MatrixXf> 
  * @param tolerance Threshold below which singular values are considered zero.
  * @return The numerical rank of the matrix.
  */
-int computeRank(const Eigen::MatrixXf &matrix, double tolerance)
+int computeRank(const Eigen::MatrixXf& matrix, double tolerance)
 {
     // Perform SVD decomposition
     Eigen::JacobiSVD<Eigen::MatrixXf> svd(matrix, Eigen::ComputeThinU | Eigen::ComputeThinV);

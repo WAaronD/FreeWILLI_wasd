@@ -1,6 +1,7 @@
-#include "../pch.h"
 #include "tracker_utils.h"
+
 #include "../algorithms/kalman_filter.h"
+#include "../pch.h"
 
 /**
  * @brief Prints details about cluster centers, distance matrix, associations, and unassigned clusters.
@@ -13,13 +14,12 @@
  * @param associations A vector indicating associations of objects to clusters.
  * @param unassignedClusters A vector of indices for clusters that are not assigned to any objects.
  */
-auto printInfo(const std::vector<Eigen::Vector3f> &clusterCenters,
-               const Eigen::MatrixXf &distanceMatrix,
-               const std::vector<int> &associations,
-               const std::vector<int> &unassignedClusters) -> void
+auto printInfo(
+    const std::vector<Eigen::Vector3f>& clusterCenters, const Eigen::MatrixXf& distanceMatrix,
+    const std::vector<int>& associations, const std::vector<int>& unassignedClusters) -> void
 {
     std::cout << "Cluster Centers:" << std::endl;
-    for (const auto &center : clusterCenters)
+    for (const auto& center : clusterCenters)
     {
         std::cout << center.transpose() << std::endl;
     }
@@ -28,20 +28,20 @@ auto printInfo(const std::vector<Eigen::Vector3f> &clusterCenters,
     std::cout << distanceMatrix << std::endl;
 
     std::cout << "Associations: ";
-    for (const auto &assoc : associations)
+    for (const auto& assoc : associations)
     {
         std::cout << assoc << " ";
     }
     std::cout << std::endl;
 
     std::cout << "Unassigned Clusters: ";
-    for (const auto &cluster : unassignedClusters)
+    for (const auto& cluster : unassignedClusters)
     {
         std::cout << cluster << " ";
     }
     std::cout << std::endl;
 
-    for (const auto &cluster : unassignedClusters)
+    for (const auto& cluster : unassignedClusters)
     {
         std::cout << "Initializing new filter for cluster: " << cluster << std::endl;
     }
@@ -71,14 +71,14 @@ auto convertDoaToElAz(float x, float y, float z) -> std::pair<float, float>
  * @param numPoints The total number of points to label.
  * @return A vector where each index corresponds to a point's cluster label (1-indexed).
  */
-auto labelClusters(const std::vector<std::vector<size_t>> &clusters, size_t numPoints) -> std::vector<size_t>
+auto labelClusters(const std::vector<std::vector<size_t>>& clusters, size_t numPoints) -> std::vector<size_t>
 {
     std::vector<size_t> flatLabels(numPoints);
     for (size_t clusterIdx = 0; clusterIdx < clusters.size(); ++clusterIdx)
     {
         for (auto pointIdx : clusters[clusterIdx])
         {
-            flatLabels[pointIdx] = clusterIdx + 1; // Assign cluster labels (1-indexed)
+            flatLabels[pointIdx] = clusterIdx + 1;  // Assign cluster labels (1-indexed)
         }
     }
     return flatLabels;
@@ -92,24 +92,25 @@ auto labelClusters(const std::vector<std::vector<size_t>> &clusters, size_t numP
  * @param eigenData A vector of Eigen vectors containing 3D points.
  * @return A vector of `point3` structs containing the converted points.
  */
-auto convertEigenToPointVector(const std::vector<Eigen::VectorXf> &buffer) -> std::vector<point3>
+auto convertEigenToPointVector(const std::vector<Eigen::VectorXf>& buffer) -> std::vector<point3>
 {
     std::vector<point3> pointVector;
     pointVector.reserve(buffer.size());
-    
-    for (const auto &point : buffer){
+
+    for (const auto& point : buffer)
+    {
         pointVector.push_back(point3{point[0], point[1], point[2]});
     }
 
-   std::transform(buffer.begin(), buffer.end(), std::back_inserter(pointVector),
-                [](const auto& point){return point3{point[0], point[1], point[2]}; });
-
-
+    std::transform(
+        buffer.begin(), buffer.end(), std::back_inserter(pointVector),
+        [](const auto& point) { return point3{point[0], point[1], point[2]}; });
 
     return pointVector;
 }
 
-std::pair<std::vector<int>, std::vector<int>> findOptimalAssociation(const Eigen::MatrixXf &distanceMatrix, double threshold)
+std::pair<std::vector<int>, std::vector<int>> findOptimalAssociation(
+    const Eigen::MatrixXf& distanceMatrix, double threshold)
 {
     int numKalmanFilters = distanceMatrix.rows();
     int numNewClusters = distanceMatrix.cols();
@@ -140,7 +141,8 @@ std::pair<std::vector<int>, std::vector<int>> findOptimalAssociation(const Eigen
         int bestNewCluster = -1;
         for (int newCluster : associatedNewClusters)
         {
-            if (distanceMatrix(kfIndex, newCluster) < threshold && assignedNewClusters.find(newCluster) == assignedNewClusters.end())
+            if (distanceMatrix(kfIndex, newCluster) < threshold &&
+                assignedNewClusters.find(newCluster) == assignedNewClusters.end())
             {
                 if (distanceMatrix(kfIndex, newCluster) < minDistance)
                 {
@@ -159,7 +161,8 @@ std::pair<std::vector<int>, std::vector<int>> findOptimalAssociation(const Eigen
     return {associations, unassociatedNewClusters};
 }
 
-Eigen::MatrixXf calculateDistanceMatrix(const std::vector<Eigen::Vector3f> &clusterCenters, const std::vector<KalmanFilter> &kalmanFilters)
+Eigen::MatrixXf calculateDistanceMatrix(
+    const std::vector<Eigen::Vector3f>& clusterCenters, const std::vector<KalmanFilter>& kalmanFilters)
 {
     Eigen::MatrixXf distanceMatrix(kalmanFilters.size(), clusterCenters.size());
     if (!kalmanFilters.empty() && !clusterCenters.empty())

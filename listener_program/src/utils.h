@@ -3,20 +3,23 @@
 
 struct PipelineVariables
 {
-    bool integrationTesting = false;
+    std::chrono::seconds clusterFrequencyInSeconds;
+    std::chrono::seconds clusterWindowInSeconds;
+
     float timeDomainThreshold = 0;
+    float energyDetectionThreshold = 0;
+    float speedOfSound = 0;
+
+    bool integrationTesting = false;
+    bool enableTracking = false;
+    bool useImu = false;
+
     std::string loggingDirectory = "";
     std::string timeDomainDetector = "";
     std::string frequencyDomainDetector = "";
-    float energyDetectionThreshold = 0;
-    float speedOfSound = 0;
     std::string frequencyDomainStrategy = "";
     std::string filterWeightsPath = "";
     std::string receiverPositionsPath = "";
-    bool enableTracking = false;
-    std::chrono::seconds clusterFrequencyInSeconds;
-    std::chrono::seconds clusterWindowInSeconds;
-    bool useImu = false;
     std::string onnxModelPath = "";
     std::string onnxModelNormalizationPath = "";
 };
