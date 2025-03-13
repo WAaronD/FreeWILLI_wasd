@@ -374,6 +374,8 @@ python3 datalogger_simulator.py \
 This example will by default load data from ```simulator_data/track132_5minchunks/``` and organize the data according to the firmware version ```1240```. The data is sent to to port ```1045``` at IP address ```self```, which is translated to the loopback address.
 
 ## Announcements
+2/25/2025: FreeWILLI was showcased at the 9th Annual Naval Applications of Machine Learning Conference in San Diego, California. Watch the presentation [here](https://youtu.be/KadqlTlNLGU).
+
 12/11/2024: FreeWILLI was successfully deployed on a [Wirewalker](https://www.delmarocean.com/) using a planar hydrophone configuration.
 Location: San Diego Trough, (32°51'14.2"N 117°37'05.2"W)
 <div style="display: flex; align-items: flex-start;">
