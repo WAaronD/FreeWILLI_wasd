@@ -6,6 +6,8 @@ simulator_program/simulator_data/*
 # But keep the integration_test/ directory and its contents
 !simulator_program/simulator_data/integration_test/
 !simulator_program/simulator_data/integration_test/**  # Track all subdirectories and files
+!simulator_program/simulator_data/convert.py
+
 
 
 supplemental/crosscomp/
