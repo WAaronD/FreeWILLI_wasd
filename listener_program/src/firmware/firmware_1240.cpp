@@ -1,9 +1,19 @@
 #include "firmware_1240.h"
 
-#include "pch.h"
-
 /**
- * @brief Inserts data into a channel matrix.
+ * @brief Inserts data into a channel matrix by decoding raw byte data.
+ *
+ * This function extracts 16-bit sample values from raw byte arrays, converts them to floating-point format,
+ * and stores them in an Eigen matrix. It also adjusts the samples based on a specified offset. Additionally,
+ * if an IMU manager is available, it updates the IMU rotation matrix using the input data.
+ *
+ * @param dataBytes A vector of byte arrays, each containing raw data including a header.
+ * @param headSize The size of the header in each data packet, which is skipped during processing.
+ * @param dataSize The number of data samples in each packet (not directly used in this function).
+ * @param bytesPerSamp The number of bytes per sample (e.g., 2 for 16-bit samples).
+ * @param sampleOffset A floating-point value subtracted from each sample for normalization.
+ *
+ * @return channelMatrix Reference to an Eigen::MatrixXf where the extracted samples will be stored.
  */
 void Firmware1240::insertDataIntoChannelMatrix(
     Eigen::MatrixXf& channelMatrix, const std::vector<std::vector<uint8_t>>& dataBytes, int headSize, int dataSize,
@@ -21,25 +31,24 @@ void Firmware1240::insertDataIntoChannelMatrix(
             matrixPtr[startOffset + j] = static_cast<float>(sample) - sampleOffset;
         }
 
-        if (auto imu = getImuManager())
+        if (imuManager)
         {
-            // Call a method on the IMU manager
-            imu->setRotationMatrix(dataBytes[i]);
-            // std::cout << imu->mRotationMatrix << std::endl;
-            // Eigen::Quaternionf q(imu->mRotationMatrix);
-
-            /* example correct conversion (matlab does the same result)
-            Eigen::Matrix3d testMat;
-            testMat << 1.0, 0.0, 0.0, 0.0, 1.73205 / 2.0, 0.5, 0.0, -0.5, 1.73205 / 2.0;
-            Eigen::Quaterniond q(testMat);
-            std::cout << "pipeline quat: " << q.conjugate() << std::endl;
-            */
+            imuManager->processIMUData(dataBytes[i]);
         }
     }
 }
 
 /**
- * @brief Generates a vector of timestamps from raw data bytes.
+ * @brief Extracts timestamps from raw data bytes and converts them into a vector of `TimePoint` objects.
+ *
+ * This function parses timestamp information from the given raw data packets. It interprets the date and
+ * time components (year, month, day, hour, minute, second) and constructs `std::chrono::system_clock::time_point`
+ * values, including microsecond-level precision. The parsed timestamps are returned as a vector.
+ *
+ * @param dataBytes A vector of byte arrays, each containing timestamp information in the first 10 bytes.
+ * @param numChannels The number of data channels (not directly used in this function but may be relevant to caller).
+ *
+ * @return A vector of `TimePoint` objects representing the extracted timestamps.
  */
 std::vector<TimePoint> Firmware1240::generateTimestamp(
     std::vector<std::vector<uint8_t>>& dataBytes, int numChannels) const
@@ -78,7 +87,22 @@ std::vector<TimePoint> Firmware1240::generateTimestamp(
 }
 
 /**
- * @brief Checks for data errors in a session.
+ * @brief Validates timestamp consistency and packet size in a session.
+ *
+ * This function checks for data integrity issues by ensuring that:
+ *  - Timestamps in `dataVector` increment correctly by `microIncrement`.
+ *  - Each packet in `dataBytes` has the expected `packetSize`.
+ *
+ * If an inconsistency is found, the function throws a `std::runtime_error`.
+ *
+ * @param dataBytes A vector of byte arrays, each representing a received data packet.
+ * @param microIncrement The expected time increment (in microseconds) between consecutive timestamps.
+ * @param isPreviousTimeSet A flag indicating whether `previousTime` has been set. It is updated within the function.
+ * @param previousTime The last valid timestamp. It is updated to the latest processed timestamp.
+ * @param dataVector A vector of `TimePoint` timestamps associated with each data packet.
+ * @param packetSize The expected size (in bytes) of each data packet.
+ *
+ * @throws std::runtime_error If timestamps are not incrementing as expected or if a packet has an incorrect size.
  */
 void Firmware1240::throwIfDataErrors(
     const std::vector<std::vector<uint8_t>>& dataBytes, const int microIncrement, bool& isPreviousTimeSet,

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "algorithms/imu_processing.h"
-#include "pch.h"
+#include "../pch.h"
+#include "imu_processor_interface.h"
 
 /**
- * @brief Base class for firmware configuration, providing constants and utility methods.
+ * @brief Base class for firmware 1240 configuration, providing constants and utility methods.
  */
 class Firmware1240
 {
@@ -44,36 +44,5 @@ class Firmware1240
         const std::vector<std::vector<uint8_t>>& dataBytes, const int microIncrement, bool& isPreviousTimeSet,
         TimePoint& previousTime, const std::vector<TimePoint>& currentTime, const int packetSize) const;
 
-    virtual ImuProcessor* getImuManager() const { return nullptr; }
-};
-
-class Firmware1240IMU : public Firmware1240
-{
-   public:
-    Firmware1240IMU() : mImuByteSize(32), imuManager(std::make_unique<ImuProcessor>(mImuByteSize)) {}
-
-    // Override getImuManager to return the actual IMU manager
-    ImuProcessor* getImuManager() const override { return imuManager.get(); }
-
-    constexpr int imuByteSize() const override { return mImuByteSize; }
-
-   private:
-    int mImuByteSize;
-    std::unique_ptr<ImuProcessor> imuManager = nullptr;  // Pointer to the IMU manager
-};
-
-class FirmwareFactory
-{
-   public:
-    static std::unique_ptr<const Firmware1240> create(bool useImu)
-    {
-        if (useImu)
-        {
-            return std::make_unique<const Firmware1240IMU>();
-        }
-        else
-        {
-            return std::make_unique<const Firmware1240>();
-        }
-    }
+    std::unique_ptr<IImuProcessor> imuManager = nullptr;
 };

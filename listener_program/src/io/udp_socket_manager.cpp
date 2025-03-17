@@ -1,4 +1,4 @@
-#include "socket_manager.h"
+#include "udp_socket_manager.h"
 
 #include "../utils.h"
 
@@ -6,10 +6,10 @@
  * @brief Constructs a new SocketManager and initializes the UDP socket.
  * @throws std::runtime_error If the socket cannot be created.
  */
-SocketManager::SocketManager(const SocketVariables& socketVariables)
+UdpSocketManager::UdpSocketManager(const SocketVariables& socketVariables)
     : mDatagramSocket(socket(AF_INET, SOCK_DGRAM, 0)),
-      mUdpPort(socketVariables.udpPort),
-      mUdpIp(socketVariables.udpIp),
+      mUdpPort(socketVariables.port),
+      mUdpIp(socketVariables.ipAddress),
       mDataBytes()
 {
     if (mUdpIp == "self")
@@ -28,7 +28,7 @@ SocketManager::SocketManager(const SocketVariables& socketVariables)
  * Configures the socket based on the assigned IP and port.
  * @throws std::runtime_error If the socket cannot be closed, created, or bound.
  */
-void SocketManager::restartListener()
+void UdpSocketManager::restartListener()
 {
     std::cout << "Restarting listener:\n";
 
@@ -81,7 +81,7 @@ void SocketManager::restartListener()
  * @param addrlen Pointer to the size of the addr structure.
  * @return Number of bytes received, or -1 on error.
  */
-int SocketManager::receiveData(int flags, struct sockaddr* addr, socklen_t* addrlen)
+int UdpSocketManager::receiveData(int flags, struct sockaddr* addr, socklen_t* addrlen)
 {
     int bytesReceived = recvfrom(mDatagramSocket, mDataBytes.data(), mDataBytes.size(), flags, addr, addrlen);
     if (bytesReceived > 0)

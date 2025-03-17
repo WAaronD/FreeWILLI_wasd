@@ -1,6 +1,7 @@
 #pragma once
+#include "../algorithms/ecompass.h"
 #include "../pch.h"
-#include "madgwick_marg.h"
+#include "imu_processor_interface.h"
 
 /**
  * @class ImuProcessor
@@ -9,19 +10,20 @@
  * This class provides methods to extract, calibrate, and process IMU data from raw byte streams,
  * and compute the rotation matrix based on accelerometer and magnetometer readings.
  */
-class ImuProcessor
+class ImuProcessor1240 : public IImuProcessor
 {
    public:
-    explicit ImuProcessor(int IMU_BYTE_SIZE);
+    explicit ImuProcessor1240(int IMU_BYTE_SIZE);
 
-    void setRotationMatrix(const std::vector<uint8_t>& dataBytes);
+    const Eigen::Matrix3f& getRotationMatrix() override;
 
-    Eigen::Matrix3f mRotationMatrix;
-    MadgwickMARG margFilter;
+    void processIMUData(const std::vector<uint8_t>& byteBlock) override;
 
    private:
     // Calibration constants
     int mImuByteSize;
+
+    Eigen::Matrix3f mRotationMatrix;
 
     static constexpr int mDataWidth = 3;
     static constexpr int mMagnetometerDataIndex = 11;
@@ -32,15 +34,8 @@ class ImuProcessor
     const float mGyroscopeCalibration = 2000.0f / 32768.0f;
     const Eigen::Vector3f mMagnetometerCalibration{1150.0f / 32768.0f, 1150.0f / 32768.0f, 2250.0f / 32768.0f};
 
-    std::optional<Eigen::VectorXf> getImuDataFromBytes(const std::vector<uint8_t>& byteBlock);
-
     void calibrateImuData(Eigen::VectorXf& imuData);
+    void setRotationMatrix(Eigen::VectorXf& imuData);
 
-    Eigen::Matrix3f calculateRotationMatrix(const Eigen::Vector3f& accelerometerData,
-                                            const Eigen::Vector3f& magnetometerData);
-
-    void madgwickUpdate(const Eigen::Vector3f& acc, const Eigen::Vector3f& mag, const Eigen::Vector3f& gyr, float beta,
-                        float dt);
-
-    Eigen::Quaternionf magFilterState;
+    ECompass calculateRotationMatrix;
 };

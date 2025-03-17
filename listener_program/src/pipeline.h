@@ -1,17 +1,17 @@
 #pragma once
 
-#include "../ML/onnx_model.h"
-#include "../algorithms/doa_utils.h"
-#include "../algorithms/fir_filter.h"
-#include "../algorithms/frequency_domain_detectors.h"
-#include "../algorithms/gcc_phat.h"
-#include "../algorithms/hydrophone_position_processing.h"
-#include "../algorithms/time_domain_detectors.h"
-#include "../firmware_1240.h"
-#include "../io/output_manager.h"
-#include "../io/socket_manager.h"
-#include "../shared_data_manager.h"
-#include "../tracker/tracker.h"
+#include "ML/onnx_model.h"
+#include "algorithms/doa_utils.h"
+#include "algorithms/fir_filter.h"
+#include "algorithms/frequency_domain_detectors.h"
+#include "algorithms/gcc_phat.h"
+#include "algorithms/hydrophone_position_processing.h"
+#include "algorithms/time_domain_detectors.h"
+#include "firmware/firmware_factory.h"
+#include "io/output_manager.h"
+#include "io/udp_socket_manager.h"
+#include "shared_data_manager.h"
+#include "tracker/tracker.h"
 
 class PipelineVariables;
 

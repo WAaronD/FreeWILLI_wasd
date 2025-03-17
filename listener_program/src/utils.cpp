@@ -20,8 +20,8 @@ auto parseJsonConfig(const std::string& jsonFilePath) -> std::tuple<SocketVariab
     PipelineVariables pipelineVariables;
 
     // Configure SocketVariables parameters
-    socketVariables.udpIp = jsonConfig.at("IPAddress").get<std::string>();
-    socketVariables.udpPort = jsonConfig.at("Port").get<int>();
+    socketVariables.ipAddress = jsonConfig.at("IPAddress").get<std::string>();
+    socketVariables.port = jsonConfig.at("Port").get<int>();
 
     // Configure PipelineVariables parameters
 

@@ -6,16 +6,16 @@ class SocketVariables;
 /**
  * @brief Manages UDP socket operations, including creating, restarting, and configuring the listener.
  */
-class SocketManager : public ISocketManager
+class UdpSocketManager : public ISocketManager
 {
    public:
-    explicit SocketManager(const SocketVariables& socketVariables);
+    explicit UdpSocketManager(const SocketVariables& socketVariables);
 
     void restartListener() override;
 
-    int getDatagramSocket() const override { return mDatagramSocket; }
-    int getUdpPort() const override { return mUdpPort; }
-    std::string getUdpIp() const override { return mUdpIp; }
+    int getSocket() const override { return mDatagramSocket; }
+    int getPort() const override { return mUdpPort; }
+    std::string getIp() const override { return mUdpIp; }
 
     int receiveData(int flags, struct sockaddr* addr, socklen_t* addrlen) override;
 
