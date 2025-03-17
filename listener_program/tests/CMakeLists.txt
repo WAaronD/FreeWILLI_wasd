@@ -5,40 +5,56 @@
 #add_executable(UnitTests process_data_test.cpp TDOA_estimation_test.cpp utils_test.cpp)
 
 
-
 # Recursively find all .cpp files in the tests directory
 file(GLOB_RECURSE TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 
 # Add the UnitTests target with all found test sources
 add_executable(UnitTests ${TEST_SOURCES})
 
-# Include directories properly set
+# Ensure GoogleTest is included only once
+include(FetchContent)
+if (NOT TARGET gtest)
+    FetchContent_Declare(
+        googletest
+        SOURCE_DIR "${CMAKE_SOURCE_DIR}/libs/googletest"
+    )
+    FetchContent_MakeAvailable(googletest)
+endif()
+
+# Include directories for GoogleTest & GoogleMock
 target_include_directories(UnitTests PRIVATE
         ${THIRD_PARTY_INCLUDE_DIRS}
         "${gtest_SOURCE_DIR}/include"
+        "${gmock_SOURCE_DIR}/include"
 )
+
+# Link against GoogleTest & GoogleMock
 target_link_libraries(UnitTests PRIVATE
         gtest
         gtest_main
+        gmock
+        gmock_main
         MainLib
         ${THIRD_PARTY_LIBRARIES}
 )
 
-# Add tests to the testing framework
+# Enable GoogleTest Framework
 include(GoogleTest)
+gtest_discover_tests(UnitTests)
 
 set_target_properties(UnitTests PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin
 )
 
+# Enable automatic test execution
 message(STATUS "ENABLE_AUTO_TEST: ${ENABLE_AUTO_TEST}")
 if (ENABLE_AUTO_TEST)
     enable_testing()
-    #gtest_discover_tests(UnitTests)
     add_test(NAME UnitTests COMMAND UnitTests)
-    # Add a custom target that runs the tests every time the project is built
+
+    # Custom target to run tests automatically after building
     add_custom_target(
-      run_tests ALL                      # ALL means the target is built every time
+      run_tests ALL                      # Runs every time the project builds
       COMMAND ${CMAKE_COMMAND} --build . --target UnitTests
       COMMAND UnitTests                  # Execute the tests after building
       DEPENDS UnitTests                  # Ensures UnitTests is built before running
@@ -46,6 +62,5 @@ if (ENABLE_AUTO_TEST)
       COMMENT "Running unit tests..."
     )
 
-    # This ensures the UnitTests executable is up-to-date before running
     add_dependencies(run_tests UnitTests)
 endif ()
