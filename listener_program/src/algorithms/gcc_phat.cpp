@@ -15,6 +15,19 @@ GCC_PHAT::GCC_PHAT(int paddedLength, int spectraLength, int numChannels, int sam
 
 GCC_PHAT::~GCC_PHAT() { fftwf_destroy_plan(mInverseFftPlan); }
 
+/**
+ * @brief Computes Time Difference of Arrival (TDOA) estimates and cross-correlation peaks using GCC-PHAT.
+ *
+ * This function processes the saved FFTs of input signals, computes the normalized cross-spectra
+ * for each microphone pair, and applies an inverse FFT to estimate TDOA values and their corresponding
+ * cross-correlation peak magnitudes.
+ *
+ * @param savedFfts A matrix of saved FFTs, where each column represents the FFT of a different microphone channel.
+ *
+ * @return A tuple containing:
+ *         - Eigen::VectorXf: A vector of estimated TDOA values for each microphone pair.
+ *         - Eigen::VectorXf: A vector of cross-correlation peak magnitudes corresponding to each TDOA.
+ */
 auto GCC_PHAT::process(const Eigen::MatrixXcf& savedFfts) -> std::tuple<Eigen::VectorXf, Eigen::VectorXf>
 {
     Eigen::VectorXf tdoaEstimates(mNumTdoas);
@@ -38,6 +51,18 @@ auto GCC_PHAT::process(const Eigen::MatrixXcf& savedFfts) -> std::tuple<Eigen::V
     return {tdoaEstimates, crossCorrPeaks};
 }
 
+/**
+ * @brief Computes the normalized cross-spectral density between two input signals.
+ *
+ * This function calculates the cross-spectrum of two FFT-transformed signals, normalizes it
+ * using its magnitude, and stores the result in `mNormalizedCrossSpectra`. If the cross-spectrum
+ * contains invalid values (NaN or infinity), an exception is thrown.
+ *
+ * @param[in] s1 The FFT-transformed signal from the first microphone/channel.
+ * @param[in] s2 The FFT-transformed signal from the second microphone/channel.
+ *
+ * @throws std::runtime_error If the computed cross-spectrum contains NaN or infinite values.
+ */
 void GCC_PHAT::calculateNormalizedCrossSpectra(const Eigen::VectorXcf& s1, const Eigen::VectorXcf& s2)
 {
     Eigen::VectorXcf crossSpectrum = s1.array() * s2.conjugate().array();
@@ -47,14 +72,22 @@ void GCC_PHAT::calculateNormalizedCrossSpectra(const Eigen::VectorXcf& s1, const
     {
         throw std::runtime_error("Cross-spectrum contains invalid (inf/NaN) values.");
     }
-    assert(
-        mNormalizedCrossSpectra.size() == crossSpectrum.size() &&
-        "Sizes of mNormalizedCrossSpectra and crossSpectrum do not match");
 
     mNormalizedCrossSpectra.array() = crossSpectrum.array() / magnitudes.array();
-    // mNormalizedCrossSpectra.array() = crossSpectrum.array();
 }
 
+/**
+ * @brief Estimates the Time Difference of Arrival (TDOA) and cross-correlation peak value.
+ *
+ * This function rearranges the cross-correlation buffer to handle circular shifts properly,
+ * finds the peak cross-correlation value, and determines the corresponding time shift.
+ * The computed TDOA (Time Difference of Arrival) is obtained by normalizing the shift
+ * based on the sample rate.
+ *
+ * @return A tuple containing:
+ *         - `float` : The estimated TDOA value in seconds.
+ *         - `float` : The peak value of the cross-correlation function, indicating signal similarity.
+ */
 auto GCC_PHAT::estimateTdoaAndPeak() -> std::tuple<float, float>
 {
     Eigen::VectorXf rearranged(2 * mMaxShift);

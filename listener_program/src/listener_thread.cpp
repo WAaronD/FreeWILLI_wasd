@@ -1,7 +1,7 @@
-#include "../io/isocket_manager.h"
-#include "../io/socket_manager.h"
-#include "../pch.h"
-#include "../shared_data_manager.h"
+#include "io/isocket_manager.h"
+// #include "io/isocket_manager.h"
+#include "pch.h"
+#include "shared_data_manager.h"
 
 int packetCounter = 0;  // this should only be used inside the UDPListener
                         // function, as it is not protected by a mutex
@@ -43,7 +43,7 @@ void logPacketStatistics(
  * @throws std::runtime_error if there is an error receiving data from the
  * socket or if the buffer overflows.
  */
-void runListenerLoop(SharedDataManager& sharedDataManager, ISocketManager* socketManager)
+void runListenerLoop(SharedDataManager& sharedDataManager, std::unique_ptr<ISocketManager>& socketManager)
 {
     try
     {

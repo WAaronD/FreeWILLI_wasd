@@ -1,7 +1,7 @@
 #include "pipeline.h"
 
-#include "../pch.h"
-#include "../utils.h"
+#include "pch.h"
+#include "utils.h"
 
 /**
  * @brief Constructs a Pipeline object and initializes necessary components.
@@ -149,6 +149,12 @@ void Pipeline::dataProcessor()
                 label = mTracker->updateKalmanFiltersContinuous(DOAs, dataTimes[0]);
                 // mOutputManager.saveSpectraForTraining("training_data_fill.csv", label, beforeFilter);
             }
+        }
+
+        if (mFirmwareConfig->imuManager)
+        {
+            std::cout << mFirmwareConfig->imuManager->getRotationMatrix();
+            std::cout << std::endl;
         }
     }
 }

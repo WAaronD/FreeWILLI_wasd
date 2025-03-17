@@ -31,16 +31,6 @@ set(THIRD_PARTY_INCLUDE_DIRS "")
 include_directories(${THIRD_PARTY_INCLUDE_DIRS})
 link_directories(${CMAKE_LIBRARY_PATH})
 
-# Find and append third-party libraries
-#if(CMAKE_CROSSCOMPILING) # assuming we are building on Ubuntu x86 and targeting R Pi Zero 2W
-#    set(ENABLE_AUTO_TEST FALSE)
-#    include("${CMAKE_SOURCE_DIR}/CrossCompileSettings.cmake")
-#    #include("${CMAKE_SOURCE_DIR}/VectorCompileSettings.cmake")
-#else ()
-#    include("${CMAKE_SOURCE_DIR}/NativeCompileSettings.cmake")
-#endif()
-
-
 # Detecting if we're cross-compiling
 if(CMAKE_CROSSCOMPILING) # assuming we are building on Ubuntu x86 and targeting R Pi Zero 2W
     set(ENABLE_AUTO_TEST FALSE)
@@ -57,7 +47,6 @@ if(CMAKE_CROSSCOMPILING) # assuming we are building on Ubuntu x86 and targeting 
 else()
     include("${CMAKE_SOURCE_DIR}/NativeCompileSettings.cmake")
 endif()
-
 
 
 # Eigen3
@@ -140,28 +129,28 @@ if (ENABLE_TEST)
 
     # Debugging message before adding GoogleTest
     if (EXISTS "${GTEST_SOURCE_DIR}/CMakeLists.txt")
-        message(STATUS "✅ Found GoogleTest in submodule at: ${GTEST_SOURCE_DIR}")
+        message(STATUS "Found GoogleTest in submodule at: ${GTEST_SOURCE_DIR}")
     else()
-        message(FATAL_ERROR "❌ GoogleTest submodule not found! Did you initialize submodules?")
+        message(FATAL_ERROR " GoogleTest submodule not found! Did you initialize submodules?")
     endif()
 
     # Add GoogleTest submodule before tests
     if(NOT TARGET gtest_main)
-        message(STATUS "📢 Adding GoogleTest to the build system from: ${GTEST_SOURCE_DIR}")
+        message(STATUS "Adding GoogleTest to the build system from: ${GTEST_SOURCE_DIR}")
         add_subdirectory(${GTEST_SOURCE_DIR} ${GTEST_BUILD_DIR} EXCLUDE_FROM_ALL)
     else()
-        message(STATUS "✅ GoogleTest already added: Skipping `add_subdirectory`")
+        message(STATUS "GoogleTest already added: Skipping `add_subdirectory`")
     endif()
 
     # Debugging message before adding test directory
     if (EXISTS "${PROJECT_SOURCE_DIR}/tests/CMakeLists.txt")
-        message(STATUS "✅ Found test directory: ${PROJECT_SOURCE_DIR}/tests")
+        message(STATUS "Found test directory: ${PROJECT_SOURCE_DIR}/tests")
     else()
-        message(FATAL_ERROR "❌ Test directory not found! Check your repository structure.")
+        message(FATAL_ERROR "Test directory not found! Check your repository structure.")
     endif()
 
     # Add the test directory after GoogleTest is built
-    message(STATUS "📢 Adding test directory to build system: ${PROJECT_SOURCE_DIR}/tests")
+    message(STATUS "Adding test directory to build system: ${PROJECT_SOURCE_DIR}/tests")
     add_subdirectory(${PROJECT_SOURCE_DIR}/tests)
 
 endif()
@@ -183,16 +172,13 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_compile_definitions(Listener PRIVATE DEBUG)
     target_compile_definitions(UnitTests PRIVATE DEBUG)
     
-    #BRING THIS BACK IN
-    #target_compile_definitions(Benchmark PRIVATE DEBUG)
-
     # Set the output directory for the executable
     set_property(TARGET Listener PROPERTY OUTPUT_NAME ListenerDebug)
     if(CMAKE_CROSSCOMPILING)
         set_property(TARGET Listener PROPERTY OUTPUT_NAME ListenerDebugX)
     endif()
     set_target_properties(Listener PROPERTIES
-            RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/debug
+            RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin
     )
     if (ENABLE_TEST)
         set_property(TARGET UnitTests PROPERTY OUTPUT_NAME UnitTestsDebug)
@@ -200,7 +186,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
             set_property(TARGET UnitTests PROPERTY OUTPUT_NAME UnitTestsDebugX)
         endif()
         set_target_properties(UnitTests PROPERTIES
-                RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/debug
+                RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin
         )
     endif ()
     if (ENABLE_BENCHMARK)
@@ -209,7 +195,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
             set_property(TARGET Benchmark PROPERTY OUTPUT_NAME BenchmarkDebugX)
         endif()
         set_target_properties(Benchmark PROPERTIES
-                RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/debug
+                RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin
         )
     endif ()
 else ()

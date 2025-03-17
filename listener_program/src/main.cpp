@@ -1,17 +1,22 @@
-#include "firmware_1240.h"
-#include "io/socket_manager.h"
+#include "io/udp_socket_manager.h"
+#include "listener_thread.h"
+#include "pipeline.h"
 #include "shared_data_manager.h"
-#include "threads/listener_thread.h"
-#include "threads/pipeline.h"
 #include "utils.h"
 
 int main(int argc, char* argv[])
 {
+    if (argc != 3)
+    {
+        std::cerr << "Usage: " << argv[0] << " <config_files/config.json> <runtime_duration>" << std::endl;
+        return EXIT_FAILURE;
+    }
+
     printMode();
 
     auto [socketVariables, pipelineVars] = parseJsonConfig(std::string(argv[1]));
 
-    std::unique_ptr<ISocketManager> socketManager = std::make_unique<SocketManager>(socketVariables);
+    std::unique_ptr<ISocketManager> socketManager = std::make_unique<UdpSocketManager>(socketVariables);
 
     while (true)
     {
@@ -24,7 +29,7 @@ int main(int argc, char* argv[])
         Pipeline pipeline(outputManager, sharedDataManager, pipelineVars);
 
         // Create threads for listening for incoming data packets and processing data
-        std::thread producerThread(runListenerLoop, std::ref(sharedDataManager), socketManager.get());
+        std::thread producerThread(runListenerLoop, std::ref(sharedDataManager), std::ref(socketManager));
         std::thread consumerThread(&Pipeline::process, &pipeline);
 
         // Wait for threads to finish

@@ -13,14 +13,20 @@ OutputManager::OutputManager(
 }
 
 /**
- * @brief Initializes an output file (whose name is taken from first received timestamp) for storing computed values.
+ * @brief Initializes an output file for storing computed values.
+ *
+ * This function creates an output file whose name is derived from the first received timestamp.
+ * The file is used to log computed detection values, including peak time, amplitude,
+ * direction of arrival (DOA) coordinates, time difference of arrival (TDOA),
+ * and cross-correlation (XCorr) amplitude values.
+ *
+ * @param timestamp The first received timestamp, used to generate the output filename.
  * @param numChannels The number of channels in the data, used to generate TDOA and XCorr labels.
  * @throws std::runtime_error If the file cannot be opened for writing.
  */
 void OutputManager::initializeOutputFile(const TimePoint& timestamp, const int numChannels)
 {
     mDetectionOutputFile = mLoggingDirectory + convertTimePointToString(timestamp);
-    // initializeOutputFile(numChannels);
     std::cout << "Creating and writing to file: " << mDetectionOutputFile << std::endl;
 
     std::ofstream file(mDetectionOutputFile, std::ofstream::out | std::ofstream::trunc);
@@ -121,7 +127,17 @@ void OutputManager::appendToBuffer(
 }
 
 /**
- * @brief Appends buffer data to the specified file.
+ * @brief Appends buffered detection data to the output file.
+ *
+ * This function writes stored detection values from the internal buffer to the output file.
+ * Each row in the file represents a detection event and includes the following data:
+ * - Peak detection time (microseconds since epoch)
+ * - Signal amplitude
+ * - Direction of arrival (DOA) coordinates (X, Y, Z)
+ * - Time difference of arrival (TDOA) values for channel pairs
+ * - Cross-correlation (XCorr) amplitude values for channel pairs
+ *
+ * @throws std::runtime_error If the file cannot be opened for writing or if buffer sizes are inconsistent.
  */
 void OutputManager::appendBufferToFile()
 {
@@ -208,9 +224,13 @@ void OutputManager::flushBufferIfNecessary()
 }
 
 /**
- * @brief Writes error-causing data and associated data bytes to the
- * standard error stream.
+ * @brief Logs error-related data, including timestamps and raw byte data, to the standard error stream.
  *
+ * This function is used for debugging and error reporting. It outputs a detailed log of the data
+ * that caused an error.
+ *
+ * @param errorTimestamps A span containing timestamps of the errored data packets.
+ * @param erroredDataBytes A vector of byte arrays representing the raw data packets that triggered the error.
  */
 void OutputManager::writeDataToCerr(
     std::span<TimePoint> errorTimestamps, const std::vector<std::vector<uint8_t>>& erroredDataBytes)
@@ -261,13 +281,10 @@ void OutputManager::saveSpectraForTraining(
     std::cout << spectraToSave.tail(500).head(5).transpose() << std::endl;
     std::cout << spectraToSave.tail(500).tail(5).transpose() << std::endl;
 
-    // Check if the file exists
     std::ifstream fileCheck(filename);
     bool fileExists = fileCheck.good();
     fileCheck.close();
 
-    // Open the file in append mode if it exists, or create a new file if it
-    // doesn't
     std::ofstream file(filename, std::ios::out | std::ios::app);
     if (!file)
     {
@@ -294,14 +311,12 @@ void OutputManager::saveSpectraForTraining(
     }
     file << "\n";
 
-    // Close the file
     file.close();
 }
 
 /**
  * @brief Determines if the program should terminate based on the runtime
  * duration.
- *
  */
 void OutputManager::terminateProgramIfNecessary()
 {
