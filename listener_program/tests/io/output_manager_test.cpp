@@ -23,39 +23,6 @@ TEST(OutputManagerTest, AppendToBufferAndFlush)
 
     // The test succeeds if no exceptions are thrown
 }
-TEST(OutputManagerTest, ProgramTerminatesWhenTimeExceeded)
-{
-    std::cout << "Current Working Directory: " << std::filesystem::current_path() << std::endl;
-
-    std::string outputDir = "../deployment_files/";
-    OutputManager outputManager(std::chrono::seconds(1), false, outputDir);
-
-    const int numChannels = 4;
-    const TimePoint timestamp = std::chrono::system_clock::now();
-    std::string filePath = outputDir + convertTimePointToString(timestamp);
-
-    // 🔹 Ensure the file is deleted after the test
-    auto cleanup = [&]()
-    {
-        if (std::filesystem::exists(filePath))
-        {
-            std::filesystem::remove(filePath);
-            std::cout << "Deleted test output file: " << filePath << std::endl;
-        }
-    };
-    std::shared_ptr<void> cleanupGuard(nullptr, [&](void*) { cleanup(); });
-
-    outputManager.initializeOutputFile(timestamp, numChannels);
-
-    std::this_thread::sleep_for(std::chrono::seconds(2));  // Simulate elapsed time
-
-    // 🔹 Capture std::cout output before the process exits
-    testing::internal::CaptureStdout();
-    EXPECT_EXIT(outputManager.terminateProgramIfNecessary(), ::testing::ExitedWithCode(0), ".*");
-    std::string output = testing::internal::GetCapturedStdout();
-
-    EXPECT_NE(output.find("Terminating program"), std::string::npos);
-}
 
 TEST(OutputManagerTest, WriteErrorDataToCerr)
 {

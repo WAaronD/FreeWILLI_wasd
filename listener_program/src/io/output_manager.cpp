@@ -327,6 +327,7 @@ void OutputManager::terminateProgramIfNecessary()
         write();
         std::cout << "Terminating program... duration reached" << std::endl;
         std::cout.flush();  // 🔹 Force flushing std::cout before exit
+        //std::this_thread::sleep_for(std::chrono::milliseconds(10));
         std::exit(0);
     }
 }

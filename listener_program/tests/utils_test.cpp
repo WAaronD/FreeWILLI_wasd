@@ -36,8 +36,8 @@ TEST(UtilsTest, ParseJsonConfigSuccess)
     auto [socketVars, pipelineVars] = parseJsonConfig(tempJsonFile);
 
     // Validate parsed values
-    EXPECT_EQ(socketVars.udpIp, "192.168.1.1");
-    EXPECT_EQ(socketVars.udpPort, 5000);
+    EXPECT_EQ(socketVars.ipAddress, "192.168.1.1");
+    EXPECT_EQ(socketVars.port, 5000);
     EXPECT_TRUE(pipelineVars.integrationTesting);
     EXPECT_FALSE(pipelineVars.useImu);
     EXPECT_FLOAT_EQ(pipelineVars.speedOfSound, 1500.0f);

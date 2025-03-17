@@ -1,17 +1,17 @@
-#include "../../src/io/socket_manager.h"
+#include "../../src/io/udp_socket_manager.h"
 
 #include "../../src/io/isocket_manager.h"
 #include "../../src/utils.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
-TEST(SocketManagerTest, ConstructorCreatesSocketSuccessfully)
+TEST(UdpSocketManagerTest, ConstructorCreatesSocketSuccessfully)
 {
     SocketVariables socketVars;
-    socketVars.udpPort = 8080;
-    socketVars.udpIp = "127.0.0.1";
+    socketVars.port = 8080;
+    socketVars.ipAddress = "127.0.0.1";
 
-    EXPECT_NO_THROW(SocketManager socketManager(socketVars));
+    EXPECT_NO_THROW(UdpSocketManager socketManager(socketVars));
 }
 
 /*
@@ -28,56 +28,56 @@ TEST(SocketManagerTest, ConstructorThrowsOnSocketFailure)
 }
 */
 
-TEST(SocketManagerTest, RestartListenerRecreatesSocketSuccessfully)
+TEST(UdpSocketManagerTest, RestartListenerRecreatesSocketSuccessfully)
 {
     SocketVariables socketVars;
-    socketVars.udpPort = 8080;
-    socketVars.udpIp = "127.0.0.1";
+    socketVars.port = 8080;
+    socketVars.ipAddress = "127.0.0.1";
 
-    SocketManager socketManager(socketVars);
+    UdpSocketManager socketManager(socketVars);
 
     EXPECT_NO_THROW(socketManager.restartListener());
 }
 
-TEST(SocketManagerTest, RestartListenerThrowsIfCloseFails)
+TEST(UdpSocketManagerTest, RestartListenerThrowsIfCloseFails)
 {
     SocketVariables socketVars;
-    socketVars.udpPort = 8080;
-    socketVars.udpIp = "127.0.0.1";
+    socketVars.port = 8080;
+    socketVars.ipAddress = "127.0.0.1";
 
-    SocketManager socketManager(socketVars);
+    UdpSocketManager socketManager(socketVars);
 
     // Close the socket manually to force `close()` failure
-    ::close(socketManager.getDatagramSocket());
+    ::close(socketManager.getSocket());
 
     EXPECT_THROW(socketManager.restartListener(), std::runtime_error);
 }
 
-TEST(SocketManagerTest, ReceiveDataReturnsNegativeOnFailure)
+TEST(UdpSocketManagerTest, ReceiveDataReturnsNegativeOnFailure)
 {
     SocketVariables socketVars;
-    socketVars.udpPort = 8080;
-    socketVars.udpIp = "127.0.0.1";
+    socketVars.port = 8080;
+    socketVars.ipAddress = "127.0.0.1";
 
-    SocketManager socketManager(socketVars);
+    UdpSocketManager socketManager(socketVars);
 
     struct sockaddr_in addr;
     socklen_t addrLen = sizeof(addr);
 
     // Ensure the socket is invalid to force recvfrom() failure
-    ::close(socketManager.getDatagramSocket());
+    ::close(socketManager.getSocket());
 
     int bytesReceived = socketManager.receiveData(0, (struct sockaddr*)&addr, &addrLen);
     EXPECT_EQ(bytesReceived, -1);
 }
 
-TEST(SocketManagerTest, SetReceiveBufferSize)
+TEST(UdpSocketManagerTest, SetReceiveBufferSize)
 {
     SocketVariables socketVars;
-    socketVars.udpPort = 8080;
-    socketVars.udpIp = "127.0.0.1";
+    socketVars.port = 8080;
+    socketVars.ipAddress = "127.0.0.1";
 
-    SocketManager socketManager(socketVars);
+    UdpSocketManager socketManager(socketVars);
 
     socketManager.setReceiveBufferSize(4096);
     EXPECT_EQ(socketManager.getReceivedData().size(), 4096);

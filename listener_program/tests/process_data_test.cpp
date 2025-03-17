@@ -3,9 +3,9 @@
 #include <iostream>
 #include <string>
 
-#include "../../src/algorithms/frequency_domain_detectors.h"
-#include "../../src/algorithms/time_domain_detectors.h"
-#include "../../src/firmware/firmware_1240.h"
+#include "../src/algorithms/frequency_domain_detectors.h"
+#include "../src/algorithms/time_domain_detectors.h"
+#include "../src/firmware/firmware_1240.h"
 #include "gtest/gtest.h"
 
 using TimePoint = std::chrono::system_clock::time_point;

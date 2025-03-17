@@ -1,4 +1,4 @@
-#include "../src/firmware_1240.h"
+#include "../../src/firmware/firmware_1240.h"
 
 #include "gtest/gtest.h"
 
@@ -49,8 +49,16 @@ TEST(Firmware1240Test, GenerateTimestamp)
     auto timestamps = firmware.generateTimestamp(dataBytes, Firmware1240::NUM_CHAN);
     EXPECT_EQ(timestamps.size(), 1);
 
-    std::time_t expected_time = std::mktime(
-        new std::tm{.tm_year = 2024 - 1900, .tm_mon = 3 - 1, .tm_mday = 14, .tm_hour = 12, .tm_min = 30, .tm_sec = 45});
+    std::tm expectedTm = {};
+    expectedTm.tm_year = 2024 - 1900;
+    expectedTm.tm_mon = 3 - 1;
+    expectedTm.tm_mday = 14;
+    expectedTm.tm_hour = 12;
+    expectedTm.tm_min = 30;
+    expectedTm.tm_sec = 45;
+
+    std::time_t expected_time = std::mktime(&expectedTm);
+
     auto expected_timestamp =
         std::chrono::system_clock::from_time_t(expected_time) + std::chrono::microseconds(1000000);
 
