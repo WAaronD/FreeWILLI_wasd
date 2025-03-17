@@ -18,7 +18,7 @@ __pycache__/
 *.o
 nohup.out
 deployment_files/*
-/listener_program/build/*
+#/listener_program/build/*
 /listener_program/bin/*
 /listener_program/debug/*
 out/
