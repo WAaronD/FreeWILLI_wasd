@@ -325,7 +325,8 @@ void OutputManager::terminateProgramIfNecessary()
     if (elapsedTime >= mProgramRuntime)
     {
         write();
-        std::cout << "Terminating program... duration reached\n";
+        std::cout << "Terminating program... duration reached" << std::endl;
+        std::cout.flush();  // 🔹 Force flushing std::cout before exit
         std::exit(0);
     }
 }

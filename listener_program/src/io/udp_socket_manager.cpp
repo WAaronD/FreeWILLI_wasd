@@ -83,11 +83,20 @@ void UdpSocketManager::restartListener()
  */
 int UdpSocketManager::receiveData(int flags, struct sockaddr* addr, socklen_t* addrlen)
 {
+    std::cout << "[DEBUG] Calling recvfrom() on socket: " << mDatagramSocket << std::endl;
+
     int bytesReceived = recvfrom(mDatagramSocket, mDataBytes.data(), mDataBytes.size(), flags, addr, addrlen);
     if (bytesReceived > 0)
     {
+        std::cout << "[DEBUG] Received " << bytesReceived << " bytes" << std::endl;
+
         mDataBytes.assign(
             static_cast<uint8_t*>(mDataBytes.data()), static_cast<uint8_t*>(mDataBytes.data()) + bytesReceived);
+    }
+    else
+    {
+        std::cout << "[DEBUG] recvfrom() returned " << bytesReceived << ", errno: " << errno << " (" << strerror(errno)
+                  << ")" << std::endl;
     }
     return bytesReceived;
 }

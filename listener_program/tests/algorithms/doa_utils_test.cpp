@@ -1,6 +1,7 @@
-#include "gtest/gtest.h"
-#include "../../src/pch.h"
 #include "../../src/algorithms/doa_utils.h"
+
+#include "../../src/pch.h"
+#include "gtest/gtest.h"
 
 /*
     the following are tests for convertDoaToElAz function
@@ -69,26 +70,24 @@ TEST(ConvertDoaToElAz, UnitVectorNegativeX)
 TEST(ConvertDoaToElAz, ArbitraryVector)
 {
     Eigen::VectorXf doa(3);
-    doa << 0.57735027f, 0.57735027f, 0.57735027f; // Normalized vector (1, 1, 1)
+    doa << 0.57735027f, 0.57735027f, 0.57735027f;  // Normalized vector (1, 1, 1)
 
     Eigen::VectorXf elAz = convertDoaToElAz(doa);
-    std::cout << "el: " << elAz(0) << std::endl;
-    std::cout << "az: " << elAz(1) << std::endl;
 
-    EXPECT_NEAR(elAz(0), 125.264, 1e-3f); // Expected elevation
-    EXPECT_NEAR(elAz(1), 45.0f, 1e-3f);   // Expected azimuth
+    EXPECT_NEAR(elAz(0), 125.264, 1e-3f);  // Expected elevation
+    EXPECT_NEAR(elAz(1), 45.0f, 1e-3f);  // Expected azimuth
 }
 
 // Test: Edge Case - Unit vector in XY plane (azimuth wrap-around)
 TEST(ConvertDoaToElAz, WrapAroundAzimuth)
 {
     Eigen::VectorXf doa(3);
-    doa << -0.70710678f, -0.70710678f, 0.0f; // Normalized (-1, -1, 0)
+    doa << -0.70710678f, -0.70710678f, 0.0f;  // Normalized (-1, -1, 0)
 
     Eigen::VectorXf elAz = convertDoaToElAz(doa);
 
-    EXPECT_NEAR(elAz(0), 90.0f, 1e-3f);   // Elevation should be 90 degrees
-    EXPECT_NEAR(elAz(1), -135.0f, 1e-3f); // Azimuth should be -135 degrees
+    EXPECT_NEAR(elAz(0), 90.0f, 1e-3f);  // Elevation should be 90 degrees
+    EXPECT_NEAR(elAz(1), -135.0f, 1e-3f);  // Azimuth should be -135 degrees
 }
 
 /*
@@ -100,14 +99,10 @@ TEST(ComputeDoaFromTdoaTest, ValidInputs)
 {
     // Define the precomputed matrices and inputs
     Eigen::MatrixXf precomputedP(3, 3);
-    precomputedP << 1, 0, 0,
-        0, 1, 0,
-        0, 0, 1;
+    precomputedP << 1, 0, 0, 0, 1, 0, 0, 0, 1;
 
     Eigen::MatrixXf basisMatrixU(3, 3);
-    basisMatrixU << 1, 0, 0,
-        0, 1, 0,
-        0, 0, 1;
+    basisMatrixU << 1, 0, 0, 0, 1, 0, 0, 0, 1;
 
     float speedOfSound = 1500.0f;
     Eigen::VectorXf tdoa(3);
@@ -119,7 +114,7 @@ TEST(ComputeDoaFromTdoaTest, ValidInputs)
 
     // Expected result (scaled TDOA normalized to unit vector)
     Eigen::VectorXf expectedDoa(3);
-    expectedDoa << 0.267261f, 0.534522f, 0.801784f; // Normalized result
+    expectedDoa << 0.267261f, 0.534522f, 0.801784f;  // Normalized result
 
     // Verify the results
     EXPECT_TRUE((doaVector - expectedDoa).norm() < 1e-4f);
@@ -129,14 +124,10 @@ TEST(ComputeDoaFromTdoaTest, RankOneDoesNotNormalize)
 {
     // Define the precomputed matrices and inputs
     Eigen::MatrixXf precomputedP(3, 3);
-    precomputedP << 1, 0, 0,
-        0, 1, 0,
-        0, 0, 1;
+    precomputedP << 1, 0, 0, 0, 1, 0, 0, 0, 1;
 
     Eigen::MatrixXf basisMatrixU(3, 3);
-    basisMatrixU << 1, 0, 0,
-        0, 1, 0,
-        0, 0, 1;
+    basisMatrixU << 1, 0, 0, 0, 1, 0, 0, 0, 1;
 
     float speedOfSound = 1500.0f;
     Eigen::VectorXf tdoa(3);
@@ -158,14 +149,10 @@ TEST(ComputeDoaFromTdoaTest, ZeroTdoaVector)
 {
     // Define the precomputed matrices and inputs
     Eigen::MatrixXf precomputedP(3, 3);
-    precomputedP << 1, 0, 0,
-        0, 1, 0,
-        0, 0, 1;
+    precomputedP << 1, 0, 0, 0, 1, 0, 0, 0, 1;
 
     Eigen::MatrixXf basisMatrixU(3, 3);
-    basisMatrixU << 1, 0, 0,
-        0, 1, 0,
-        0, 0, 1;
+    basisMatrixU << 1, 0, 0, 0, 1, 0, 0, 0, 1;
 
     float speedOfSound = 1500.0f;
     Eigen::VectorXf tdoa(3);
@@ -187,19 +174,15 @@ TEST(ComputeDoaFromTdoaTest, InvalidRank)
 {
     // Define the precomputed matrices and inputs
     Eigen::MatrixXf precomputedP(3, 3);
-    precomputedP << 1, 0, 0,
-        0, 1, 0,
-        0, 0, 1;
+    precomputedP << 1, 0, 0, 0, 1, 0, 0, 0, 1;
 
     Eigen::MatrixXf basisMatrixU(3, 3);
-    basisMatrixU << 1, 0, 0,
-        0, 1, 0,
-        0, 0, 1;
+    basisMatrixU << 1, 0, 0, 0, 1, 0, 0, 0, 1;
 
     float speedOfSound = 1500.0f;
     Eigen::VectorXf tdoa(3);
     tdoa << 0.001f, 0.002f, 0.003f;
-    int rank = 0; // Invalid rank
+    int rank = 0;  // Invalid rank
 
     // Call the function
     Eigen::VectorXf doaVector = computeDoaFromTdoa(precomputedP, basisMatrixU, speedOfSound, tdoa, rank);
@@ -236,7 +219,7 @@ TEST(NormalizeDoaTest, Full3DNormalizationZeroVector)
     doaVector << 0.0f, 0.0f, 0.0f;
     normalizeDoa(doaVector, 3);
 
-    EXPECT_FLOAT_EQ(doaVector.norm(), 0.0f); // Vector remains unchanged
+    EXPECT_FLOAT_EQ(doaVector.norm(), 0.0f);  // Vector remains unchanged
 }
 
 // Test for normalization of x and y components (rank 2) with a typical vector
@@ -249,7 +232,7 @@ TEST(NormalizeDoaTest, NormalizeXYTypical)
     double xyNorm = std::sqrt(3.0 * 3.0 + 4.0 * 4.0);
     EXPECT_NEAR(doaVector(0), 3.0 / xyNorm, 1e-6);
     EXPECT_NEAR(doaVector(1), 4.0 / xyNorm, 1e-6);
-    EXPECT_FLOAT_EQ(doaVector(2), 5.0f); // z-component remains unchanged
+    EXPECT_FLOAT_EQ(doaVector(2), 5.0f);  // z-component remains unchanged
 }
 
 // Test for rank 2 normalization with zero x and y components
@@ -261,7 +244,7 @@ TEST(NormalizeDoaTest, NormalizeXYZeroXYComponents)
 
     EXPECT_FLOAT_EQ(doaVector(0), 0.0f);
     EXPECT_FLOAT_EQ(doaVector(1), 0.0f);
-    EXPECT_FLOAT_EQ(doaVector(2), 5.0f); // z-component remains unchanged
+    EXPECT_FLOAT_EQ(doaVector(2), 5.0f);  // z-component remains unchanged
 }
 
 // Test for rank 1 (no normalization)
@@ -281,7 +264,7 @@ TEST(NormalizeDoaTest, InvalidRank)
 {
     Eigen::VectorXf doaVector(3);
     doaVector << 3.0f, 4.0f, 5.0f;
-    normalizeDoa(doaVector, 0); // Invalid rank should leave the vector unchanged
+    normalizeDoa(doaVector, 0);  // Invalid rank should leave the vector unchanged
 
     EXPECT_FLOAT_EQ(doaVector(0), 3.0f);
     EXPECT_FLOAT_EQ(doaVector(1), 4.0f);
