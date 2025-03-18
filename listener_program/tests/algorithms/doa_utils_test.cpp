@@ -6,7 +6,6 @@
 /*
     the following are tests for convertDoaToElAz function
 */
-
 TEST(ConvertDoaToElAz, UnitVectorPositiveZ)
 {
     Eigen::VectorXf doa(3);

@@ -1,6 +1,6 @@
-#include "../../src/algorithms/time_domain_detectors.h"  // Adjust path accordingly
-
 #include <gtest/gtest.h>
+
+#include "../../src/algorithms/time_domain_detectors_factory.h"  // Adjust path accordingly
 
 // #include <Eigen/Dense>
 

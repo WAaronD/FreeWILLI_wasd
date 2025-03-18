@@ -1,5 +1,4 @@
-#include "../../src/algorithms/frequency_domain_detectors.h"
-
+#include "../../src/algorithms/frequency_domain_detectors_factory.h"
 #include "../../src/pch.h"
 #include "gtest/gtest.h"
 

@@ -11,24 +11,24 @@ TEST(UtilsTest, ParseJsonConfigSuccess)
     std::string tempJsonFile = "temp_config.json";
     std::ofstream file(tempJsonFile);
     file << R"({
-        "IPAddress": "192.168.1.1",
-        "Port": 5000,
-        "IntegrationTesting": true,
-        "Firmware1240_with_IMU": false,
-        "SpeedOfSound": 1500.0,
-        "LoggingDirectory": "/logs",
-        "Time_Domain_Detector": "CrossCorrelation",
-        "Time_Domain_Threshold": 0.7,
-        "Frequency_Domain_Strategy": "FFT",
-        "Frequency_Domain_Detector": "Energy",
-        "Frequency_Domain_Threshold": 0.5,
-        "FilterWeights": "/filters.dat",
-        "ReceiverPositions": "/receivers.json",
-        "Enable_Tracking": true,
-        "Cluster_Frequency_In_Seconds": 30,
-        "Cluster_Window_In_Seconds": 60,
-        "ONNX_model_path": "/models/model.onnx",
-        "ONNX_model_normalization": "/models/normalization.dat"
+        "networkIPAddress": "192.168.1.1",
+        "networkPort": 5000,
+        "enableIntegrationTesting": true,
+        "useFirmware1240WithIMU": false,
+        "speedOfSound_mps": 1500.0,
+        "logDirectory": "/logs",
+        "timeDomainDetector": "CrossCorrelation",
+        "timeDomainThreshold": 0.7,
+        "frequencyDomainStrategy": "FFT",
+        "frequencyDomainDetector": "Energy",
+        "frequencyDomainThreshold": 0.5,
+        "filterWeightsFile": "/filters.dat",
+        "receiverPositionsFile": "/receivers.json",
+        "enableTracking": true,
+        "clusteringIntervalSeconds": 30,
+        "clusteringWindowSeconds": 60,
+        "onnxModelPath": "/models/model.onnx",
+        "onnxNormalizationParams": "/models/normalization.dat"
     })";
     file.close();
 

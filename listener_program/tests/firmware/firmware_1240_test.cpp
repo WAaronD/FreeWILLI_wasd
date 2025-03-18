@@ -1,8 +1,6 @@
-#include "../../src/firmware/firmware_1240.h"
-
+#include "../../src/firmware/firmware_factory.h"
 #include "gtest/gtest.h"
 
-// Test: Insert Data Into Channel Matrix
 // Test: Insert Data Into Channel Matrix
 TEST(Firmware1240Test, InsertDataIntoChannelMatrix)
 {

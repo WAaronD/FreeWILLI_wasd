@@ -250,10 +250,53 @@ After DOA estimation (step 5), our novel multi-target tracking algorithm can be 
 
 ##### **Tunable Parameters**
 - **DBSCAN Parameters** (`eps`, `min_samples`): Control how closely detections must be clustered to form a track.
+- **Clustering Interval (seconds)** (`clusterIntervalSeconds`): Defines how often the clustering algorithm runs to group detected sources. A higher value reduces computational load but may delay updates to active tracks.
+- **Clustering Window Duration (seconds)** (`clusterWindowSeconds`): Specifies the time span of recent data considered in each clustering iteration. A longer window allows for more stable clustering but may include outdated detections.
 - **Track Inactivity Threshold**: Specifies the maximum duration a tracked source can remain unassociated across clustering iterations before being considered lost and removed.
 
 
 ### Runtime Configuration
+
+
+### **Configuration Variables**
+The program's runtime behavior is controlled by JSON configuration files stored in the ```config_files/``` directory. These files specify parameters for network communication, signal processing, tracking, and neural network inference. Users can adjust these settings to customize system behavior without modifying or recompiling the code.
+
+- **`enableIntegrationTesting`**: Enables or disables integration testing mode. Set to `true` to run CI/CD integration tests, otherwise `false`.
+
+- **`logDirectory`**: Specifies the directory where logs and output files will be stored.
+
+- **`networkIPAddress`**: Defines the IP address for network communication. Use `"self"` for local execution.
+
+- **`networkPort`**: The port number on which the program will listen for incoming data.
+
+- **`useFirmware1240WithIMU`**: Indicates whether to use firmware version 1240 with IMU support. Set to `true` if using IMU-enhanced firmware.
+
+- **`speedOfSound_mps`**: The assumed speed of sound in meters per second (m/s), used for TDOA and DOA calculations.
+
+- **`timeDomainDetector`**: The selected detection method applied in the time domain. Options include `"None"`, `"PeakAmplitude"`, etc.
+
+- **`timeDomainThreshold`**: Defines the threshold value used in time domain detection for identifying relevant signal events.
+
+- **`frequencyDomainStrategy`**: Specifies the strategy for frequency domain processing. Options include `"None"`, `"Filter"`, etc.
+
+- **`frequencyDomainDetector`**: The selected detection method applied in the frequency domain. Options include `"None"`, `"AverageEnergy"`, etc.
+
+- **`frequencyDomainThreshold`**: Defines the threshold value used in frequency domain detection for filtering out weak signals.
+
+- **`filterWeightsFile`**: Path to the filter coefficient file used for frequency domain filtering.
+
+- **`receiverPositionsFile`**: Path to the file containing hydrophone or receiver positions used for DOA estimation.
+
+- **`enableTracking`**: Enables or disables multi-target tracking. Set to `true` to activate tracking functionality.
+
+- **`clusteringIntervalSeconds`**: Defines how often the clustering algorithm runs to group detected sources, in seconds.
+
+- **`clusteringWindowSeconds`**: Specifies the time span of recent data considered in each clustering iteration, in seconds.
+
+- **`onnxModelPath`**: Path to the ONNX model used for neural network inference.
+
+- **`onnxNormalizationParams`**: Path to the JSON file containing normalization parameters for preprocessing inputs to the ONNX model.
+
 
 
 ### Directory Structure

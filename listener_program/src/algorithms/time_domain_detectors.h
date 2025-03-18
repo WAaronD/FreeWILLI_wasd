@@ -41,23 +41,3 @@ class NoTimeDomainDetector : public ITimeDomainDetector
 
     float getLastDetection() const override { return peakAmplitude; }
 };
-
-class ITimeDomainDetectorFactory
-{
-   public:
-    static std::unique_ptr<ITimeDomainDetector> create(const std::string& timeDomainDetector, float timeDomainThreshold)
-    {
-        if (timeDomainDetector == "PeakAmplitude")
-        {
-            return std::make_unique<PeakAmplitudeDetector>(timeDomainThreshold);
-        }
-        else if (timeDomainDetector == "None")
-        {
-            return std::make_unique<NoTimeDomainDetector>();
-        }
-        else
-        {
-            throw std::invalid_argument("Unknown TimeDomainDetector type: " + timeDomainDetector);
-        }
-    }
-};
