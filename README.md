@@ -96,9 +96,8 @@ The repository is organized as follows:
 
 ### Installing Dependencies with Docker (Recommended)
 
-1. Build Docker Image with a Custom Port
+1. Build Docker Image
 
-By default, it will use port 1045, but you can specify a custom port at build time:
 ```bash
 cd listener_program/
 docker build -t freewilli-exec .
