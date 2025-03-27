@@ -68,7 +68,7 @@ void Pipeline::dataProcessor()
     // call function once outside of the loop below to initialize files.
     initializeOutputFiles(previousTimeSet, previousTime);
 
-    while (!mSharedDataManager.errorOccurred)
+    while (!mSharedDataManager.errorOccurred)  // loop
     {
         obtainAndProcessByteData(previousTimeSet, previousTime);
         mOutputManager.terminateProgramIfNecessary();

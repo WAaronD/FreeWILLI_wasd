@@ -35,20 +35,19 @@ jobs:
     
     - name: Run Clang-Tidy on changed files
       run: |
-        docker run --rm -v ${{ github.workspace }}:/app -w /app/listener_program \
-          josephlwalker96/freewilli-exec bash -c '
-            cd /app/listener_program &&
-            if [ ! -d .git ]; then echo "Missing .git — did you set fetch-depth: 0?"; exit 1; fi &&
-            git fetch origin main &&
-            cmake -S . -B out -DCMAKE_EXPORT_COMPILE_COMMANDS=ON &&
-            CHANGED_FILES=$(git diff --diff-filter=ACMRT --name-only origin/main -- "*.cpp" "*.hpp" | grep "^src/" || true) &&
-            if [ -n "$CHANGED_FILES" ]; then
-              echo "Linting changed files:" $CHANGED_FILES &&
-              run-clang-tidy.py -p out -j $(nproc) $CHANGED_FILES
-            else
-              echo "No .cpp/.hpp files changed in src/"
-            fi
-          '
+        docker run --rm -v ${{ github.workspace }}:/app -w /app josephlwalker96/freewilli-exec bash -c '
+          if [ ! -d .git ]; then echo "Missing .git — did you set fetch-depth: 0?"; exit 1; fi &&
+          git fetch origin main &&
+          cd listener_program &&
+          cmake -S . -B out -DCMAKE_EXPORT_COMPILE_COMMANDS=ON &&
+          CHANGED_FILES=$(git diff --diff-filter=ACMRT --name-only origin/main -- "*.cpp" "*.hpp" | grep "^src/" || true) &&
+          if [ -n "$CHANGED_FILES" ]; then
+            echo "Linting changed files:" $CHANGED_FILES &&
+            run-clang-tidy.py -p out -j $(nproc) $CHANGED_FILES
+          else
+            echo "No .cpp/.hpp files changed in src/"
+          fi
+        '
 
 
     - name: Run Integration Test
