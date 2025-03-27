@@ -30,7 +30,7 @@ jobs:
         docker run --rm -v ${{ github.workspace }}:/app -w /app/listener_program josephlwalker96/freewilli-exec \
           bash -c "
             cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON &&
-            run-clang-tidy.py -p out \$(find src -name '*.cpp') -j \$(nproc)
+            run-clang-tidy.py -p out $(find src -name '*.cpp') -j $(nproc)
           "
 
 
