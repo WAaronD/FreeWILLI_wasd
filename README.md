@@ -99,7 +99,6 @@ The repository is organized as follows:
 1. Build Docker Image
 
 ```bash
-cd listener_program/
 docker build -t freewilli-exec .
 ```
 
