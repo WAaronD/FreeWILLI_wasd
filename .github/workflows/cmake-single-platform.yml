@@ -36,7 +36,7 @@ jobs:
     - name: Run Clang-Tidy on changed files
       run: |
         docker run --rm -v ${{ github.workspace }}:/app -w /app josephlwalker96/freewilli-exec bash -c '
-          if [ ! -d .git ]; then echo "Missing .git — did you set fetch-depth: 0?"; exit 1; fi &&
+          git config --global --add safe.directory /app &&
           git fetch origin main &&
           cd listener_program &&
           cmake -S . -B out -DCMAKE_EXPORT_COMPILE_COMMANDS=ON &&
