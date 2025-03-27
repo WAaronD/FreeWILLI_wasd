@@ -26,28 +26,28 @@ jobs:
     - name: Pull Docker Image
       run: docker pull josephlwalker96/freewilli-exec:latest
 
-    #- name: Run Clang-Tidy
-    #  run: |
-    #    docker run --rm -v ${{ github.workspace }}:/app -w /app/listener_program josephlwalker96/freewilli-exec \
-    #      bash -c '
-    #        cmake -S . -B out -DCMAKE_EXPORT_COMPILE_COMMANDS=ON &&
-    #        run-clang-tidy.py -p out -j $(nproc) $(find ./src -name "*.cpp")'
-    
-    - name: Run Clang-Tidy on changed files
+    - name: Run Clang-Tidy
       run: |
-        docker run --rm -v ${{ github.workspace }}:/app -w /app josephlwalker96/freewilli-exec bash -c '
-          git config --global --add safe.directory /app &&
-          git fetch origin main &&
-          cd listener_program &&
-          cmake -S . -B out -DCMAKE_EXPORT_COMPILE_COMMANDS=ON &&
-          CHANGED_FILES=$(git diff --diff-filter=ACMRT --name-only HEAD^ -- "*.cpp" "*.hpp" | grep "^src/" || true) &&
-          if [ -n "$CHANGED_FILES" ]; then
-            echo "Linting changed files:" $CHANGED_FILES &&
-            run-clang-tidy.py -p out -j $(nproc) $CHANGED_FILES
-          else
-            echo "No .cpp/.hpp files changed in src/"
-          fi
-        '
+        docker run --rm -v ${{ github.workspace }}:/app -w /app/listener_program josephlwalker96/freewilli-exec \
+          bash -c '
+            cmake -S . -B out -DCMAKE_EXPORT_COMPILE_COMMANDS=ON &&
+            run-clang-tidy.py -p out -j $(nproc) $(find ./src -name "*.cpp")'
+    
+    #- name: Run Clang-Tidy on changed files
+    #  run: |
+    #    docker run --rm -v ${{ github.workspace }}:/app -w /app josephlwalker96/freewilli-exec bash -c '
+    #      git config --global --add safe.directory /app &&
+    #      git fetch origin main &&
+    #      cd listener_program &&
+    #      cmake -S . -B out -DCMAKE_EXPORT_COMPILE_COMMANDS=ON &&
+    #      CHANGED_FILES=$(git diff --diff-filter=ACMRT --name-only HEAD^ -- "*.cpp" "*.hpp" | grep "^src/" || true) &&
+    #      if [ -n "$CHANGED_FILES" ]; then
+    #        echo "Linting changed files:" $CHANGED_FILES &&
+    #        run-clang-tidy.py -p out -j $(nproc) $CHANGED_FILES
+    #      else
+    #        echo "No .cpp/.hpp files changed in src/"
+    #      fi
+    #    '
 
 
     - name: Run Integration Test
