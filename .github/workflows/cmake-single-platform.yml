@@ -24,20 +24,27 @@ jobs:
     - name: Pull Docker Image
       run: docker pull josephlwalker96/freewilli-exec:latest
 
-    # Run Clang-Tidy inside Docker
     #- name: Run Clang-Tidy
     #  run: |
     #    docker run --rm -v ${{ github.workspace }}:/app -w /app/listener_program josephlwalker96/freewilli-exec \
-    #      bash -c "
+    #      bash -c '
     #        cmake -S . -B out -DCMAKE_EXPORT_COMPILE_COMMANDS=ON &&
-    #        run-clang-tidy.py -p out \$(find ./src -name '*.cpp') -j \$(nproc)
-    #      "
-    - name: Run Clang-Tidy
+    #        run-clang-tidy.py -p out -j $(nproc) $(find ./src -name "*.cpp")'
+    
+    - name: Run Clang-Tidy on changed files
       run: |
-        docker run --rm -v ${{ github.workspace }}:/app -w /app/listener_program josephlwalker96/freewilli-exec \
-          bash -c '
+        docker run --rm -v ${{ github.workspace }}:/app -w /app/listener_program \
+          -e GIT_COMMIT=$(git rev-parse HEAD) \
+          josephlwalker96/freewilli-exec bash -c '
             cmake -S . -B out -DCMAKE_EXPORT_COMPILE_COMMANDS=ON &&
-            run-clang-tidy.py -p out -j $(nproc) $(find ./src -name "*.cpp")'
+            CHANGED_FILES=$(git diff --diff-filter=ACMRT --name-only origin/main -- "*.cpp" "*.hpp" | grep "^src/" || true) &&
+            if [ -n "$CHANGED_FILES" ]; then
+              echo "Linting changed files:" $CHANGED_FILES &&
+              run-clang-tidy.py -p out -j $(nproc) $CHANGED_FILES
+            else
+              echo "No .cpp/.hpp files changed in src/"
+            fi
+          '
 
 
     - name: Run Integration Test

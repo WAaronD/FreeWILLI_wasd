@@ -156,6 +156,7 @@ void Pipeline::dataProcessor()
         {
             std::cout << mFirmwareConfig->imuManager->getRotationMatrix();
             std::cout << std::endl;
+            std::cout << std::endl;
         }
     }
 }
