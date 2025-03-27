@@ -6,6 +6,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Install system dependencies and Clang-Tidy
 RUN apt-get update && apt-get install -y \
+    git \
     clang \
     clang-tidy \
     clang-tools \

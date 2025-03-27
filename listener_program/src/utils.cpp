@@ -19,11 +19,11 @@ auto parseJsonConfig(const std::string& jsonFilePath) -> std::tuple<SocketVariab
     SocketVariables socketVariables;
     PipelineVariables pipelineVariables;
 
-    // Configure SocketVariables parameters
+    // SocketVariables parameters
     socketVariables.ipAddress = jsonConfig.at("networkIPAddress").get<std::string>();
     socketVariables.port = jsonConfig.at("networkPort").get<int>();
 
-    // Configure PipelineVariables parameters
+    // PipelineVariables parameters
     pipelineVariables.integrationTesting = jsonConfig.at("enableIntegrationTesting").get<bool>();
     pipelineVariables.useImu = jsonConfig.at("useFirmware1240WithIMU").get<bool>();
     pipelineVariables.speedOfSound = jsonConfig.at("speedOfSound_mps").get<float>();
