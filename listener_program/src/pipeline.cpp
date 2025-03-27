@@ -65,6 +65,9 @@ void Pipeline::dataProcessor()
     auto previousTime = TimePoint::min();
     dataBytes.resize(mFirmwareConfig->NUM_PACKS_DETECT);
 
+    int i = 0;
+    std::cout << i << std::endl;
+
     // call function once outside of the loop below to initialize files.
     initializeOutputFiles(previousTimeSet, previousTime);
 
