@@ -36,8 +36,10 @@ jobs:
     - name: Run Clang-Tidy on changed files
       run: |
         docker run --rm -v ${{ github.workspace }}:/app -w /app/listener_program \
-          -e GIT_COMMIT=$(git rev-parse HEAD) \
           josephlwalker96/freewilli-exec bash -c '
+            cd /app/listener_program &&
+            if [ ! -d .git ]; then echo "Missing .git — did you set fetch-depth: 0?"; exit 1; fi &&
+            git fetch origin main &&
             cmake -S . -B out -DCMAKE_EXPORT_COMPILE_COMMANDS=ON &&
             CHANGED_FILES=$(git diff --diff-filter=ACMRT --name-only origin/main -- "*.cpp" "*.hpp" | grep "^src/" || true) &&
             if [ -n "$CHANGED_FILES" ]; then

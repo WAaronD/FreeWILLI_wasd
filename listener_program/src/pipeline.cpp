@@ -140,7 +140,7 @@ void Pipeline::dataProcessor()
             mTimeDomainDetector->getLastDetection(), directionOfArrival[0], directionOfArrival[1],
             directionOfArrival[2], tdoaVector, std::get<1>(tdoasAndXCorrAmps), dataTimes[0]);
 
-        if (mTracker)
+        if (mTracker)  // check
         {
             [[maybe_unused]] int label = -1;
             mTracker->updateTrackerBuffer(directionOfArrival);
