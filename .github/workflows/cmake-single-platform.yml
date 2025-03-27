@@ -26,12 +26,20 @@ jobs:
     - name: Pull Docker Image
       run: docker pull josephlwalker96/freewilli-exec:latest
 
+    #- name: Run Clang-Tidy
+    #  run: |
+    #    docker run --rm -v ${{ github.workspace }}:/app -w /app/listener_program josephlwalker96/freewilli-exec \
+    #      bash -c '
+    #        cmake -S . -B out -DCMAKE_EXPORT_COMPILE_COMMANDS=ON &&
+    #        run-clang-tidy.py -p out -j $(nproc) $(find ./src -name "*.cpp")'
+
     - name: Run Clang-Tidy
       run: |
         docker run --rm -v ${{ github.workspace }}:/app -w /app/listener_program josephlwalker96/freewilli-exec \
           bash -c '
             cmake -S . -B out -DCMAKE_EXPORT_COMPILE_COMMANDS=ON &&
-            run-clang-tidy.py -p out -j $(nproc) $(find ./src -name "*.cpp")'
+            run-clang-tidy.py -p out -j $(nproc) $(find ./src -name "*.cpp") -- -header-filter="^/app/listener_program/src/.*"
+          '
     
     #- name: Run Clang-Tidy on changed files
     #  run: |
