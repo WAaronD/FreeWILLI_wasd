@@ -44,7 +44,7 @@ TEST(Firmware1240Test, GenerateTimestamp)
     dataBytes[0][8] = 0x42;
     dataBytes[0][9] = 0x40;
 
-    auto timestamps = firmware.generateTimestamp(dataBytes, Firmware1240::NUM_CHAN);
+    auto timestamps = firmware.generateTimestamp(dataBytes);
     EXPECT_EQ(timestamps.size(), 1);
 
     std::tm expectedTm = {};
