@@ -131,22 +131,23 @@ void Pipeline::dataProcessor()
         std::cout << "GCC time: " << duration.count() << std::endl;
 
         Eigen::VectorXf tdoaVector = std::get<0>(tdoasAndXCorrAmps);
-        Eigen::VectorXf DOAs =
+        Eigen::VectorXf directionOfArrival =
             computeDoaFromTdoa(precomputedP, basisMatrixU, mSpeedOfSound, tdoaVector, rankOfHydrophoneMatrix);
-        Eigen::VectorXf AzEl = convertDoaToElAz(DOAs);
-        std::cout << "AzEl: " << AzEl << std::endl;
+        Eigen::VectorXf azimuthAndElevation = convertDoaToElAz(directionOfArrival);
+        std::cout << "AzEl: " << azimuthAndElevation << std::endl;
 
         mOutputManager.appendToBuffer(
-            mTimeDomainDetector->getLastDetection(), DOAs[0], DOAs[1], DOAs[2], tdoaVector,
-            std::get<1>(tdoasAndXCorrAmps), dataTimes[0]);
+            mTimeDomainDetector->getLastDetection(), directionOfArrival[0], directionOfArrival[1],
+            directionOfArrival[2], tdoaVector, std::get<1>(tdoasAndXCorrAmps), dataTimes[0]);
 
         if (mTracker)
         {
-            int label = -1;
-            mTracker->updateTrackerBuffer(DOAs);
+            [[maybe_unused]] int label = -1;
+            mTracker->updateTrackerBuffer(directionOfArrival);
             if (mTracker->mIsTrackerInitialized)
             {
-                label = mTracker->updateKalmanFiltersContinuous(DOAs, dataTimes[0]);
+                label = mTracker->updateKalmanFiltersContinuous(
+                    directionOfArrival, dataTimes[0]);  // NOLINT(clang-analyzer-deadcode.DeadStores)
                 // mOutputManager.saveSpectraForTraining("training_data_fill.csv", label, beforeFilter);
             }
         }
@@ -172,17 +173,17 @@ void Pipeline::obtainAndProcessByteData(bool& previousTimeSet, TimePoint& previo
 {
     mSharedDataManager.waitForData(dataBytes, mFirmwareConfig->NUM_PACKS_DETECT);
 
-    dataTimes = mFirmwareConfig->generateTimestamp(dataBytes, mFirmwareConfig->NUM_CHAN);
+    dataTimes = mFirmwareConfig->generateTimestamp(dataBytes);
 
     mFirmwareConfig->throwIfDataErrors(
         dataBytes, mFirmwareConfig->MICRO_INCR, previousTimeSet, previousTime, dataTimes,
         mFirmwareConfig->packetSize());
 
-    auto before2l = std::chrono::steady_clock::now();
+    // auto before2l = std::chrono::steady_clock::now();
     mFirmwareConfig->insertDataIntoChannelMatrix(mChannelData, dataBytes);
-    auto after2l = std::chrono::steady_clock::now();
-    std::chrono::duration<double> duration2l = after2l - before2l;
-    // std::cout << "append : " << duration2l.count() << std::endl;
+    // auto after2l = std::chrono::steady_clock::now();
+    // std::chrono::duration<double> duration2l = after2l - before2l;
+    //  std::cout << "append : " << duration2l.count() << std::endl;
 }
 
 /**

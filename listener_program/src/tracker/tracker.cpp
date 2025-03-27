@@ -100,14 +100,15 @@ auto Tracker::getClusterCentroids(const std::vector<point3>& data, const std::ve
             }
 
             // Compute the centroid using up to the last N points in the cluster
-            int N = 3;
+            int lastNumPoints = 3;
             Eigen::Vector3f clusterCenter = Eigen::Vector3f::Zero();
-            for (size_t i = std::max(0, static_cast<int>(clusterPoints.size()) - N); i < clusterPoints.size(); ++i)
+            for (size_t i = std::max(0, static_cast<int>(clusterPoints.size()) - lastNumPoints);
+                 i < clusterPoints.size(); ++i)
             {
                 Eigen::Vector3f dataPoint(clusterPoints[i].x, clusterPoints[i].y, clusterPoints[i].z);
                 clusterCenter += dataPoint;
             }
-            clusterCenter /= std::min(static_cast<int>(clusterPoints.size()), N);
+            clusterCenter /= std::min(static_cast<int>(clusterPoints.size()), lastNumPoints);
 
             clusterCenters.push_back(clusterCenter);
         }
@@ -199,8 +200,8 @@ int Tracker::updateKalmanFiltersContinuous(const Eigen::VectorXf& observation, c
     float bestDist = 0.14f;  // Gating threshold for filter association
 
     // Convert timepoint to a numerical representation (microseconds since epoch)
-    auto time_since_epoch = std::chrono::duration_cast<std::chrono::microseconds>(timepoint.time_since_epoch());
-    unsigned long timenum = static_cast<unsigned long>(time_since_epoch.count());
+    auto timeSinceEpoch = std::chrono::duration_cast<std::chrono::microseconds>(timepoint.time_since_epoch());
+    unsigned long timenum = static_cast<unsigned long>(timeSinceEpoch.count());
 
     // Find the Kalman filter with the closest prediction to the current observation
     for (size_t idx = 0; idx < mKalmanFilters.size(); ++idx)

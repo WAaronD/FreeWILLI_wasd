@@ -16,8 +16,8 @@
  * @return channelMatrix Reference to an Eigen::MatrixXf where the extracted samples will be stored.
  */
 void Firmware1240::insertDataIntoChannelMatrix(
-    Eigen::MatrixXf& channelMatrix, const std::vector<std::vector<uint8_t>>& dataBytes, int headSize, int dataSize,
-    int bytesPerSamp, float sampleOffset) const
+    Eigen::MatrixXf& channelMatrix, const std::vector<std::vector<uint8_t>>& dataBytes, int headSize, int bytesPerSamp,
+    float sampleOffset) const
 {
     for (int i = 0; i < dataBytes.size(); i++)
     {
@@ -50,8 +50,7 @@ void Firmware1240::insertDataIntoChannelMatrix(
  *
  * @return A vector of `TimePoint` objects representing the extracted timestamps.
  */
-std::vector<TimePoint> Firmware1240::generateTimestamp(
-    std::vector<std::vector<uint8_t>>& dataBytes, int numChannels) const
+std::vector<TimePoint> Firmware1240::generateTimestamp(std::vector<std::vector<uint8_t>>& dataBytes) const
 {
     const size_t dataSize = dataBytes.size();
     std::vector<std::chrono::system_clock::time_point> outputTimes(dataSize);

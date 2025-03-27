@@ -14,4 +14,4 @@ bool AverageMagnitudeDetector::detect(const Eigen::VectorXcf& frequencyDomainDat
 
 NoFrequencyDomainDetector::NoFrequencyDomainDetector() {}
 
-bool NoFrequencyDomainDetector::detect(const Eigen::VectorXcf& frequencyDomainData) const { return true; }
+bool NoFrequencyDomainDetector::detect(const Eigen::VectorXcf& /*frequencyDomainData*/) const { return true; }

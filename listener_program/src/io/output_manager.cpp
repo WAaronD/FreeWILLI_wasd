@@ -88,10 +88,10 @@ std::vector<std::string> OutputManager::generateChannelComboLabels(const std::st
  */
 void OutputManager::write()
 {
-    auto beforeFlush = std::chrono::steady_clock::now();
+    // auto beforeFlush = std::chrono::steady_clock::now();
     appendBufferToFile();
-    auto afterFlush = std::chrono::steady_clock::now();
-    std::chrono::duration<double> durationFlush = afterFlush - beforeFlush;
+    // auto afterFlush = std::chrono::steady_clock::now();
+    // std::chrono::duration<double> durationFlush = afterFlush - beforeFlush;
 
     mLastFlushTime = std::chrono::steady_clock::now();
 }
@@ -327,7 +327,7 @@ void OutputManager::terminateProgramIfNecessary()
         write();
         std::cout << "Terminating program... duration reached" << std::endl;
         std::cout.flush();  // 🔹 Force flushing std::cout before exit
-        //std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        // std::this_thread::sleep_for(std::chrono::milliseconds(10));
         std::exit(0);
     }
 }

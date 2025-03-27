@@ -35,10 +35,9 @@ class Firmware1240
 
     void insertDataIntoChannelMatrix(
         Eigen::MatrixXf& channelMatrix, const std::vector<std::vector<uint8_t>>& dataBytes, int headSize = HEAD_SIZE,
-        int dataSize = DATA_SIZE, int bytesPerSamp = BYTES_PER_SAMP, float sampleOffset = SAMPLE_OFFSET) const;
+        int bytesPerSamp = BYTES_PER_SAMP, float sampleOffset = SAMPLE_OFFSET) const;
 
-    auto generateTimestamp(std::vector<std::vector<uint8_t>>& dataBytes, int numChannels) const
-        -> std::vector<TimePoint>;
+    auto generateTimestamp(std::vector<std::vector<uint8_t>>& dataBytes) const -> std::vector<TimePoint>;
 
     void throwIfDataErrors(
         const std::vector<std::vector<uint8_t>>& dataBytes, const int microIncrement, bool& isPreviousTimeSet,
