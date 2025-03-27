@@ -25,13 +25,19 @@ jobs:
       run: docker pull josephlwalker96/freewilli-exec:latest
 
     # Run Clang-Tidy inside Docker
+    #- name: Run Clang-Tidy
+    #  run: |
+    #    docker run --rm -v ${{ github.workspace }}:/app -w /app/listener_program josephlwalker96/freewilli-exec \
+    #      bash -c "
+    #        cmake -S . -B out -DCMAKE_EXPORT_COMPILE_COMMANDS=ON &&
+    #        run-clang-tidy.py -p out \$(find ./src -name '*.cpp') -j \$(nproc)
+    #      "
     - name: Run Clang-Tidy
       run: |
         docker run --rm -v ${{ github.workspace }}:/app -w /app/listener_program josephlwalker96/freewilli-exec \
-          bash -c "
+          bash -c '
             cmake -S . -B out -DCMAKE_EXPORT_COMPILE_COMMANDS=ON &&
-            run-clang-tidy.py -p out \$(find ./src -name '*.cpp') -j \$(nproc)
-          "
+            run-clang-tidy.py -p out -j $(nproc) $(find ./src -name "*.cpp")'
 
 
     - name: Run Integration Test
