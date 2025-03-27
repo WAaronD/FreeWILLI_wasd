@@ -16,6 +16,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+          fetch-depth: 0  # 👈 This ensures the full Git history (including .git)
     
     - name: Include submodules
       run: git submodule update --init --recursive
