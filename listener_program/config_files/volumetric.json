@@ -3,7 +3,7 @@
     "logDirectory": "deployment_files/",
     "networkIPAddress": "self",
     "networkPort": 1045,
-    "useFirmware1240WithIMU": true,
+    "useFirmware1240WithIMU": false,
     "speedOfSound_mps": 1482.965459,
     "timeDomainDetector": "PeakAmplitude",
     "timeDomainThreshold": 1,

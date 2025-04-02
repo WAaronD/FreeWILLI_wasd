@@ -107,9 +107,9 @@ TEST(ComputeDoaFromTdoaTest, ValidInputs)
     Eigen::VectorXf tdoa(3);
     tdoa << 0.001f, 0.002f, 0.003f;
     int rank = 3;
-
+    Eigen::MatrixXf cachedLeastSquaresResult = precomputedP * basisMatrixU.transpose() * speedOfSound;
     // Call the function
-    Eigen::VectorXf doaVector = computeDoaFromTdoa(precomputedP, basisMatrixU, speedOfSound, tdoa, rank);
+    Eigen::VectorXf doaVector = computeDoaFromTdoa(cachedLeastSquaresResult, tdoa, rank);
 
     // Expected result (scaled TDOA normalized to unit vector)
     Eigen::VectorXf expectedDoa(3);
@@ -133,8 +133,9 @@ TEST(ComputeDoaFromTdoaTest, RankOneDoesNotNormalize)
     tdoa << 0.001f, 0.002f, 0.003f;
     int rank = 1;
 
+    Eigen::MatrixXf cachedLeastSquaresResult = precomputedP * basisMatrixU.transpose() * speedOfSound;
     // Call the function
-    Eigen::VectorXf doaVector = computeDoaFromTdoa(precomputedP, basisMatrixU, speedOfSound, tdoa, rank);
+    Eigen::VectorXf doaVector = computeDoaFromTdoa(cachedLeastSquaresResult, tdoa, rank);
 
     // Expected result (scaled TDOA without normalization)
     Eigen::VectorXf expectedDoa(3);
@@ -157,9 +158,9 @@ TEST(ComputeDoaFromTdoaTest, ZeroTdoaVector)
     Eigen::VectorXf tdoa(3);
     tdoa << 0.0f, 0.0f, 0.0f;
     int rank = 3;
-
+    Eigen::MatrixXf cachedLeastSquaresResult = precomputedP * basisMatrixU.transpose() * speedOfSound;
     // Call the function
-    Eigen::VectorXf doaVector = computeDoaFromTdoa(precomputedP, basisMatrixU, speedOfSound, tdoa, rank);
+    Eigen::VectorXf doaVector = computeDoaFromTdoa(cachedLeastSquaresResult, tdoa, rank);
 
     // Expected result (all zeros)
     Eigen::VectorXf expectedDoa(3);
@@ -182,9 +183,9 @@ TEST(ComputeDoaFromTdoaTest, InvalidRank)
     Eigen::VectorXf tdoa(3);
     tdoa << 0.001f, 0.002f, 0.003f;
     int rank = 0;  // Invalid rank
-
+    Eigen::MatrixXf cachedLeastSquaresResult = precomputedP * basisMatrixU.transpose() * speedOfSound;
     // Call the function
-    Eigen::VectorXf doaVector = computeDoaFromTdoa(precomputedP, basisMatrixU, speedOfSound, tdoa, rank);
+    Eigen::VectorXf doaVector = computeDoaFromTdoa(cachedLeastSquaresResult, tdoa, rank);
 
     // Expected result (unchanged TDOA scaled)
     Eigen::VectorXf expectedDoa(3);

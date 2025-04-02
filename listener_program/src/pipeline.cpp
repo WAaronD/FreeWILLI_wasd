@@ -61,6 +61,9 @@ void Pipeline::dataProcessor()
     Eigen::MatrixXf hydrophonePositions = getHydrophoneRelativePositions(mReceiverPositionsPath);
     auto [precomputedP, basisMatrixU, rankOfHydrophoneMatrix] = hydrophoneMatrixDecomposition(hydrophonePositions);
 
+    // precompute the leastsquares matrix. Use for efficient DOA estiation
+    Eigen::MatrixXf cachedLeastSquaresResult = precomputedP * basisMatrixU.transpose() * mSpeedOfSound;
+
     bool previousTimeSet = false;
     auto previousTime = TimePoint::min();
     dataBytes.resize(mFirmwareConfig->NUM_PACKS_DETECT);
@@ -132,7 +135,7 @@ void Pipeline::dataProcessor()
 
         Eigen::VectorXf tdoaVector = std::get<0>(tdoasAndXCorrAmps);
         Eigen::VectorXf directionOfArrival =
-            computeDoaFromTdoa(precomputedP, basisMatrixU, mSpeedOfSound, tdoaVector, rankOfHydrophoneMatrix);
+            computeDoaFromTdoa(cachedLeastSquaresResult, tdoaVector, rankOfHydrophoneMatrix);
         Eigen::VectorXf azimuthAndElevation = convertDoaToElAz(directionOfArrival);
         std::cout << "AzEl: " << azimuthAndElevation << std::endl;
 
