@@ -7,33 +7,28 @@
  * and stores them in an Eigen matrix. It also adjusts the samples based on a specified offset. Additionally,
  * if an IMU manager is available, it updates the IMU rotation matrix using the input data.
  *
+ * @param channelMatrix Reference to an Eigen::MatrixXf where the extracted samples will be stored.
  * @param dataBytes A vector of byte arrays, each containing raw data including a header.
- * @param headSize The size of the header in each data packet, which is skipped during processing.
- * @param dataSize The number of data samples in each packet (not directly used in this function).
- * @param bytesPerSamp The number of bytes per sample (e.g., 2 for 16-bit samples).
- * @param sampleOffset A floating-point value subtracted from each sample for normalization.
  *
- * @return channelMatrix Reference to an Eigen::MatrixXf where the extracted samples will be stored.
  */
 void Firmware1240::insertDataIntoChannelMatrix(
-    Eigen::MatrixXf& channelMatrix, const std::vector<std::vector<uint8_t>>& dataBytes, int headSize, int bytesPerSamp,
-    float sampleOffset) const
+    Eigen::MatrixXf& channelMatrix, const std::vector<std::vector<uint8_t>>& dataBytes) const
 {
     for (int i = 0; i < dataBytes.size(); i++)
     {
         float* __restrict__ matrixPtr = channelMatrix.data();
-        const uint8_t* __restrict__ inPtr = dataBytes[i].data() + headSize;
+        const uint8_t* __restrict__ inPtr = dataBytes[i].data() + HEAD_SIZE;
         const size_t startOffset = i * SAMPS_PER_CHANNEL * NUM_CHAN;
 
         for (size_t j = 0; j < SAMPS_PER_PACKET; ++j)
         {
-            uint16_t sample = (static_cast<uint16_t>(inPtr[bytesPerSamp * j]) << 8) | inPtr[bytesPerSamp * j + 1];
-            matrixPtr[startOffset + j] = static_cast<float>(sample) - sampleOffset;
+            uint16_t sample = (static_cast<uint16_t>(inPtr[BYTES_PER_SAMP * j]) << 8) | inPtr[BYTES_PER_SAMP * j + 1];
+            matrixPtr[startOffset + j] = static_cast<float>(sample) - SAMPLE_OFFSET;
         }
 
-        if (imuManager)
+        if (getImuManager())
         {
-            imuManager->processIMUData(dataBytes[i]);
+            getImuManager()->processIMUData(dataBytes[i]);
         }
     }
 }
@@ -46,7 +41,6 @@ void Firmware1240::insertDataIntoChannelMatrix(
  * values, including microsecond-level precision. The parsed timestamps are returned as a vector.
  *
  * @param dataBytes A vector of byte arrays, each containing timestamp information in the first 10 bytes.
- * @param numChannels The number of data channels (not directly used in this function but may be relevant to caller).
  *
  * @return A vector of `TimePoint` objects representing the extracted timestamps.
  */
@@ -95,32 +89,30 @@ std::vector<TimePoint> Firmware1240::generateTimestamp(std::vector<std::vector<u
  * If an inconsistency is found, the function throws a `std::runtime_error`.
  *
  * @param dataBytes A vector of byte arrays, each representing a received data packet.
- * @param microIncrement The expected time increment (in microseconds) between consecutive timestamps.
  * @param isPreviousTimeSet A flag indicating whether `previousTime` has been set. It is updated within the function.
  * @param previousTime The last valid timestamp. It is updated to the latest processed timestamp.
  * @param dataVector A vector of `TimePoint` timestamps associated with each data packet.
- * @param packetSize The expected size (in bytes) of each data packet.
  *
  * @throws std::runtime_error If timestamps are not incrementing as expected or if a packet has an incorrect size.
  */
 void Firmware1240::throwIfDataErrors(
-    const std::vector<std::vector<uint8_t>>& dataBytes, const int microIncrement, bool& isPreviousTimeSet,
-    TimePoint& previousTime, const std::vector<TimePoint>& dataVector, const int packetSize) const
+    const std::vector<std::vector<uint8_t>>& dataBytes, bool& isPreviousTimeSet, TimePoint& previousTime,
+    const std::vector<TimePoint>& dataVector) const
 {
     for (int i = 0; i < dataVector.size(); i++)
     {
         auto elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(dataVector[i] - previousTime).count();
 
-        if (isPreviousTimeSet && (elapsedTime != microIncrement))
+        if (isPreviousTimeSet && (elapsedTime != MICRO_INCR))
         {
             std::stringstream errorMsg;
-            errorMsg << "Error: Time not incremented by " << microIncrement << std::endl;
+            errorMsg << "Error: Time not incremented by " << MICRO_INCR << std::endl;
             throw std::runtime_error(errorMsg.str());
         }
-        else if (dataBytes[i].size() != packetSize)
+        else if (dataBytes[i].size() != packetSize())
         {
             std::stringstream errorMsg;
-            errorMsg << "Error: Incorrect number of bytes in packet. Expected: " << packetSize
+            errorMsg << "Error: Incorrect number of bytes in packet. Expected: " << packetSize()
                      << ", Received: " << dataBytes.size() << std::endl;
             throw std::runtime_error(errorMsg.str());
         }

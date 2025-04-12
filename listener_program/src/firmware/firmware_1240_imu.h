@@ -9,10 +9,11 @@
 class Firmware1240IMU : public Firmware1240
 {
    public:
-    Firmware1240IMU() : mImuByteSize(32) { imuManager = std::make_unique<ImuProcessor1240>(mImuByteSize); }
+    int imuByteSize() const override { return mImuByteSize; }
 
-    constexpr int imuByteSize() const override { return mImuByteSize; }
+    IImuProcessor* getImuManager() const override { return imuManager.get(); }
 
    private:
-    int mImuByteSize;
+    static constexpr int mImuByteSize = 32;
+    std::unique_ptr<IImuProcessor> imuManager = std::make_unique<ImuProcessor1240>(mImuByteSize);
 };

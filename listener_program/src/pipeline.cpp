@@ -12,24 +12,24 @@
  */
 Pipeline::Pipeline(
     OutputManager& outputManager, SharedDataManager& sharedDataManager, const PipelineVariables& pipelineVariables)
-    : mFirmwareConfig(FirmwareFactory::create(pipelineVariables.useImu)),
+    : mFirmwareConfig(FirmwareFactory::create(pipelineVariables.firmware)),
       mOutputManager(outputManager),
       mSharedDataManager(sharedDataManager),
       mSpeedOfSound(pipelineVariables.speedOfSound),
       mReceiverPositionsPath(pipelineVariables.receiverPositionsPath),
       mFilter(IFrequencyDomainStrategyFactory::create(
           pipelineVariables.frequencyDomainStrategy, pipelineVariables.filterWeightsPath, mChannelData,
-          mFirmwareConfig->NUM_CHAN)),
+          mFirmwareConfig->numChannels())),
       mTimeDomainDetector(ITimeDomainDetectorFactory::create(
           pipelineVariables.timeDomainDetector, pipelineVariables.timeDomainThreshold)),
       mFrequencyDomainDetector(IFrequencyDomainDetectorFactory::create(
           pipelineVariables.frequencyDomainDetector, pipelineVariables.energyDetectionThreshold)),
       mTracker(ITracker::create(pipelineVariables)),
       mOnnxModel(IONNXModel::create(pipelineVariables)),
-      mChannelData(Eigen::MatrixXf::Zero(mFirmwareConfig->NUM_CHAN, mFirmwareConfig->CHANNEL_SIZE)),
+      mChannelData(Eigen::MatrixXf::Zero(mFirmwareConfig->numChannels(), mFirmwareConfig->channelSize())),
       mComputeTDOAs(
-          mFilter->getPaddedLength(), mFilter->getFrequencyDomainData().rows(), mFirmwareConfig->NUM_CHAN,
-          mFirmwareConfig->SAMPLE_RATE)
+          mFilter->getPaddedLength(), mFilter->getFrequencyDomainData().rows(), mFirmwareConfig->numChannels(),
+          mFirmwareConfig->sampleRate())
 
 {
 }
@@ -66,7 +66,7 @@ void Pipeline::dataProcessor()
 
     bool previousTimeSet = false;
     auto previousTime = TimePoint::min();
-    dataBytes.resize(mFirmwareConfig->NUM_PACKS_DETECT);
+    dataBytes.resize(mFirmwareConfig->numPacketsToDetect());
 
     // call function once outside of the loop below to initialize files.
     initializeOutputFiles(previousTimeSet, previousTime);
@@ -155,9 +155,9 @@ void Pipeline::dataProcessor()
             }
         }
 
-        if (mFirmwareConfig->imuManager)
+        if (mFirmwareConfig->getImuManager())
         {
-            std::cout << mFirmwareConfig->imuManager->getRotationMatrix();
+            std::cout << mFirmwareConfig->getImuManager()->getRotationMatrix();
             std::cout << std::endl;
         }
     }
@@ -165,7 +165,7 @@ void Pipeline::dataProcessor()
 void Pipeline::initializeOutputFiles(bool& previousTimeSet, TimePoint& previousTime)
 {
     obtainAndProcessByteData(previousTimeSet, previousTime);
-    mOutputManager.initializeOutputFile(dataTimes[0], mFirmwareConfig->NUM_CHAN);
+    mOutputManager.initializeOutputFile(dataTimes[0], mFirmwareConfig->numChannels());
     if (mTracker)
     {
         mTracker->initializeOutputFile(dataTimes[0]);
@@ -174,13 +174,11 @@ void Pipeline::initializeOutputFiles(bool& previousTimeSet, TimePoint& previousT
 
 void Pipeline::obtainAndProcessByteData(bool& previousTimeSet, TimePoint& previousTime)
 {
-    mSharedDataManager.waitForData(dataBytes, mFirmwareConfig->NUM_PACKS_DETECT);
+    mSharedDataManager.waitForData(dataBytes, mFirmwareConfig->numPacketsToDetect());
 
     dataTimes = mFirmwareConfig->generateTimestamp(dataBytes);
 
-    mFirmwareConfig->throwIfDataErrors(
-        dataBytes, mFirmwareConfig->MICRO_INCR, previousTimeSet, previousTime, dataTimes,
-        mFirmwareConfig->packetSize());
+    mFirmwareConfig->throwIfDataErrors(dataBytes, previousTimeSet, previousTime, dataTimes);
 
     // auto before2l = std::chrono::steady_clock::now();
     mFirmwareConfig->insertDataIntoChannelMatrix(mChannelData, dataBytes);

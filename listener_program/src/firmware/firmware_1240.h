@@ -1,47 +1,51 @@
 #pragma once
 
 #include "../pch.h"
-#include "imu_processor_interface.h"
+#include "firmware_interface.h"
 
 /**
  * @brief Base class for firmware 1240 configuration, providing constants and utility methods.
  */
-class Firmware1240
+class Firmware1240 : public IFirmware
 {
+   protected:
+    const int NUM_CHAN = 4;
+    const int SAMPLE_RATE = 1e5;
+    const int MICRO_INCR = 1240;  // microseconds between data packets
+    const int SAMPS_PER_CHANNEL = 124;  // Samples per packet per channel
+    const float TIME_WINDOW = 0.01;  // Fraction of a second for cross-correlation
+    const int HEAD_SIZE = 12;  // Packet head size (bytes)
+    const int BYTES_PER_SAMP = 2;  // Bytes per sample
+    const float SAMPLE_OFFSET = 32768.0f;  // value used to convert unsigned 16 bit to signed
+
+    const int SAMPS_PER_PACKET = SAMPS_PER_CHANNEL * NUM_CHAN;  // Samples per packet
+    const int DATA_SIZE = SAMPS_PER_PACKET * BYTES_PER_SAMP;  // Packet data size (bytes)
+    const int REQUIRED_BYTES = DATA_SIZE + HEAD_SIZE;
+    const int DATA_BYTES_PER_CHANNEL = SAMPS_PER_CHANNEL * BYTES_PER_SAMP;  // Data bytes per channel
+
    public:
-    // UDP packet information
-    static constexpr int HEAD_SIZE = 12;  // Packet head size (bytes)
-    static constexpr int NUM_CHAN = 4;  // Number of channels per packet
-    static constexpr int SAMPS_PER_CHANNEL = 124;  // Samples per packet per channel
-    static constexpr int BYTES_PER_SAMP = 2;  // Bytes per sample
-    static constexpr int MICRO_INCR = 1240;  // Time between packets
-    static constexpr int SAMPLE_RATE = 1e5;  // Sample rate in Hz
-    static constexpr float SAMPLE_OFFSET = 32768.0f;  // Define a named constant
-                                                      // for the sample offset
+    int numChannels() const override { return NUM_CHAN; }
 
-    static constexpr int SAMPS_PER_PACKET = SAMPS_PER_CHANNEL * NUM_CHAN;  // Samples per packet
-    static constexpr int DATA_SIZE = SAMPS_PER_PACKET * BYTES_PER_SAMP;  // Packet data size (bytes)
-    static constexpr int REQUIRED_BYTES = DATA_SIZE + HEAD_SIZE;
-    static constexpr int DATA_BYTES_PER_CHANNEL = SAMPS_PER_CHANNEL * BYTES_PER_SAMP;  // Data bytes per channel
+    int sampleRate() const override { return SAMPLE_RATE; }
 
-    static constexpr float TIME_WINDOW = 0.01;  // Fraction of a second for cross-correlation
-    static constexpr int NUM_PACKS_DETECT = static_cast<int>(TIME_WINDOW * SAMPLE_RATE / SAMPS_PER_CHANNEL);
-    static constexpr int DATA_SEGMENT_LENGTH = NUM_PACKS_DETECT * SAMPS_PER_CHANNEL * NUM_CHAN;
-    static constexpr int CHANNEL_SIZE = DATA_SEGMENT_LENGTH / NUM_CHAN;
+    int microIncre() const override { return MICRO_INCR; }
 
-    virtual constexpr int imuByteSize() const { return 0; }
+    int numPacketsToDetect() const override { return static_cast<int>(TIME_WINDOW * SAMPLE_RATE / SAMPS_PER_CHANNEL); }
 
-    constexpr int packetSize() const { return DATA_SIZE + HEAD_SIZE + imuByteSize(); }
+    int channelSize() const override { return numPacketsToDetect() * SAMPS_PER_CHANNEL; }
+
+    int imuByteSize() const override { return 0; }
+
+    int packetSize() const override { return DATA_SIZE + HEAD_SIZE + imuByteSize(); }
 
     void insertDataIntoChannelMatrix(
-        Eigen::MatrixXf& channelMatrix, const std::vector<std::vector<uint8_t>>& dataBytes, int headSize = HEAD_SIZE,
-        int bytesPerSamp = BYTES_PER_SAMP, float sampleOffset = SAMPLE_OFFSET) const;
+        Eigen::MatrixXf& channelMatrix, const std::vector<std::vector<uint8_t>>& dataBytes) const override;
 
-    auto generateTimestamp(std::vector<std::vector<uint8_t>>& dataBytes) const -> std::vector<TimePoint>;
+    std::vector<TimePoint> generateTimestamp(std::vector<std::vector<uint8_t>>& dataBytes) const override;
 
     void throwIfDataErrors(
-        const std::vector<std::vector<uint8_t>>& dataBytes, const int microIncrement, bool& isPreviousTimeSet,
-        TimePoint& previousTime, const std::vector<TimePoint>& currentTime, const int packetSize) const;
+        const std::vector<std::vector<uint8_t>>& dataBytes, bool& isPreviousTimeSet, TimePoint& previousTime,
+        const std::vector<TimePoint>& currentTime) const override;
 
-    std::unique_ptr<IImuProcessor> imuManager = nullptr;
+    IImuProcessor* getImuManager() const override { return nullptr; }
 };

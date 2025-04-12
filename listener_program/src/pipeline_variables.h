@@ -12,8 +12,8 @@ struct PipelineVariables
 
     bool integrationTesting = false;
     bool enableTracking = false;
-    bool useImu = false;
 
+    std::string firmware = "";
     std::string loggingDirectory = "";
     std::string timeDomainDetector = "";
     std::string frequencyDomainDetector = "";

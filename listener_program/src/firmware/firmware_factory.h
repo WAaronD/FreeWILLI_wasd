@@ -6,15 +6,20 @@
 class FirmwareFactory
 {
    public:
-    static std::unique_ptr<const Firmware1240> create(bool useImu)
+    static std::unique_ptr<const IFirmware> create(const std::string& firmwareToUse)
     {
-        if (useImu)
+        if (firmwareToUse == "1240_imu")
         {
             return std::make_unique<const Firmware1240IMU>();
         }
-        else
+        else if (firmwareToUse == "1240")
         {
             return std::make_unique<const Firmware1240>();
+        }
+        else
+        {
+            std::cerr << "Specified firmware version not recognized \n";
+            std::exit(1);
         }
     }
 };

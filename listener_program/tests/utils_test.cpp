@@ -14,7 +14,7 @@ TEST(UtilsTest, ParseJsonConfigSuccess)
         "networkIPAddress": "192.168.1.1",
         "networkPort": 5000,
         "enableIntegrationTesting": true,
-        "useFirmware1240WithIMU": false,
+        "firmware": "1240",
         "speedOfSound_mps": 1500.0,
         "logDirectory": "/logs",
         "timeDomainDetector": "CrossCorrelation",
@@ -39,7 +39,7 @@ TEST(UtilsTest, ParseJsonConfigSuccess)
     EXPECT_EQ(socketVars.ipAddress, "192.168.1.1");
     EXPECT_EQ(socketVars.port, 5000);
     EXPECT_TRUE(pipelineVars.integrationTesting);
-    EXPECT_FALSE(pipelineVars.useImu);
+    EXPECT_EQ(pipelineVars.firmware, "1240");
     EXPECT_FLOAT_EQ(pipelineVars.speedOfSound, 1500.0f);
     EXPECT_EQ(pipelineVars.loggingDirectory, "/logs");
     EXPECT_EQ(pipelineVars.timeDomainDetector, "CrossCorrelation");
