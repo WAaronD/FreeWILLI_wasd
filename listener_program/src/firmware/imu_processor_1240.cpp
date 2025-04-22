@@ -22,11 +22,17 @@ void ImuProcessor1240::setRotationMatrix(Eigen::VectorXf& imuData)
 
     Eigen::Vector3f magnetometerData = imuData.segment<mDataWidth>(mMagnetometerDataIndex);
 
-    // Eigen::Vector3f gyroscopeData = imuData.segment<mDataWidth>(mGyroscopeDataIndex);
+    Eigen::Vector3f gyroscopeData = imuData.segment<mDataWidth>(mGyroscopeDataIndex);
 
     Eigen::Vector3f accelerometerData = imuData.segment<mDataWidth>(mAccelerometerDataIndex);
 
     mRotationMatrix = calculateRotationMatrix.process(accelerometerData, magnetometerData);
+
+    calculateRotationMatrixMag.update(
+        gyroscopeData[0], gyroscopeData[1], gyroscopeData[2], accelerometerData[0], accelerometerData[1],
+        accelerometerData[2], magnetometerData[0], magnetometerData[1], magnetometerData[2]);
+
+    calculateRotationMatrixMag.printQuaternion();
 }
 
 /**

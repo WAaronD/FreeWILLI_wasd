@@ -1,5 +1,6 @@
 #pragma once
 #include "../algorithms/ecompass.h"
+#include "../algorithms/madgwickAHRS.h"
 #include "../pch.h"
 #include "imu_processor_interface.h"
 
@@ -38,4 +39,5 @@ class ImuProcessor1240 : public IImuProcessor
     void setRotationMatrix(Eigen::VectorXf& imuData);
 
     ECompass calculateRotationMatrix;
+    MadgwickAHRS calculateRotationMatrixMag = MadgwickAHRS(512.0f, 0.1f);
 };
