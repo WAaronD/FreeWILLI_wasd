@@ -9,7 +9,7 @@ class MadgwickAHRS
 
     void update(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz);
 
-    void updateIMU(float gx, float gy, float gz, float ax, float ay, float az);
+    void updateImu(float gx, float gy, float gz, float ax, float ay, float az);
 
     void getQuaternion(float& q0, float& q1, float& q2, float& q3) const;
 
@@ -21,4 +21,5 @@ class MadgwickAHRS
     float q0, q1, q2, q3;
 
     static float invSqrt(float x);
+    void performQuaternionIntegration(float qDot0, float qDot1, float qDot2, float qDot3);
 };
