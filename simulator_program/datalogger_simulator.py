@@ -132,8 +132,11 @@ class DataSimulator:
             if f.endswith('.npy')
         ])
 
-        # Initialize multiprocessing manager and dictionary for data exchange
-        self.manager = multiprocessing.Manager()
+        #### Initialize multiprocessing manager and dictionary for data exchange
+        # spin up a small “manager server” process under the hood to hold Python objects in a shared memory space, 
+        # and hands out proxy objects back to your processes.
+        self.manager = multiprocessing.Manager() 
+        # This asks the manager server for a new, empty dictionary proxy.. This serves as a shared buffer between processes
         self.returnDict = self.manager.dict()
 
         # Initialize socket
@@ -293,8 +296,8 @@ class DataSimulator:
                 Sleep(sleepTime)
 
                 dataChunkIndex += 1
-
-            # Wait for the next file to finish preloading
+                
+            # ensures that, before we switch buffers, the preload worker has definitely finished writing into
             if nextProcess is not None:
                 nextProcess.join()
 
