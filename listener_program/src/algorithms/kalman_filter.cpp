@@ -40,13 +40,27 @@ KalmanFilter::KalmanFilter(const Eigen::Vector3f& initialState)
 
     mPredictedState = mCurrentState;
     mPredictedCovariance = mStateCovariance;
+
+    mPrevKalmanPredictTime = std::chrono::steady_clock::now();
+}
+
+void KalmanFilter::updateProcessModel(float deltaT)
+{
+    mProcessModel = Eigen::MatrixXf::Zero(6, 6);
+    mProcessModel.block<3, 3>(0, 0) = Eigen::Matrix3f::Identity();
+    mProcessModel.block<3, 3>(0, 3) = deltaT * Eigen::Matrix3f::Identity();
+    mProcessModel.block<3, 3>(3, 3) = Eigen::Matrix3f::Identity();
 }
 
 /**
  * @brief Predicts the next state using the process model.
  */
-void KalmanFilter::predict()
+void KalmanFilter::predict(std::chrono::time_point<std::chrono::steady_clock> currentTime)
 {
+    // float deltaT = (currentTime - mPrevKalmanPredictTime).count();  // in seconds
+    float deltaT = std::chrono::duration<float>(currentTime - mPrevKalmanPredictTime).count();  // deltaT in seconds
+    updateProcessModel(deltaT);  // Rebuild process model with latest deltaT
+    mPrevKalmanPredictTime = currentTime;
     mPredictedState = mProcessModel * mCurrentState;
     mPredictedCovariance = mProcessModel * mStateCovariance * mProcessModel.transpose() + mProcessNoiseCov;
 }
@@ -95,36 +109,35 @@ const Eigen::VectorXf& KalmanFilter::getCurrentState() const { return mCurrentSt
 /**
  * @brief Performs a full filter update, including prediction and optional observation updates.
  *
+ * @param deltaT time step
  * @param filteredStateMean Optional pointer to a filtered state mean vector.
  * @param filteredStateCovariance Optional pointer to a filtered state covariance matrix.
  * @param observation Optional pointer to an observation vector.
  * @return Pair containing the updated state vector and covariance matrix.
  */
+
+/*
 auto KalmanFilter::filterUpdate(
-    const Eigen::VectorXf* filteredStateMean, const Eigen::MatrixXf* filteredStateCovariance,
-    const Eigen::VectorXf* observation) -> std::pair<Eigen::VectorXf, Eigen::MatrixXf>
+   std::chrono::time_point<std::chrono::steady_clock> currentTime, const Eigen::VectorXf* filteredStateMean,
+   const Eigen::MatrixXf* filteredStateCovariance, const Eigen::VectorXf* observation)
+   -> std::pair<Eigen::VectorXf, Eigen::MatrixXf>
 {
-    // Optional update of state and covariance
-    if (filteredStateMean != nullptr)
-    {
-        mCurrentState = *filteredStateMean;
-    }
-    if (filteredStateCovariance != nullptr)
-    {
-        mStateCovariance = *filteredStateCovariance;
-    }
+   if (filteredStateMean != nullptr) mCurrentState = *filteredStateMean;
 
-    predict();
+   if (filteredStateCovariance != nullptr) mStateCovariance = *filteredStateCovariance;
 
-    if (observation != nullptr)
-    {
-        update(*observation);
-    }
-    else
-    {
-        mCurrentState = mPredictedState;
-        mStateCovariance = mPredictedCovariance;
-    }
+   float deltaT = (currentTime - mPrevKalmanPredictTime).count();  // in seconds
+   predict(deltaT);
+   mPrevKalmanPredictTime = currentTime;
 
-    return {mCurrentState, mStateCovariance};
+   if (observation != nullptr)
+       update(*observation);
+   else
+   {
+       mCurrentState = mPredictedState;
+       mStateCovariance = mPredictedCovariance;
+   }
+
+   return {mCurrentState, mStateCovariance};
 }
+   */

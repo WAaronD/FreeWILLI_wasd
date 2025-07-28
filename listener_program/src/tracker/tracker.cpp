@@ -204,10 +204,11 @@ int Tracker::updateKalmanFiltersContinuous(const Eigen::VectorXf& observation, c
     unsigned long timenum = static_cast<unsigned long>(timeSinceEpoch.count());
 
     // Find the Kalman filter with the closest prediction to the current observation
+    auto currentTime = std::chrono::steady_clock::now();
     for (size_t idx = 0; idx < mKalmanFilters.size(); ++idx)
     {
         KalmanFilter& kf = mKalmanFilters[idx];
-        kf.predict();
+        kf.predict(currentTime);
 
         // Compute predicted state in observation space
         Eigen::VectorXf predictedStateMean = kf.getObservationMatrix() * kf.getPredictedState();

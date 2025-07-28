@@ -50,14 +50,14 @@ def plot_log(path_doa, kalman_log, grouped_time_intervals):
     ax1.set_ylim(-180, 200)
     ax1.set_ylabel("Azimuth [degrees]")
     ax1.grid(True)
-    ax1.set_xlim(-3, 64.0188)
+    #ax1.set_xlim(-3, 64.0188)
     # Plot predicted_xs
     ax2.scatter(times, predicted_xs,s=6, c=[color_mapping[fid] for fid in filter_ids], alpha=0.1)
     ax2.set_ylim(30, 200)
     ax2.set_ylabel("Elevation [degrees]")
     ax2.set_xlabel("Time [minutes]")
     ax2.grid(True)
-    ax2.set_xlim(-3, 64.0188)
+    #ax2.set_xlim(-3, 64.0188)
     
     # Shade regions specified by grouped_time_intervals
     normalized_intervals = [(interval[0] - times[0]) / 60 for interval in grouped_time_intervals]
