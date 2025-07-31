@@ -282,6 +282,7 @@ class DataSimulator:
 
                 # Send the UDP packet
                 self.socket.sendto(packet, (self.arguments.ip, self.arguments.port))
+                print(packet)
 
                 if isFirstRead:
                     isFirstRead = False
