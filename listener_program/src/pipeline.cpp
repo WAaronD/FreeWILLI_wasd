@@ -192,6 +192,16 @@ void Pipeline::obtainAndProcessByteData(bool& previousTimeSet, TimePoint& previo
     // auto after2l = std::chrono::steady_clock::now();
     // std::chrono::duration<double> duration2l = after2l - before2l;
     //  std::cout << "append : " << duration2l.count() << std::endl;
+
+    // Print the concatenated samples for all channels
+    std::cout << "Concatenated samples (window):" << std::endl;
+    for (int chan = 0; chan < mChannelData.rows(); ++chan) {
+        std::cout << "Channel " << chan << ": ";
+        for (int samp = 0; samp < mChannelData.cols(); ++samp) {
+            std::cout << mChannelData(chan, samp) << " ";
+        }
+        std::cout << std::endl;
+    }
 }
 
 /**
