@@ -1,48 +1,45 @@
 #pragma once
 
-#include "ML/onnx_model.h"
-#include "algorithms/doa_utils.h"
-#include "algorithms/fir_filter_factory.h"
-#include "algorithms/frequency_domain_detectors_factory.h"
-#include "algorithms/gcc_phat.h"
-#include "algorithms/hydrophone_position_processing.h"
-#include "algorithms/time_domain_detectors_factory.h"
-#include "firmware/firmware_factory.h"
-#include "firmware/firmware_interface.h"
-#include "io/output_manager.h"
-#include "io/udp_socket_manager.h"
-#include "shared_data_manager.h"
-#include "tracker/tracker.h"
+#include <chrono>
+#include <memory>
 
-class PipelineVariables;
+#include "interfaces.h"
+#include "shared_data_manager.h"
+
+// ============================================================================
+// REFACTORED PIPELINE CLASS
+// ============================================================================
 
 class Pipeline
 {
+   private:
+    SharedDataManager& mSharedDataManager;
+    // ProcessingContext& mContext;
+    std::shared_ptr<ProcessingContext> mContext;
+    std::unique_ptr<IPipelineOrchestrator> mOrchestrator;
+    std::unique_ptr<IOutputHandler> mOutputHandler;
+    std::unique_ptr<IErrorHandler> mErrorHandler;
+
+    std::chrono::seconds mProgramRuntime;
+    TimePoint mProgramStartTime;
+    bool mInitialized;
+
    public:
-    Pipeline(OutputManager& outputManager, SharedDataManager& sharedSess, const PipelineVariables& pipelineVariables);
+    Pipeline(
+        SharedDataManager& sharedDataManager, std::unique_ptr<IPipelineOrchestrator> orchestrator,
+        std::unique_ptr<IOutputHandler> outputHandler, std::unique_ptr<IErrorHandler> errorHandler,
+        std::chrono::seconds programRuntime, std::shared_ptr<ProcessingContext> processingContext);
 
     void process();
 
+    // Getters for testing and inspection
+    const IPipelineOrchestrator* getOrchestrator() const;
+    const IOutputHandler* getOutputHandler() const;
+    const IErrorHandler* getErrorHandler() const;
+
    private:
-    // Private member variables
-    OutputManager& mOutputManager;
-    SharedDataManager& mSharedDataManager;
-
-    const float mSpeedOfSound;
-    std::string mReceiverPositionsPath;
-    std::vector<std::vector<uint8_t>> dataBytes;
-    std::vector<TimePoint> dataTimes;
-
-    std::unique_ptr<const IFirmware> mFirmwareConfig = nullptr;
-    Eigen::MatrixXf mChannelData;
-    std::unique_ptr<IFrequencyDomainStrategy> mFilter = nullptr;
-    std::unique_ptr<ITimeDomainDetector> mTimeDomainDetector = nullptr;
-    std::unique_ptr<IFrequencyDomainDetector> mFrequencyDomainDetector = nullptr;
-    std::unique_ptr<ONNXModel> mOnnxModel = nullptr;
-    std::unique_ptr<Tracker> mTracker = nullptr;
-    GCC_PHAT mComputeTDOAs;
-    void dataProcessor();
-    void initializeOutputFiles(bool& previousTimeSet, TimePoint& previousTime);
-    void obtainAndProcessByteData(bool& previousTimeSet, TimePoint& previousTime);
-    void handleProcessingError(const std::exception& e);
+    void initializeContext();
+    void processLoop();
+    bool shouldTerminate() const;
+    void performInitialDataAcquisition();
 };

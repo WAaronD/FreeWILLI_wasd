@@ -1,222 +1,216 @@
 #include "pipeline.h"
 
-#include "algorithms/linear_algebra_utils.h"
-#include "pch.h"
-#include "utils.h"
+#include <iostream>
 
-/**
- * @brief Constructs a Pipeline object and initializes necessary components.
- *
- * @param sharedSess Reference to a SharedDataManager object for managing shared
- * resources.
- * @param pipelineVariables Configuration parameters for the pipeline.
- */
+#include "error_handlers.h"
+#include "firmware/firmware_interface.h"
+#include "pipeline_orchestrator.h"
+
 Pipeline::Pipeline(
-    OutputManager& outputManager, SharedDataManager& sharedDataManager, const PipelineVariables& pipelineVariables)
-    : mFirmwareConfig(FirmwareFactory::create(pipelineVariables.firmware)),
-      mOutputManager(outputManager),
-      mSharedDataManager(sharedDataManager),
-      mSpeedOfSound(pipelineVariables.speedOfSound),
-      mReceiverPositionsPath(pipelineVariables.receiverPositionsPath),
-      mFilter(
-          IFrequencyDomainStrategyFactory::create(
-              pipelineVariables.frequencyDomainStrategy, pipelineVariables.filterWeightsPath, mChannelData,
-              mFirmwareConfig->numChannels())),
-      mTimeDomainDetector(
-          ITimeDomainDetectorFactory::create(
-              pipelineVariables.timeDomainDetector, pipelineVariables.timeDomainThreshold)),
-      mFrequencyDomainDetector(
-          IFrequencyDomainDetectorFactory::create(
-              pipelineVariables.frequencyDomainDetector, pipelineVariables.energyDetectionThreshold)),
-      mTracker(ITracker::create(pipelineVariables)),
-      mOnnxModel(IONNXModel::create(pipelineVariables)),
-      mChannelData(Eigen::MatrixXf::Zero(mFirmwareConfig->numChannels(), mFirmwareConfig->channelSize())),
-      mComputeTDOAs(
-          mFilter->getPaddedLength(), mFilter->getFrequencyDomainData().rows(), mFirmwareConfig->numChannels(),
-          mFirmwareConfig->sampleRate())
-
+    SharedDataManager& sharedDataManager, std::unique_ptr<IPipelineOrchestrator> orchestrator,
+    std::unique_ptr<IOutputHandler> outputHandler, std::unique_ptr<IErrorHandler> errorHandler,
+    std::chrono::seconds programRuntime, std::shared_ptr<ProcessingContext> processingContext)
+    : mSharedDataManager(sharedDataManager),
+      mOrchestrator(std::move(orchestrator)),
+      mOutputHandler(std::move(outputHandler)),
+      mErrorHandler(std::move(errorHandler)),
+      mProgramRuntime(programRuntime),
+      mProgramStartTime(std::chrono::system_clock::now()),
+      mInitialized(false),
+      mContext(std::move(processingContext))
 {
+    // Provide default error handler if none specified
+    if (!mErrorHandler)
+    {
+        mErrorHandler = std::make_unique<DefaultErrorHandler>(&mSharedDataManager);
+    }
+
+    // Validate required components
+    if (!mOrchestrator)
+    {
+        throw std::invalid_argument("Pipeline orchestrator cannot be null");
+    }
+
+    if (!mOutputHandler)
+    {
+        throw std::invalid_argument("Output handler cannot be null");
+    }
 }
 
-/**
- * @brief Processes the data pipeline in a loop until termination conditions are
- * met.
- */
 void Pipeline::process()
 {
     try
     {
-        dataProcessor();
+        std::cout << "Starting pipeline processing..." << std::endl;
+
+        initializeContext();
+        processLoop();
+
+        std::cout << "Pipeline processing completed successfully." << std::endl;
+    }
+    catch (const ProcessingError& e)
+    {
+        std::cerr << "Processing error occurred, handling..." << std::endl;
+        mErrorHandler->handleError(e);
     }
     catch (const std::exception& e)
     {
-        handleProcessingError(e);
+        std::cerr << "Unexpected error in pipeline: " << e.what() << std::endl;
+        ProcessingError error("Pipeline", e.what(), std::current_exception(), *mContext);
+        mErrorHandler->handleError(error);
     }
-}
 
-/**
- * @brief Processes data segments from the shared buffer.
- *
- * Applies filters, performs analysis, and manages data processing pipeline
- * operations.
- */
-void Pipeline::dataProcessor()
-{
-    Eigen::MatrixXf hydrophonePositions = getHydrophoneRelativePositions(mReceiverPositionsPath);
-
-    auto svdDecomposition = computeSvd(hydrophonePositions);
-    auto [cachedLeastSquaresResult, rankOfHydrophoneMatrix] =
-        precomputePseudoInverseAndRank(svdDecomposition, mSpeedOfSound);
-
-    // precompute the leastsquares matrix. Use for efficient DOA estiation
-    // Eigen::MatrixXf cachedLeastSquaresResult = precomputedInverse * mSpeedOfSound;
-
-    bool previousTimeSet = false;
-    auto previousTime = TimePoint::min();
-    dataBytes.resize(mFirmwareConfig->numPacketsToDetect());
-
-    // call function once outside of the loop below to initialize files.
-    initializeOutputFiles(previousTimeSet, previousTime);
-
-    while (!mSharedDataManager.errorOccurred)
-    {
-        obtainAndProcessByteData(previousTimeSet, previousTime);
-        mOutputManager.terminateProgramIfNecessary();
-
-        mOutputManager.flushBufferIfNecessary();
-
-        if (mTracker)
-        {
-            mTracker->scheduleCluster();
-        }
-        if (!mTimeDomainDetector->detect(mChannelData.row(0)))
-        {
-            continue;
-        }
-
-        // std::cout << "apply addr channelData: " << mChannelData.data() <<
-        // std::endl;
-        mFilter->apply();
-        Eigen::MatrixXcf savedFFTs = mFilter->getFrequencyDomainData();
-
-        // std::cout << "creat addr mSavedFFTs: " << savedFFTs.data() <<
-        // std::endl;
-        Eigen::MatrixXcf beforeFilter = mFilter->mBeforeFilter;
-
-        if (!mFrequencyDomainDetector->detect(savedFFTs.col(0)))
-        {
-            continue;
-        }
-
-        if (mOnnxModel)
-        {
-            // std::vector<float> input_tensor_values = getExampleClick();
-            Eigen::VectorXf spectraToInference = beforeFilter.array().abs();
-
-            // std::cout << "Inference spectra: " << std::endl;
-            // std::cout << spectraToInference.tail(500).head(5).transpose() << std::endl;
-            // std::cout << spectraToInference.tail(500).tail(5).transpose() << std::endl;
-
-            Eigen::VectorXf spectraToInferenceFinal = spectraToInference.tail(500);
-            std::vector<float> spectraVector(
-                spectraToInferenceFinal.data(), spectraToInferenceFinal.data() + spectraToInferenceFinal.size());
-            std::vector<float> output = mOnnxModel->runInference(spectraVector);
-            // std::cout << "Classification: \n";
-            // for (const auto& val : output)
-            //{
-            //     std::cout << val << " ";
-            // }
-            // std::cout << std::endl;
-            if (output[1] < output[0])
-            {
-                std::cout << "Noise detected: \n";
-                continue;
-            }
-        }
-        mSharedDataManager.detectionCounter++;
-        auto beforeGCC = std::chrono::steady_clock::now();
-        auto tdoasAndXCorrAmps = mComputeTDOAs.process(savedFFTs);
-        auto afterGCC = std::chrono::steady_clock::now();
-        std::chrono::duration<double> duration = afterGCC - beforeGCC;
-        std::cout << "GCC time: " << duration.count() << std::endl;
-
-        Eigen::VectorXf tdoaVector = std::get<0>(tdoasAndXCorrAmps);
-        Eigen::VectorXf directionOfArrival =
-            computeDoaFromTdoa(cachedLeastSquaresResult, tdoaVector, rankOfHydrophoneMatrix);
-        Eigen::VectorXf azimuthAndElevation = convertDoaToElAz(directionOfArrival);
-        std::cout << "AzEl: " << azimuthAndElevation << std::endl;
-
-        mOutputManager.appendToBuffer(
-            mTimeDomainDetector->getLastDetection(), directionOfArrival[0], directionOfArrival[1],
-            directionOfArrival[2], tdoaVector, std::get<1>(tdoasAndXCorrAmps), dataTimes[0]);
-
-        if (mTracker)  // check
-        {
-            [[maybe_unused]] int label = -1;
-            mTracker->updateTrackerBuffer(directionOfArrival);
-            if (mTracker->mIsTrackerInitialized)
-            {
-                label = mTracker->updateKalmanFiltersContinuous(
-                    directionOfArrival, dataTimes[0]);  // NOLINT(clang-analyzer-deadcode.DeadStores)
-                // mOutputManager.saveSpectraForTraining("training_data_fill.csv", label, beforeFilter);
-            }
-        }
-
-        if (mFirmwareConfig->getImuManager())
-        {
-            std::cout << mFirmwareConfig->getImuManager()->getRotationMatrix();
-            std::cout << std::endl;
-        }
-    }
-}
-void Pipeline::initializeOutputFiles(bool& previousTimeSet, TimePoint& previousTime)
-{
-    obtainAndProcessByteData(previousTimeSet, previousTime);
-    mOutputManager.initializeOutputFile(dataTimes[0], mFirmwareConfig->numChannels());
-    if (mTracker)
-    {
-        mTracker->initializeOutputFile(dataTimes[0]);
-    }
-}
-
-void Pipeline::obtainAndProcessByteData(bool& previousTimeSet, TimePoint& previousTime)
-{
-    mSharedDataManager.waitForData(dataBytes, mFirmwareConfig->numPacketsToDetect());
-
-    dataTimes = mFirmwareConfig->generateTimestamp(dataBytes);
-
-    mFirmwareConfig->throwIfDataErrors(dataBytes, previousTimeSet, previousTime, dataTimes);
-
-    // auto before2l = std::chrono::steady_clock::now();
-    mFirmwareConfig->insertDataIntoChannelMatrix(mChannelData, dataBytes);
-    // auto after2l = std::chrono::steady_clock::now();
-    // std::chrono::duration<double> duration2l = after2l - before2l;
-    //  std::cout << "append : " << duration2l.count() << std::endl;
-}
-
-/**
- * @brief Handles errors that occur during data processing.
- *
- * @param e The exception thrown during data processing.
- */
-void Pipeline::handleProcessingError(const std::exception& e)
-{
-    std::cerr << "Error occurred in data processor thread:\n";
-
-    // Log the exception message
-    std::stringstream msg;
-    msg << e.what() << std::endl;
-    std::cerr << msg.str();
-
-    // Attempt to write data for debugging
+    // Ensure output handler is properly finalized
     try
     {
-        mOutputManager.writeDataToCerr(dataTimes, dataBytes);
+        mOutputHandler->finalize();
     }
-    catch (...)
+    catch (const std::exception& e)
     {
-        std::cerr << "Failed to write data to cerr\n";
+        std::cerr << "Error finalizing output handler: " << e.what() << std::endl;
+    }
+}
+
+void Pipeline::initializeContext()
+{
+    std::cout << "Initializing pipeline context..." << std::endl;
+
+    // Perform initial data acquisition to get firmware information and first timestamp
+    performInitialDataAcquisition();
+
+    // Initialize processing stages
+    mOrchestrator->initializeStages(mContext);
+
+    // Initialize output handler with first timestamp and channel count
+    if (!mContext->dataTimes.empty() && mContext->firmware)
+    {
+        mOutputHandler->initialize(mContext->dataTimes[0], mContext->firmware->numChannels());
+    }
+    else
+    {
+        throw std::runtime_error("Failed to acquire initial data for pipeline initialization");
     }
 
-    mSharedDataManager.errorOccurred = true;  // Flag the error in the session
+    mInitialized = true;
+    std::cout << "Pipeline context initialization completed." << std::endl;
 }
+
+void Pipeline::performInitialDataAcquisition()
+{
+    std::cout << "Performing initial data acquisition..." << std::endl;
+
+    // Execute stages until we get a successful data acquisition
+    // This is needed to initialize output files and get firmware info
+    // bool dataAcquired = false;
+    if (!mSharedDataManager.errorOccurred)
+    {
+        mOrchestrator->executeStages(mContext);
+        mContext->pipelineInitialized = true;
+    }
+}
+
+void Pipeline::processLoop()
+{
+    if (!mInitialized)
+    {
+        throw std::runtime_error("Pipeline not initialized. Call initializeContext() first.");
+    }
+
+    std::cout << "Starting main processing loop..." << std::endl;
+
+    size_t iterationCount = 0;
+    auto lastStatusUpdate = std::chrono::steady_clock::now();
+    const auto statusInterval = std::chrono::seconds(10);
+
+    while (!mSharedDataManager.errorOccurred && !shouldTerminate())
+    {
+        try
+        {
+            iterationCount++;
+
+            // Execute all processing stages
+            if (mOrchestrator->executeStages(mContext))
+            {
+                // Processing successful, handle output
+                mOutputHandler->handleOutput(mContext->currentResult);
+                mSharedDataManager.detectionCounter++;
+            }
+
+            // Periodic flush of output handlers
+            mOutputHandler->flush();
+
+            // Periodic status update
+            auto now = std::chrono::steady_clock::now();
+            if (now - lastStatusUpdate >= statusInterval)
+            {
+                std::cout << "Processed " << iterationCount << " iterations, " << mSharedDataManager.detectionCounter
+                          << " detections" << std::endl;
+                lastStatusUpdate = now;
+            }
+        }
+        catch (const ProcessingError& e)
+        {
+            // Let the error handler decide how to proceed
+            mErrorHandler->handleError(e);
+
+            // If error occurred in a critical stage, we might need to break
+            if (e.stageName == "DataAcquisition")
+            {
+                std::cerr << "Critical data acquisition error, stopping processing" << std::endl;
+                break;
+            }
+
+            // For other errors, continue processing
+            std::cerr << "Continuing processing after handling error in " << e.stageName << std::endl;
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << "Unexpected error in processing loop: " << e.what() << std::endl;
+            ProcessingError error("ProcessingLoop", e.what(), std::current_exception(), *mContext);
+            mErrorHandler->handleError(error);
+
+            // Break on unexpected errors to prevent infinite loop
+            break;
+        }
+    }
+
+    // Final flush and statistics
+    mOutputHandler->flush();
+
+    std::cout << "Processing loop completed." << std::endl;
+    std::cout << "Total iterations: " << iterationCount << std::endl;
+    std::cout << "Total detections: " << mSharedDataManager.detectionCounter << std::endl;
+
+    if (shouldTerminate())
+    {
+        std::cout << "Pipeline terminated due to runtime limit." << std::endl;
+    }
+
+    if (mSharedDataManager.errorOccurred)
+    {
+        std::cout << "Pipeline terminated due to error condition." << std::endl;
+    }
+}
+
+bool Pipeline::shouldTerminate() const
+{
+    auto currentTime = std::chrono::system_clock::now();
+    auto elapsedTime = currentTime - mProgramStartTime;
+
+    bool timeExpired = (elapsedTime >= mProgramRuntime);
+
+    if (timeExpired)
+    {
+        auto elapsedSeconds = std::chrono::duration_cast<std::chrono::seconds>(elapsedTime).count();
+        std::cout << "Runtime limit reached: " << elapsedSeconds << " seconds" << std::endl;
+    }
+
+    return timeExpired;
+}
+
+// Getters for testing and inspection
+const IPipelineOrchestrator* Pipeline::getOrchestrator() const { return mOrchestrator.get(); }
+
+const IOutputHandler* Pipeline::getOutputHandler() const { return mOutputHandler.get(); }
+
+const IErrorHandler* Pipeline::getErrorHandler() const { return mErrorHandler.get(); }

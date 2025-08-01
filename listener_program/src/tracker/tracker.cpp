@@ -402,5 +402,6 @@ void Tracker::updateTrackerBuffer(const Eigen::VectorXf& directionOfArrival)
 
 void Tracker::initializeOutputFile(const TimePoint& timestamp)
 {
+    std::cout << convertTimePointToString(timestamp) << std::endl;
     mOutputfile = mOutputDirectory + convertTimePointToString(timestamp) + "_tracker";
 }

@@ -10,7 +10,6 @@ FrequencyDomainFilterStrategy::FrequencyDomainFilterStrategy(
 
     channelData.conservativeResize(channelData.rows(), mPaddedLength);
     channelData.setZero();
-
     mSavedFFTs = Eigen::MatrixXcf::Zero(mFftOutputSize, mNumChannels);
 
     initializeFilterWeights(filterWeights);
