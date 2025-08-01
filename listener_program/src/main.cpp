@@ -107,9 +107,9 @@ std::unique_ptr<Pipeline> createAcousticProcessingPipeline(
                         .addTimeDomainDetection(std::move(timeDomainDetector))
                         .addFiltering(std::move(filter))
                         .addFrequencyDomainDetection(std::move(frequencyDomainDetector))
-                        //.addClassification(std::move(onnxModel))
-                        //.addDirectionEstimation(std::move(gccPhat), cachedLeastSquares, rank)
-                        //.addTracking(std::move(tracker))
+                        .addClassification(std::move(onnxModel))
+                        .addDirectionEstimation(std::move(gccPhat), cachedLeastSquares, rank)
+                        .addTracking(std::move(tracker))
                         .setFileOutput(config.loggingDirectory, config.integrationTesting)
                         .setConsoleOutput(false)  // Non-verbose console output
                         .setErrorLogging(config.loggingDirectory + "error.log")
