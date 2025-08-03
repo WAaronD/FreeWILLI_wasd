@@ -266,9 +266,6 @@ bool TrackingStage::process(std::shared_ptr<ProcessingContext> context)
 
     try
     {
-        // Schedule cluster processing
-        mTracker->scheduleCluster();
-
         // Update tracker buffer with new direction
         mTracker->updateTrackerBuffer(context->directionOfArrival);
 
@@ -311,4 +308,12 @@ void TrackingStage::initialize(std::shared_ptr<ProcessingContext> context)
         mTracker->initializeOutputFile(context->dataTimes[0]);
         std::cout << "after tracker init: " << std::endl;
     }
+}
+
+bool TrackingStage::requiresPeriodicTick() const { return true; }
+
+void TrackingStage::tick()
+{
+    // Schedule cluster processing
+    mTracker->scheduleCluster();
 }

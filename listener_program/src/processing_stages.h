@@ -98,4 +98,6 @@ class TrackingStage : public IProcessingStage
     bool process(std::shared_ptr<ProcessingContext> context) override;
     std::string getName() const override;
     void initialize(std::shared_ptr<ProcessingContext> context) override;
+    bool requiresPeriodicTick() const override;
+    void tick() override;
 };

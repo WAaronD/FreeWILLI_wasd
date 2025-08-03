@@ -135,6 +135,8 @@ class IProcessingStage
     virtual bool process(std::shared_ptr<ProcessingContext> context) = 0;
     virtual std::string getName() const = 0;
     virtual void initialize(std::shared_ptr<ProcessingContext> context) {}
+    virtual bool requiresPeriodicTick() const { return false; }
+    virtual void tick() {};
 };
 
 class IOutputHandler
@@ -161,4 +163,5 @@ class IPipelineOrchestrator
     virtual void addStage(std::unique_ptr<IProcessingStage> stage) = 0;
     virtual bool executeStages(std::shared_ptr<ProcessingContext> context) = 0;
     virtual void initializeStages(std::shared_ptr<ProcessingContext> context) = 0;
+    virtual void tickPeriodicStages() = 0;
 };

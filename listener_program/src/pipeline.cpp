@@ -136,6 +136,8 @@ void Pipeline::processLoop()
                 mSharedDataManager.detectionCounter++;
             }
 
+            mOrchestrator->tickPeriodicStages();
+
             // Periodic flush of output handlers
             mOutputHandler->flush();
 

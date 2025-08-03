@@ -15,6 +15,12 @@ void PipelineOrchestrator::addStage(std::unique_ptr<IProcessingStage> stage)
         throw std::invalid_argument("Cannot add null processing stage");
     }
 
+    // Track stages that require periodic ticking
+    if (stage->requiresPeriodicTick())
+    {
+        mPeriodicStageIndices.push_back(mStages.size());
+    }
+
     mStages.push_back(std::move(stage));
 
     // Reset initialization flag when stages are modified
@@ -47,13 +53,6 @@ void PipelineOrchestrator::initializeStages(std::shared_ptr<ProcessingContext> c
 
 bool PipelineOrchestrator::executeStages(std::shared_ptr<ProcessingContext> context)
 {
-    /*
-    if (!mInitialized)
-    {
-        throw std::runtime_error("Pipeline orchestrator not initialized. Call initializeStages() first.");
-    }
-    */
-
     // Reset context for new processing cycle
     context->reset();
 
@@ -62,10 +61,7 @@ bool PipelineOrchestrator::executeStages(std::shared_ptr<ProcessingContext> cont
     {
         try
         {
-            // std::cout << "before Address of channelData: " << context->channelData.data() << std::endl;
             bool shouldContinue = stage->process(context);
-            // std::cout << context->channelData.row(0).head(20) << std::endl;
-            // std::cout << "after Address of channelData: " << context->channelData.data() << std::endl;
 
             if (!shouldContinue)
             {
@@ -99,4 +95,21 @@ const IProcessingStage* PipelineOrchestrator::getStage(size_t index) const
         return nullptr;
     }
     return mStages[index].get();
+}
+
+void PipelineOrchestrator::tickPeriodicStages()
+{
+    for (size_t stageIndex : mPeriodicStageIndices)
+    {
+        try
+        {
+            mStages[stageIndex]->tick();
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << "Error in tick() for stage " << mStages[stageIndex]->getName() << ": " << e.what()
+                      << std::endl;
+            // Don't throw - tick errors shouldn't stop the pipeline
+        }
+    }
 }
