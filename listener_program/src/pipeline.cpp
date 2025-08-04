@@ -16,7 +16,6 @@ Pipeline::Pipeline(
       mErrorHandler(std::move(errorHandler)),
       mProgramRuntime(programRuntime),
       mProgramStartTime(std::chrono::system_clock::now()),
-      mInitialized(false),
       mContext(std::move(processingContext))
 {
     // Provide default error handler if none specified
@@ -91,7 +90,6 @@ void Pipeline::initializeContext()
         throw std::runtime_error("Failed to acquire initial data for pipeline initialization");
     }
 
-    mInitialized = true;
     std::cout << "Pipeline context initialization completed." << std::endl;
 }
 
@@ -111,11 +109,6 @@ void Pipeline::performInitialDataAcquisition()
 
 void Pipeline::processLoop()
 {
-    if (!mInitialized)
-    {
-        throw std::runtime_error("Pipeline not initialized. Call initializeContext() first.");
-    }
-
     std::cout << "Starting main processing loop..." << std::endl;
 
     size_t iterationCount = 0;

@@ -1,10 +1,10 @@
 #pragma once
 #include "../pch.h"
 
-class IFrequencyDomainStrategy
+class IFrequencyDomainTransform
 {
    public:
-    virtual ~IFrequencyDomainStrategy() = default;
+    virtual ~IFrequencyDomainTransform() = default;
 
     virtual void apply() = 0;
     virtual int getPaddedLength() const = 0;
@@ -14,11 +14,11 @@ class IFrequencyDomainStrategy
     Eigen::MatrixXcf mBeforeFilter;
 };
 
-class FrequencyDomainFilterStrategy : public IFrequencyDomainStrategy
+class FrequencyDomainFIRFilter : public IFrequencyDomainTransform
 {
    public:
-    FrequencyDomainFilterStrategy(const std::string& filterPath, Eigen::MatrixXf& channelData, int numChannels);
-    ~FrequencyDomainFilterStrategy();
+    FrequencyDomainFIRFilter(const std::string& filterPath, Eigen::MatrixXf& channelData, int numChannels);
+    ~FrequencyDomainFIRFilter();
 
     void apply() override;
     int getPaddedLength() const override;
@@ -26,8 +26,7 @@ class FrequencyDomainFilterStrategy : public IFrequencyDomainStrategy
 
    private:
     void initializeFilterWeights(const std::vector<float>& filterWeights);
-    void createFftPlan(Eigen::MatrixXf& channelData);
-    std::vector<float> readFirFilterFile(const std::string& filePath);
+    void initializeFFT(Eigen::MatrixXf& channelData);
 
    private:
     int mNumChannels;
@@ -40,10 +39,10 @@ class FrequencyDomainFilterStrategy : public IFrequencyDomainStrategy
     Eigen::MatrixXcf mSavedFFTs;
 };
 
-class FrequencyDomainNoFilterStrategy : public IFrequencyDomainStrategy
+class FrequencyDomainTransform : public IFrequencyDomainTransform
 {
    public:
-    FrequencyDomainNoFilterStrategy(Eigen::MatrixXf& channelData, int numChannels) : mNumChannels(numChannels)
+    FrequencyDomainTransform(Eigen::MatrixXf& channelData, int numChannels) : mNumChannels(numChannels)
     {
         // Suppose you don't need padding, so just take channelData.cols() as is
         mPaddedLength = channelData.cols();
@@ -56,7 +55,7 @@ class FrequencyDomainNoFilterStrategy : public IFrequencyDomainStrategy
             reinterpret_cast<fftwf_complex*>(mSavedFFTs.data()), nullptr, 1, mFftOutputSize, FFTW_ESTIMATE);
     }
 
-    ~FrequencyDomainNoFilterStrategy()
+    ~FrequencyDomainTransform()
     {
         if (mForwardFftPlan) fftwf_destroy_plan(mForwardFftPlan);
     }

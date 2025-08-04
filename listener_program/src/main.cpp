@@ -27,8 +27,7 @@ int main(int argc, char* argv[])
         SharedDataManager sharedDataManager;
 
         // Factory invocation:
-        auto pipeline = PipelineFactory::createPipeline(
-            PipelineType::AcousticProcessing, sharedDataManager, pipelineVars, std::stoi(argv[2]));
+        auto pipeline = PipelineFactory::createPipeline(sharedDataManager, pipelineVars, std::stoi(argv[2]));
 
         std::thread producerThread(runListenerLoop, std::ref(sharedDataManager), std::ref(socketManager));
         std::thread consumerThread(&Pipeline::process, pipeline.get());

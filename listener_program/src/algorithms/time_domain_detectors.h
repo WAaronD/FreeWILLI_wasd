@@ -22,6 +22,21 @@ class PeakAmplitudeDetector : public ITimeDomainDetector
     float getLastDetection() const override;
 };
 
+class RuCCUSDetector : public ITimeDomainDetector
+{
+   public:
+    explicit RuCCUSDetector(float threshdet);
+
+    bool detect(const Eigen::VectorXf& timeDomainData) override;
+
+    float getLastDetection() const override;
+
+   private:
+    float m_threshdet;
+    float m_lastDetection;  // 1.0f = click detected, 0.0f = no click
+};
+
+/*
 class NoTimeDomainDetector : public ITimeDomainDetector
 {
    private:
@@ -41,3 +56,4 @@ class NoTimeDomainDetector : public ITimeDomainDetector
 
     float getLastDetection() const override { return peakAmplitude; }
 };
+*/

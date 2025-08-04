@@ -22,7 +22,6 @@ class FileOutputHandler : public IOutputHandler
     size_t mBufferSizeThreshold;
     std::chrono::time_point<std::chrono::steady_clock> mLastFlushTime;
     bool mIntegrationTesting;
-    bool mInitialized;
 
    public:
     FileOutputHandler(const std::string& loggingDir, bool integrationTesting = false);

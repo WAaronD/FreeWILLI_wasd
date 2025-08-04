@@ -34,6 +34,7 @@ bool DataAcquisitionStage::process(std::shared_ptr<ProcessingContext> context)
 
     // Insert data into channel matrix
     mFirmware->insertDataIntoChannelMatrix(context->channelData, context->dataBytes);
+    std::cout << context->channelData.row(0).head(5) << "    " << context->channelData.row(0).tail(5) << std::endl;
     return context->pipelineInitialized;
 }
 
@@ -89,15 +90,45 @@ bool TimeDomainDetectionStage::process(std::shared_ptr<ProcessingContext> contex
     return detected;
 }
 
-std::string TimeDomainDetectionStage::getName() const { return "TimeDomainDetection"; }
+std::string TimeDomainDetectionStage::getName() const { return "Time Domain Detection"; }
 
 // ============================================================================
-// FILTERING STAGE
+// TIME DOMAIN FILTERING STAGE
 // ============================================================================
 
-FilteringStage::FilteringStage(std::unique_ptr<IFrequencyDomainStrategy> filter) : mFilter(std::move(filter)) {}
+TimeDomainFilteringStage::TimeDomainFilteringStage(std::unique_ptr<ITimeDomainFilter> filter)
+    : mFilter(std::move(filter))
+{
+}
 
-bool FilteringStage::process(std::shared_ptr<ProcessingContext> context)
+bool TimeDomainFilteringStage::process(std::shared_ptr<ProcessingContext> context)
+{
+    if (!mFilter)
+    {
+        return false;
+    }
+
+    // Apply frequency domain filter
+    mFilter->apply();
+
+    // Store filtered and unfiltered frequency domain data
+    // context->frequencyDomainData = mFilter->getFrequencyDomainData();
+    // context->beforeFilterData = mFilter->mBeforeFilter;
+    return true;
+}
+
+std::string TimeDomainFilteringStage::getName() const { return "Time Domain Filtering"; }
+
+// ============================================================================
+// FREQUENCY DOMAIN FILTERING STAGE
+// ============================================================================
+
+FrequencyDomainFilteringStage::FrequencyDomainFilteringStage(std::unique_ptr<IFrequencyDomainTransform> filter)
+    : mFilter(std::move(filter))
+{
+}
+
+bool FrequencyDomainFilteringStage::process(std::shared_ptr<ProcessingContext> context)
 {
     if (!mFilter)
     {
@@ -113,7 +144,7 @@ bool FilteringStage::process(std::shared_ptr<ProcessingContext> context)
     return true;
 }
 
-std::string FilteringStage::getName() const { return "Filtering"; }
+std::string FrequencyDomainFilteringStage::getName() const { return "Frequency Domain Filtering"; }
 
 // ============================================================================
 // FREQUENCY DOMAIN DETECTION STAGE
@@ -141,12 +172,12 @@ std::string FrequencyDomainDetectionStage::getName() const { return "FrequencyDo
 // CLASSIFICATION STAGE
 // ============================================================================
 
-ClassificationStage::ClassificationStage(std::unique_ptr<ONNXModel> model, size_t spectraSize)
+ONNXClassificationStage::ONNXClassificationStage(std::unique_ptr<ONNXModel> model, size_t spectraSize)
     : mModel(std::move(model)), mSpectraSize(spectraSize)
 {
 }
 
-bool ClassificationStage::process(std::shared_ptr<ProcessingContext> context)
+bool ONNXClassificationStage::process(std::shared_ptr<ProcessingContext> context)
 {
     if (!mModel || context->beforeFilterData.rows() == 0)
     {
@@ -190,7 +221,7 @@ bool ClassificationStage::process(std::shared_ptr<ProcessingContext> context)
     }
 }
 
-std::string ClassificationStage::getName() const { return "Classification"; }
+std::string ONNXClassificationStage::getName() const { return "Classification"; }
 
 // ============================================================================
 // DIRECTION ESTIMATION STAGE

@@ -17,8 +17,6 @@ class PipelineOrchestrator : public IPipelineOrchestrator
     // Track which stages need periodic ticking using their index in mStages
     std::vector<size_t> mPeriodicStageIndices;
 
-    bool mInitialized;
-
    public:
     PipelineOrchestrator();
 

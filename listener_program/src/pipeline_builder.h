@@ -39,13 +39,15 @@ class PipelineBuilder
 
     PipelineBuilder& addTimeDomainDetection(std::unique_ptr<ITimeDomainDetector> detector);
 
-    PipelineBuilder& addFiltering(std::unique_ptr<IFrequencyDomainStrategy> filter);
+    PipelineBuilder& addTimeDomainFilter(std::unique_ptr<ITimeDomainFilter> filter);
+
+    PipelineBuilder& addFrequencyDomainTransform(std::unique_ptr<IFrequencyDomainTransform> filter);
 
     PipelineBuilder& addFrequencyDomainDetection(std::unique_ptr<IFrequencyDomainDetector> detector);
 
-    PipelineBuilder& addClassification(std::unique_ptr<ONNXModel> model, size_t spectraSize = 500);
+    PipelineBuilder& addONNXClassification(std::unique_ptr<ONNXModel> model, size_t spectraSize = 500);
 
-    PipelineBuilder& addDirectionEstimation(
+    PipelineBuilder& addFrequencyDomainDoaEstimation(
         std::unique_ptr<GCC_PHAT> gccPhat, const Eigen::MatrixXf& cachedLS, int rank);
 
     PipelineBuilder& addTracking(std::unique_ptr<Tracker> tracker);

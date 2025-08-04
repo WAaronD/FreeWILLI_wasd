@@ -38,14 +38,28 @@ PipelineBuilder& PipelineBuilder::addTimeDomainDetection(std::unique_ptr<ITimeDo
     return *this;
 }
 
-PipelineBuilder& PipelineBuilder::addFiltering(std::unique_ptr<IFrequencyDomainStrategy> filter)
+PipelineBuilder& PipelineBuilder::addTimeDomainFilter(std::unique_ptr<ITimeDomainFilter> filter)
+{
+    if (!filter)
+    {
+        throw std::invalid_argument("Time domain filter cannot be null");
+    }
+
+    auto stage = std::make_unique<TimeDomainFilteringStage>(std::move(filter));
+    mOrchestrator->addStage(std::move(stage));
+
+    std::cout << "Added Filtering stage to pipeline" << std::endl;
+    return *this;
+}
+
+PipelineBuilder& PipelineBuilder::addFrequencyDomainTransform(std::unique_ptr<IFrequencyDomainTransform> filter)
 {
     if (!filter)
     {
         throw std::invalid_argument("Frequency domain filter cannot be null");
     }
 
-    auto stage = std::make_unique<FilteringStage>(std::move(filter));
+    auto stage = std::make_unique<FrequencyDomainFilteringStage>(std::move(filter));
     mOrchestrator->addStage(std::move(stage));
 
     std::cout << "Added Filtering stage to pipeline" << std::endl;
@@ -66,17 +80,17 @@ PipelineBuilder& PipelineBuilder::addFrequencyDomainDetection(std::unique_ptr<IF
     return *this;
 }
 
-PipelineBuilder& PipelineBuilder::addClassification(std::unique_ptr<ONNXModel> model, size_t spectraSize)
+PipelineBuilder& PipelineBuilder::addONNXClassification(std::unique_ptr<ONNXModel> model, size_t spectraSize)
 {
     // Classification is optional - null model is allowed
-    auto stage = std::make_unique<ClassificationStage>(std::move(model), spectraSize);
+    auto stage = std::make_unique<ONNXClassificationStage>(std::move(model), spectraSize);
     mOrchestrator->addStage(std::move(stage));
 
     std::cout << "Added Classification stage to pipeline" << std::endl;
     return *this;
 }
 
-PipelineBuilder& PipelineBuilder::addDirectionEstimation(
+PipelineBuilder& PipelineBuilder::addFrequencyDomainDoaEstimation(
     std::unique_ptr<GCC_PHAT> gccPhat, const Eigen::MatrixXf& cachedLS, int rank)
 {
     // mCachedLeastSquares = cachedLS;

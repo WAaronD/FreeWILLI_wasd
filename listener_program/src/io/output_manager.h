@@ -6,6 +6,7 @@
 /**
  * @brief A struct to hold buffer data for detection and tracking.
  */
+/*
 struct BufferStruct
 {
     std::vector<float> mAmps;
@@ -16,7 +17,7 @@ struct BufferStruct
     std::vector<Eigen::VectorXf> mXCorrAmps;
     std::vector<TimePoint> mPeakTimes;
 };
-
+*/
 /**
  * @brief A class to manage the observation buffer for detection and tracking.
  */
@@ -25,12 +26,13 @@ class OutputManager
    public:
     OutputManager(std::chrono::seconds programRuntimei, bool integrationTesting, const std::string& loggingDirectory);
 
-    void appendToBuffer(const float peakAmp, const float doaX, const float doaY, const float doaZ,
-                        const Eigen::VectorXf& tdoaVector, const Eigen::VectorXf& xCorrAmps, const TimePoint& peakTime);
+    void appendToBuffer(
+        const float peakAmp, const float doaX, const float doaY, const float doaZ, const Eigen::VectorXf& tdoaVector,
+        const Eigen::VectorXf& xCorrAmps, const TimePoint& peakTime);
     void flushBufferIfNecessary();
 
-    void writeDataToCerr(std::span<TimePoint> errorTimestamps,
-                         const std::vector<std::vector<uint8_t>>& erroredDataBytes);
+    void writeDataToCerr(
+        std::span<TimePoint> errorTimestamps, const std::vector<std::vector<uint8_t>>& erroredDataBytes);
 
     void initializeOutputFile(const TimePoint& timestamp, const int numChannels);
 

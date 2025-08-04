@@ -12,8 +12,7 @@ FileOutputHandler::FileOutputHandler(const std::string& loggingDir, bool integra
       mFlushInterval(std::chrono::seconds(30)),
       mBufferSizeThreshold(1000),
       mLastFlushTime(std::chrono::steady_clock::now()),
-      mIntegrationTesting(integrationTesting),
-      mInitialized(false)
+      mIntegrationTesting(integrationTesting)
 {
     // Ensure logging directory ends with separator
     if (!mLoggingDirectory.empty() && mLoggingDirectory.back() != '/' && mLoggingDirectory.back() != '\\')
@@ -28,7 +27,6 @@ void FileOutputHandler::initialize(const TimePoint& timestamp, int numChannels)
     std::cout << "Creating and writing to file: " << mOutputFile << std::endl;
 
     initializeFileWithHeaders(numChannels);
-    mInitialized = true;
 }
 
 void FileOutputHandler::initializeFileWithHeaders(int numChannels)
@@ -82,7 +80,7 @@ std::vector<std::string> FileOutputHandler::generateChannelComboLabels(const std
 
 void FileOutputHandler::handleOutput(const DetectionResult& result)
 {
-    if (!mInitialized || !result.isValid)
+    if (!result.isValid)
     {
         return;
     }
@@ -123,7 +121,7 @@ void FileOutputHandler::flushIfNecessary()
 
 void FileOutputHandler::flush()
 {
-    if (mBuffer.empty() || !mInitialized)
+    if (mBuffer.empty())
     {
         return;
     }

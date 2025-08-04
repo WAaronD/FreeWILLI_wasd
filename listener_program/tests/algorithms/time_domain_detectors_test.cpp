@@ -36,41 +36,11 @@ TEST(PeakAmplitudeDetectorTest, ReturnsCorrectLastDetection)
     EXPECT_FLOAT_EQ(detector.getLastDetection(), 0.8f);
 }
 
-// Test NoTimeDomainDetector behavior
-TEST(NoTimeDomainDetectorTest, AlwaysReturnsTrue)
-{
-    NoTimeDomainDetector detector;
-
-    Eigen::VectorXf signal(4);
-    signal << 0.1f, 0.5f, 0.3f, 0.2f;
-
-    EXPECT_TRUE(detector.detect(signal));  // Should always return true
-}
-
-// Test NoTimeDomainDetector's last detection value
-TEST(NoTimeDomainDetectorTest, ReturnsPeakAmplitude)
-{
-    NoTimeDomainDetector detector;
-
-    Eigen::VectorXf signal(5);
-    signal << 0.2f, 0.9f, 0.3f, 0.4f, 0.1f;
-    detector.detect(signal);
-
-    EXPECT_FLOAT_EQ(detector.getLastDetection(), 0.9f);
-}
-
 // Test Factory: PeakAmplitudeDetector creation
 TEST(ITimeDomainDetectorFactoryTest, CreatesPeakAmplitudeDetector)
 {
     auto detector = ITimeDomainDetectorFactory::create("PeakAmplitude", 0.5f);
     EXPECT_NE(dynamic_cast<PeakAmplitudeDetector*>(detector.get()), nullptr);
-}
-
-// Test Factory: NoTimeDomainDetector creation
-TEST(ITimeDomainDetectorFactoryTest, CreatesNoTimeDomainDetector)
-{
-    auto detector = ITimeDomainDetectorFactory::create("None", 0.0f);
-    EXPECT_NE(dynamic_cast<NoTimeDomainDetector*>(detector.get()), nullptr);
 }
 
 // Test Factory: Throws for unknown detector type

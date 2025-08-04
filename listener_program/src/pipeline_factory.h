@@ -20,5 +20,5 @@ class PipelineFactory
     /// Create a pipeline of the requested type.
     /// @throws std::invalid_argument if the type isn’t supported.
     static std::unique_ptr<Pipeline> createPipeline(
-        PipelineType type, SharedDataManager& sharedDataManager, const PipelineVariables& config, int runtimeSeconds);
+        SharedDataManager& sharedDataManager, const PipelineVariables& config, int runtimeSeconds);
 };

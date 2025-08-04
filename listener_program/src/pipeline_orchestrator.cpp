@@ -6,7 +6,7 @@
 // PIPELINE ORCHESTRATOR IMPLEMENTATION
 // ============================================================================
 
-PipelineOrchestrator::PipelineOrchestrator() : mInitialized(false) {}
+PipelineOrchestrator::PipelineOrchestrator() {}
 
 void PipelineOrchestrator::addStage(std::unique_ptr<IProcessingStage> stage)
 {
@@ -22,11 +22,7 @@ void PipelineOrchestrator::addStage(std::unique_ptr<IProcessingStage> stage)
     }
 
     mStages.push_back(std::move(stage));
-
-    // Reset initialization flag when stages are modified
-    mInitialized = false;
 }
-
 void PipelineOrchestrator::initializeStages(std::shared_ptr<ProcessingContext> context)
 {
     std::cout << "Initializing " << mStages.size() << " processing stages..." << std::endl;
@@ -47,7 +43,6 @@ void PipelineOrchestrator::initializeStages(std::shared_ptr<ProcessingContext> c
         }
     }
 
-    mInitialized = true;
     std::cout << "All processing stages initialized successfully." << std::endl;
 }
 

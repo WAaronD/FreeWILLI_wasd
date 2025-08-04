@@ -14,7 +14,6 @@ class Pipeline
 {
    private:
     SharedDataManager& mSharedDataManager;
-    // ProcessingContext& mContext;
     std::shared_ptr<ProcessingContext> mContext;
     std::unique_ptr<IPipelineOrchestrator> mOrchestrator;
     std::unique_ptr<IOutputHandler> mOutputHandler;
@@ -22,7 +21,6 @@ class Pipeline
 
     std::chrono::seconds mProgramRuntime;
     TimePoint mProgramStartTime;
-    bool mInitialized;
 
    public:
     Pipeline(

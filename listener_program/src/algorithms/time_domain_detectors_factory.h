@@ -11,9 +11,14 @@ class ITimeDomainDetectorFactory
         {
             return std::make_unique<PeakAmplitudeDetector>(timeDomainThreshold);
         }
-        else if (timeDomainDetector == "None")
+
+        // else if (timeDomainDetector == "None")
+        //{
+        //     return std::make_unique<NoTimeDomainDetector>();
+        // }
+        else if (timeDomainDetector == "RuCCUS")
         {
-            return std::make_unique<NoTimeDomainDetector>();
+            return std::make_unique<RuCCUSDetector>(timeDomainThreshold);
         }
         else
         {
