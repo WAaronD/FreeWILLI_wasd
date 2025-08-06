@@ -171,6 +171,30 @@ PipelineBuilder& PipelineBuilder::setConsoleOutput(bool verbose)
     return *this;
 }
 
+PipelineBuilder& PipelineBuilder::setNetworkOutput(const std::string& ip, int port)
+{
+    if (ip.empty())
+    {
+        throw std::invalid_argument("Ip address for network output cannot be empty");
+    }
+
+    auto networkHandler = std::make_unique<NetworkOutputHandler>(ip, port);
+
+    if (mOutputHandler)
+    {
+        // If we already have an output handler, create a composite
+        ensureCompositeOutputHandler();
+        static_cast<CompositeOutputHandler*>(mOutputHandler.get())->addHandler(std::move(networkHandler));
+    }
+    else
+    {
+        mOutputHandler = std::move(networkHandler);
+    }
+
+    std::cout << "Added network output at ip address: " << ip << " " << port << std::endl;
+    return *this;
+}
+
 PipelineBuilder& PipelineBuilder::setCompositeOutput()
 {
     if (!dynamic_cast<CompositeOutputHandler*>(mOutputHandler.get()))

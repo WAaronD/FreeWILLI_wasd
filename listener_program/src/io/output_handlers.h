@@ -49,19 +49,6 @@ class FileOutputHandler : public IOutputHandler
     std::vector<std::string> generateChannelComboLabels(const std::string& labelPrefix, int numChannels);
 };
 
-class CompositeOutputHandler : public IOutputHandler
-{
-   private:
-    std::vector<std::unique_ptr<IOutputHandler>> mHandlers;
-
-   public:
-    void addHandler(std::unique_ptr<IOutputHandler> handler);
-    void initialize(const TimePoint& timestamp, int numChannels) override;
-    void handleOutput(const DetectionResult& result) override;
-    void flush() override;
-    void finalize() override;
-};
-
 class ConsoleOutputHandler : public IOutputHandler
 {
    private:
@@ -71,6 +58,39 @@ class ConsoleOutputHandler : public IOutputHandler
    public:
     explicit ConsoleOutputHandler(bool verbose = false);
 
+    void initialize(const TimePoint& timestamp, int numChannels) override;
+    void handleOutput(const DetectionResult& result) override;
+    void flush() override;
+    void finalize() override;
+};
+
+class NetworkOutputHandler : public IOutputHandler
+{
+   public:
+    NetworkOutputHandler(const std::string& ip, int port);
+    ~NetworkOutputHandler() override;
+
+    void handleOutput(const DetectionResult& result) override;
+    void flush() override;
+    void initialize(const TimePoint& timestamp, int numChannels) override;
+    void finalize() override;
+
+   private:
+    std::string mIp;
+    int mPort;
+    int mSockfd;
+    struct sockaddr_in mDest;
+    TimePoint mInitTimestamp;
+    int mInitNumChannels;
+};
+
+class CompositeOutputHandler : public IOutputHandler
+{
+   private:
+    std::vector<std::unique_ptr<IOutputHandler>> mHandlers;
+
+   public:
+    void addHandler(std::unique_ptr<IOutputHandler> handler);
     void initialize(const TimePoint& timestamp, int numChannels) override;
     void handleOutput(const DetectionResult& result) override;
     void flush() override;

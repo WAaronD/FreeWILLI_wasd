@@ -25,14 +25,7 @@ bool FIRFilter::apply()
     const int C = data.rows();
     const int N = data.cols();
     const int M = int(mFilterWeights.size());  // b[0..M-1]
-    /*
-    std::cout << "FIR taps (M=" << M << "): " << std::endl;
-    for (int i = 0; i < 5; ++i)
-    {
-        std::cout << mFilterWeights[i] << " ";
-    }
-    */
-    // std::cout << "\n";
+
     //  allocate same length as input
     Eigen::MatrixXf filtered = Eigen::MatrixXf::Zero(C, N);
 
@@ -55,7 +48,7 @@ bool FIRFilter::apply()
     }
 
     data = std::move(filtered);
-    std::cout << data.row(0).head(5) << " … " << data.row(0).tail(5) << std::endl;
+    // std::cout << data.row(0).head(5) << " … " << data.row(0).tail(5) << std::endl;
     return true;
 }
 

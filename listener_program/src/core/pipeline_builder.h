@@ -60,6 +60,8 @@ class PipelineBuilder
 
     PipelineBuilder& setConsoleOutput(bool verbose = false);
 
+    PipelineBuilder& setNetworkOutput(const std::string&, int port);
+
     PipelineBuilder& setCompositeOutput();
 
     PipelineBuilder& addOutputHandler(std::unique_ptr<IOutputHandler> handler);

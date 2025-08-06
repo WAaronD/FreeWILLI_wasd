@@ -128,6 +128,7 @@ void Pipeline::processLoop()
                 // Processing successful, handle output
                 mOutputHandler->handleOutput(mContext->currentResult);
                 mSharedDataManager.detectionCounter++;
+                std::cout << "Detection at: " << iterationCount << std::endl;
             }
 
             mOrchestrator->tickPeriodicStages();

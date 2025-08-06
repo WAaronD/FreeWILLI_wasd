@@ -202,33 +202,39 @@ conda activate freewilli
 pip install -r requirements.txt
 ```
 
-
-
 ## Listener
 
 ### Technical Overview
 
-Uses a **producer/consumer concurrency pattern** with threads created in ```src/main.cpp```. Shared data and synchronization are handled by ```SharedDataManager()``` from ```src/shared_data_manager.h```
+The Listener program is launched as:
+```bash
+./bin/Listener <config.json> <runtime_seconds>
+```
+- **<config.json>**
+A JSON spec (e.g. ```config_files/volumetric.json```) that drives every aspect of the pipeline. The varaible ```template``` specifies a particular pipeline build, which is composed of a predefined set of signal processing stages (see ```src/core/pipeline_factory.cpp``` for available build options). The implemention of those stages is specified in the remaining variables of the JSON file. See section  **Example Workflow** for more info. In ```src/utils.cpp```, the function ```parseJsonConfig()``` parses the JSON into a ```PipelineVariables``` struct.
+
+- **<runtime_seconds>**
+Total duration (in seconds) before the program shuts down cleanly.
+
+The program uses a producer/consumer concurrency pattern with threads created in ```src/main.cpp```. Data that is shared between threads and synchronization are handled by ```SharedDataManager()``` from ```src/shared_data_manager.h```
 
 
-At launch, the Listener builds a custom processing flow from your JSON spec using the **PipelineBuilder** (`pipeline_builder.cpp`):
+At launch, the Listener builds a custom processing flow from your JSON spec using the ```PipelineBuilder``` (`pipeline_builder.cpp`):
 
 1. **Stage List Creation**  
    The builder reads each entry under `"pipelineStages"` and instantiates the corresponding stage objects (e.g. data acquisition, filtering, detection, tracking).
 
 2. **Shared Context**  
-   All stages share a single `ProcessingContext` that carries raw samples, timestamps, intermediate buffers, and detection results through the pipeline.
+   All stages share a single `ProcessingContext` that carries raw samples, timestamps, intermediate data, and detection results through the pipeline. Custom builds may need to define there own `ProcessingContext` structs.
 
 3. **Orchestration Loop**  
-   The `PipelineOrchestrator` (`pipeline_orchestrator.cpp`) steps through your configured stages in order—calling `execute()` on each—and hands off the updated context to the next stage.
+   The `PipelineOrchestrator` (`pipeline_orchestrator.cpp`) steps through the configured stages in order—calling `execute()` on each—and hands off the updated context to the next stage.
 
 4. **Pluggable Implementations**  
-   Because each stage implements a common interface, you can swap algorithms simply by changing the name in your JSON:
-   - Replace the default click detector with a new one by registering it in `time_domain_detectors_factory.h`.
-   - Swap an FIR filter for a polyphase filter via the filter factory in `time_domain_filters_factory.h`.
+   Because each stage implements a common interface, you can swap algorithms simply by changing the name in your JSON.
 
 **Example Workflow**  
-The config file ```config_files/volumetric.json``` specifies ```template``` as **MultiChannelFrequencyDomainTracking**. In ```pipeline_factory.cpp```, this build the pipeline through the fucntoin call to ```multiChannelFrequencyDomainTracking``` which builds the pipeline by adding the following stages:
+The config file ```config_files/volumetric.json``` specifies ```template``` as **MultiChannelFrequencyDomainTracking**. In ```pipeline_factory.cpp```, this builds the pipeline through the function ```multiChannelFrequencyDomainTracking``` which builds the pipeline by adding the following stages:
 
 - **.addDataAcquisition(...)**
 Reads raw audio packets from SharedDataManager and converts them into floating‑point data. **This stage is required.**
