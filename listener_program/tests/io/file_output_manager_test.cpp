@@ -1,7 +1,7 @@
-#include "../../src/io/output_manager.h"
-
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+
+#include "../../src/io/file_output_manager.h"
 
 TEST(OutputManagerTest, AppendToBufferAndFlush)
 {

@@ -1,6 +1,6 @@
 #pragma once
 #include "../pch.h"
-#include "isocket_manager.h"
+#include "socket_manager_interface.h"
 
 class SocketVariables;
 
@@ -16,13 +16,10 @@ class UdpSocketManager : public ISocketManager
 
     std::vector<uint8_t>& receiveData(int flags, struct sockaddr* addr, socklen_t* addrlen) override;
 
-    // std::vector<uint8_t>& getReceivedData() override { return mDataBytes; }
-    //  void setReceiveBufferSize(size_t newSize) override { mDataBytes.resize(2048); }
-
    private:
-    int mDatagramSocket;  ///< UDP socket descriptor.
-    int mUdpPort;  ///< Port number for the UDP connection.
-    std::string mUdpIp;  ///< IP address of the data logger or simulator.
+    int mDatagramSocket;
+    int mUdpPort;
+    std::string mUdpIp;
 
     // Store dataBytes as a member to allow easier mocking and testing.
     std::vector<uint8_t> mDataBytes;

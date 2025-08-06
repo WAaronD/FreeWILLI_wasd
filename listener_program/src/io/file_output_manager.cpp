@@ -1,4 +1,4 @@
-#include "output_manager.h"
+#include "file_output_manager.h"
 
 OutputManager::OutputManager(
     std::chrono::seconds programRuntime, bool integrationTesting, const std::string& loggingDirectory)

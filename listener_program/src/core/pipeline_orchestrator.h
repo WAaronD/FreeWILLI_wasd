@@ -11,12 +11,6 @@
 
 class PipelineOrchestrator : public IPipelineOrchestrator
 {
-   private:
-    std::vector<std::unique_ptr<IProcessingStage>> mStages;
-
-    // Track which stages need periodic ticking using their index in mStages
-    std::vector<size_t> mPeriodicStageIndices;
-
    public:
     PipelineOrchestrator();
 
@@ -26,4 +20,10 @@ class PipelineOrchestrator : public IPipelineOrchestrator
     void tickPeriodicStages() override;
     size_t getStageCount() const;
     const IProcessingStage* getStage(size_t index) const;
+
+   private:
+    std::vector<std::unique_ptr<IProcessingStage>> mStages;
+
+    // Track which stages need periodic ticking using their index in mStages
+    std::vector<size_t> mPeriodicStageIndices;
 };

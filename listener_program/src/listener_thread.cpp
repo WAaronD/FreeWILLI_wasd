@@ -1,22 +1,10 @@
-#include "io/isocket_manager.h"
-// #include "io/isocket_manager.h"
+#include "io/socket_manager_interface.h"
 #include "pch.h"
 #include "shared_data_manager.h"
 
 int packetCounter = 0;  // this should only be used inside the UDPListener
                         // function, as it is not protected by a mutex
 
-/**
- * @brief Logs packet statistics at regular intervals and resets the packet
- * timer.
- *
- * @param packetCounter The total number of packets received so far.
- * @param printInterval The interval (in packets) at which to log statistics.
- * @param startPacketTime Start time of the last logged interval.
- * @param queueSize Current size of the shared queue.
- * @param processedPackets Number of processed packets.
- * @param detectionCount Number of detections recorded by the session.
- */
 void logPacketStatistics(
     int packetCounter, int printInterval, std::chrono::steady_clock::time_point& startPacketTime, int queueSize,
     int processedPackets, int detectionCount)
@@ -33,16 +21,6 @@ void logPacketStatistics(
     startPacketTime = std::chrono::steady_clock::now();
 }
 
-/**
- * @brief Listens for incoming UDP packets, processes them, and stores data in a
- * buffer.
- *
- * @param sharedDataManager Reference to a SharedDataManager object for managing shared data across threads
- * @param socketManager Reference to a SocketManager object that manages the UDP
- * socket.
- * @throws std::runtime_error if there is an error receiving data from the
- * socket or if the buffer overflows.
- */
 void runListenerLoop(SharedDataManager& sharedDataManager, std::unique_ptr<ISocketManager>& socketManager)
 {
     try

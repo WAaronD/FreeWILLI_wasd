@@ -14,16 +14,6 @@
 
 class Pipeline
 {
-   private:
-    SharedDataManager& mSharedDataManager;
-    std::shared_ptr<ProcessingContext> mContext;
-    std::unique_ptr<IPipelineOrchestrator> mOrchestrator;
-    std::unique_ptr<IOutputHandler> mOutputHandler;
-    std::unique_ptr<IErrorHandler> mErrorHandler;
-
-    std::chrono::seconds mProgramRuntime;
-    TimePoint mProgramStartTime;
-
    public:
     Pipeline(
         SharedDataManager& sharedDataManager, std::unique_ptr<IPipelineOrchestrator> orchestrator,
@@ -42,4 +32,13 @@ class Pipeline
     void processLoop();
     bool shouldTerminate() const;
     void performInitialDataAcquisition();
+
+    SharedDataManager& mSharedDataManager;
+    std::shared_ptr<ProcessingContext> mContext;
+    std::unique_ptr<IPipelineOrchestrator> mOrchestrator;
+    std::unique_ptr<IOutputHandler> mOutputHandler;
+    std::unique_ptr<IErrorHandler> mErrorHandler;
+
+    std::chrono::seconds mProgramRuntime;
+    TimePoint mProgramStartTime;
 };
