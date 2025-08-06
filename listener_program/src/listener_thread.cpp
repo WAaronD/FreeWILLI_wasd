@@ -50,22 +50,13 @@ void runListenerLoop(SharedDataManager& sharedDataManager, std::unique_ptr<ISock
         struct sockaddr_in addr;
         socklen_t addrLength = sizeof(addr);
         constexpr int printInterval = 500;
-        const int receiveSize = 2048;  // some max size
-
-        // We let the SocketManager handle resizing internally as it receives
-        // data
-        socketManager->setReceiveBufferSize(receiveSize);
 
         auto startPacketTime = std::chrono::steady_clock::now();
 
         while (!sharedDataManager.errorOccurred)
         {
             // Receive data
-            int bytesReceived = socketManager->receiveData(0, (struct sockaddr*)&addr, &addrLength);
-
-            if (bytesReceived == -1) throw std::runtime_error("Error in receiveData: bytesReceived is -1");
-
-            const std::vector<uint8_t>& dataBytes = socketManager->getReceivedData();
+            const std::vector<uint8_t>& dataBytes = socketManager->receiveData(0, (struct sockaddr*)&addr, &addrLength);
 
             int queueSize = sharedDataManager.pushDataToBuffer(dataBytes);
 
@@ -75,11 +66,6 @@ void runListenerLoop(SharedDataManager& sharedDataManager, std::unique_ptr<ISock
                 logPacketStatistics(
                     packetCounter, printInterval, startPacketTime, queueSize, packetCounter - queueSize,
                     sharedDataManager.detectionCounter);
-            }
-
-            if (queueSize > 1000)
-            {
-                throw std::runtime_error("Buffer overflowing \n");
             }
         }
     }

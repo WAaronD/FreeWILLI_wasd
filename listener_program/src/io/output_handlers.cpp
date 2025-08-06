@@ -400,12 +400,8 @@ void NetworkOutputHandler::initialize(const TimePoint& timestamp, int numChannel
 
 void NetworkOutputHandler::handleOutput(const DetectionResult& /*result*/)
 {
-    // stub: you could buffer or serialize `result` here
-}
-
-void NetworkOutputHandler::flush()
-{
     const char* msg = "Hello, UDP!";
+    std::cout << "sending mesage!!!!! \n";
     ssize_t sent =
         ::sendto(mSockfd, msg, std::strlen(msg), 0, reinterpret_cast<struct sockaddr*>(&mDest), sizeof(mDest));
     if (sent < 0)
@@ -413,6 +409,8 @@ void NetworkOutputHandler::flush()
         throw std::runtime_error("NetworkOutputHandler: sendto() failed");
     }
 }
+
+void NetworkOutputHandler::flush() {}
 
 void NetworkOutputHandler::finalize()
 {

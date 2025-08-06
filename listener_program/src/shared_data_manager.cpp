@@ -9,8 +9,14 @@ using namespace std::chrono_literals;
 int SharedDataManager::pushDataToBuffer(const std::vector<uint8_t>& data)
 {
     std::lock_guard<std::mutex> lock(dataBufferLock);
-    dataBuffer.push(data);
-    return static_cast<int>(dataBuffer.size());
+    mDataBuffer.push(data);
+
+    if (mDataBuffer.size() > mMaxBufferSize)
+    {
+        throw std::runtime_error("Buffer overflowing \n");
+    }
+
+    return static_cast<int>(mDataBuffer.size());
 }
 
 /**
@@ -40,12 +46,12 @@ void SharedDataManager::waitForData(std::vector<std::vector<uint8_t>>& dataBytes
 bool SharedDataManager::popDataFromBuffer(std::vector<std::vector<uint8_t>>& data, int numPacksToGet)
 {
     std::lock_guard<std::mutex> lock(dataBufferLock);
-    if (dataBuffer.size() >= numPacksToGet)
+    if (mDataBuffer.size() >= numPacksToGet)
     {
         for (int i = 0; i < numPacksToGet; i++)
         {
-            data[i] = dataBuffer.front();
-            dataBuffer.pop();
+            data[i] = mDataBuffer.front();
+            mDataBuffer.pop();
         }
         return true;
     }

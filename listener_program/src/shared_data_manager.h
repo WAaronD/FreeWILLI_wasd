@@ -10,9 +10,10 @@ class SharedDataManager
 {
    private:
     std::mutex dataBufferLock;
-    std::queue<std::vector<uint8_t>> dataBuffer;  ///< Holds incoming data packets (thread-safe via mutex).
+    std::queue<std::vector<uint8_t>> mDataBuffer;  ///< Holds incoming data packets (thread-safe via mutex).
 
     bool popDataFromBuffer(std::vector<std::vector<uint8_t>>& data, int numPacksToGet);
+    int mMaxBufferSize = 1000;
 
    public:
     std::atomic<bool> errorOccurred = false;  ///< Indicates an error has occurred in processing or I/O operations.

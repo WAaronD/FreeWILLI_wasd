@@ -7,10 +7,8 @@
  * @throws std::runtime_error If the socket cannot be created.
  */
 UdpSocketManager::UdpSocketManager(const SocketVariables& socketVariables)
-    : mDatagramSocket(socket(AF_INET, SOCK_DGRAM, 0)),
-      mUdpPort(socketVariables.port),
-      mUdpIp(socketVariables.ipAddress),
-      mDataBytes()
+    : mDatagramSocket(socket(AF_INET, SOCK_DGRAM, 0)), mUdpPort(socketVariables.port), mUdpIp(socketVariables.ipAddress)
+
 {
     if (mUdpIp == "self")
     {
@@ -21,6 +19,7 @@ UdpSocketManager::UdpSocketManager(const SocketVariables& socketVariables)
     {
         throw std::runtime_error("Error creating socket\n");
     }
+    mDataBytes.resize(2048);  // create a default size for the receive byte buffer
 }
 
 /**
@@ -81,7 +80,7 @@ void UdpSocketManager::restartListener()
  * @param addrlen Pointer to the size of the addr structure.
  * @return Number of bytes received, or -1 on error.
  */
-int UdpSocketManager::receiveData(int flags, struct sockaddr* addr, socklen_t* addrlen)
+std::vector<uint8_t>& UdpSocketManager::receiveData(int flags, struct sockaddr* addr, socklen_t* addrlen)
 {
     int bytesReceived = recvfrom(mDatagramSocket, mDataBytes.data(), mDataBytes.size(), flags, addr, addrlen);
     if (bytesReceived > 0)
@@ -89,5 +88,7 @@ int UdpSocketManager::receiveData(int flags, struct sockaddr* addr, socklen_t* a
         mDataBytes.assign(
             static_cast<uint8_t*>(mDataBytes.data()), static_cast<uint8_t*>(mDataBytes.data()) + bytesReceived);
     }
-    return bytesReceived;
+    if (bytesReceived == -1) throw std::runtime_error("Error in receiveData: bytesReceived is -1");
+
+    return mDataBytes;
 }
