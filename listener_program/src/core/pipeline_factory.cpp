@@ -5,15 +5,15 @@
 #include <memory>
 #include <stdexcept>
 
-#include "ML/onnx_model.h"
-#include "algorithms/frequency_domain_detectors_factory.h"
-#include "algorithms/hydrophone_position_processing.h"
-#include "algorithms/linear_algebra_utils.h"
-#include "algorithms/time_domain_detectors_factory.h"
-#include "algorithms/time_domain_filters_factory.h"
-#include "firmware/firmware_factory.h"
+#include "../ML/onnx_model.h"
+#include "../algorithms/detectors/frequency_domain_detectors_factory.h"
+#include "../algorithms/detectors/time_domain_detectors_factory.h"
+#include "../algorithms/linear_algebra_utils.h"
+#include "../algorithms/localization/hydrophone_position_processing.h"
+#include "../algorithms/time_domain_filters_factory.h"
+#include "../firmware/firmware_factory.h"
+#include "../tracker/tracker.h"
 #include "pipeline_builder.h"
-#include "tracker/tracker.h"
 
 std::unique_ptr<Pipeline> multiChannelFrequencyDomainTracking(
     SharedDataManager& sharedDataManager, const PipelineVariables& config, int runtime)
@@ -113,9 +113,9 @@ std::unique_ptr<Pipeline> multiChannelTimeDomainClassification(
     // --- build pipeline ---
     auto pipeline = PipelineBuilder()
                         .addDataAcquisition(sharedDataManager, std::move(firmware))
-                        //.addTimeDomainDetection(std::move(tdet))
-                        //.addTimeDomainFilter(std::move(filter))
-                        //.addTimeDomainDetection(std::move(tclass))
+                        .addTimeDomainDetection(std::move(tdet))
+                        .addTimeDomainFilter(std::move(filter))
+                        .addTimeDomainDetection(std::move(tclass))
                         .setFileOutput(config.loggingDirectory, config.integrationTesting)
                         .setConsoleOutput(false)
                         .setErrorLogging(config.loggingDirectory + "error.log")

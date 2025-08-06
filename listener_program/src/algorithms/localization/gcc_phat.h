@@ -1,5 +1,5 @@
 #pragma once
-#include "../pch.h"
+#include "../../pch.h"
 
 /**
  * @brief Implements the Generalized Cross-Correlation with Phase Transform (GCC-PHAT) algorithm.

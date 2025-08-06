@@ -4,13 +4,22 @@
 #include <iomanip>
 #include <sstream>
 
-#include "interfaces.h"
-#include "pch.h"
-#include "utils.h"
+// #include "interfaces.h"
+#include "../pch.h"
+#include "../utils.h"
 
 // ============================================================================
 // OUTPUT HANDLER IMPLEMENTATIONS
 // ============================================================================
+class IOutputHandler
+{
+   public:
+    virtual ~IOutputHandler() = default;
+    virtual void handleOutput(const DetectionResult& result) = 0;
+    virtual void flush() = 0;
+    virtual void initialize(const TimePoint& timestamp, int numChannels) = 0;
+    virtual void finalize() {}
+};
 
 class FileOutputHandler : public IOutputHandler
 {

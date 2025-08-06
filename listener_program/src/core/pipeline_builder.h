@@ -1,8 +1,8 @@
 #pragma once
 
-#include "algorithms/gcc_phat.h"
-#include "error_handlers.h"
-#include "output_handlers.h"
+#include "../algorithms/localization/gcc_phat.h"
+#include "../error_handlers.h"
+#include "../io/output_handlers.h"
 #include "pipeline.h"
 #include "pipeline_orchestrator.h"
 #include "processing_stages.h"

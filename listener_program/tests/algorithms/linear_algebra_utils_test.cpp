@@ -1,5 +1,7 @@
 #include "../../src/algorithms/linear_algebra_utils.h"
 
+#include "../../src/pch.h"
+
 // #include "../../src/pch.h"
 #include "gtest/gtest.h"
 

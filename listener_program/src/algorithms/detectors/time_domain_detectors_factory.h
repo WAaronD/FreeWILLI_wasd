@@ -1,5 +1,5 @@
 #pragma once
-#include "../pch.h"
+#include "../../pch.h"
 #include "time_domain_detectors.h"
 
 class ITimeDomainDetectorFactory

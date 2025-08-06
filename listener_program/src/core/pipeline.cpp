@@ -2,8 +2,9 @@
 
 #include <iostream>
 
-#include "error_handlers.h"
-#include "firmware/firmware_interface.h"
+#include "../error_handlers.h"
+#include "../firmware/firmware_interface.h"
+#include "../io/output_handlers.h"
 #include "pipeline_orchestrator.h"
 
 Pipeline::Pipeline(

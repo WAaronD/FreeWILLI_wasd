@@ -3,7 +3,7 @@
 #include <chrono>
 #include <iostream>
 
-#include "algorithms/hydrophone_position_processing.h"
+#include "../algorithms/localization/hydrophone_position_processing.h"
 
 // ============================================================================
 // DATA ACQUISITION STAGE
@@ -34,11 +34,11 @@ bool DataAcquisitionStage::process(std::shared_ptr<ProcessingContext> context)
 
     // Insert data into channel matrix
     mFirmware->insertDataIntoChannelMatrix(context->channelData, context->dataBytes);
-    std::cout << context->channelData.row(0).head(5) << "    " << context->channelData.row(0).tail(5) << std::endl;
+    // std::cout << context->channelData.row(0).head(5) << "    " << context->channelData.row(0).tail(5) << std::endl;
     return context->pipelineInitialized;
 }
 
-std::string DataAcquisitionStage::getName() const { return "DataAcquisition"; }
+std::string DataAcquisitionStage::getName() const { return "Data Acquisition"; }
 
 void DataAcquisitionStage::initialize(std::shared_ptr<ProcessingContext> context)
 {
@@ -114,6 +114,8 @@ bool TimeDomainFilteringStage::process(std::shared_ptr<ProcessingContext> contex
     // Store filtered and unfiltered frequency domain data
     // context->frequencyDomainData = mFilter->getFrequencyDomainData();
     // context->beforeFilterData = mFilter->mBeforeFilter;
+    // std::cout << context->channelData.row(0).head(5) << "     " << context->channelData.row(0).tail(5) << std::endl;
+
     return true;
 }
 

@@ -4,10 +4,6 @@
 #include <iostream>
 #include <sstream>
 
-// ============================================================================
-// DEFAULT ERROR HANDLER IMPLEMENTATION
-// ============================================================================
-
 DefaultErrorHandler::DefaultErrorHandler(SharedDataManager* sharedDataManager, const std::string& logFile)
     : mSharedDataManager(sharedDataManager), mLogFile(logFile), mLogToFile(!logFile.empty())
 {

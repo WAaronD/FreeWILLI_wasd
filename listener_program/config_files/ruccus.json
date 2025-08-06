@@ -12,7 +12,7 @@
     "frequencyDomainStrategy": "Filter",
     "frequencyDomainDetector": "AverageEnergy",
     "frequencyDomainThreshold": 100,
-    "filterWeightsFile": "filters/highpass_taps@101_cutoff@20k_window@hamming_fs@100k.txt",
+    "filterWeightsFile": "filters/highpass_taps@101_cutoff@15k_window@hamming_fs@100k.txt",
     "receiverPositionsFile": "receiver_pos/SOCAL_H_72_HS_harp4chPar_recPos.txt",
     "enableTracking": true,
     "clusteringIntervalSeconds": 60,

@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 
-#include "interfaces.h"
+#include "core_interfaces.h"
 
 // ============================================================================
 // PIPELINE ORCHESTRATOR IMPLEMENTATION

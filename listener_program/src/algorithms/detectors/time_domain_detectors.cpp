@@ -58,6 +58,7 @@ bool RuCCUSDetector::detect(const Eigen::VectorXf& data)
 
     // 7) Final decision
     bool result = (excursions >= 10);
+    std::cout << "Ruccus result: " << result << " \n";
     m_lastDetection = result ? 1.0f : 0.0f;
     return result;
 }

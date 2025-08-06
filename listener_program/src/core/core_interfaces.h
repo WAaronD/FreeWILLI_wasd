@@ -1,8 +1,8 @@
 #pragma once
 
-#include "firmware/firmware_interface.h"
-#include "pch.h"
-#include "structs.h"
+#include "../firmware/firmware_interface.h"
+#include "../pch.h"
+#include "../structs.h"
 
 // Forward declarations
 class IFirmware;
@@ -27,23 +27,6 @@ class IProcessingStage
     virtual void initialize(std::shared_ptr<ProcessingContext> context) {}
     virtual bool requiresPeriodicTick() const { return false; }
     virtual void tick() {};
-};
-
-class IOutputHandler
-{
-   public:
-    virtual ~IOutputHandler() = default;
-    virtual void handleOutput(const DetectionResult& result) = 0;
-    virtual void flush() = 0;
-    virtual void initialize(const TimePoint& timestamp, int numChannels) = 0;
-    virtual void finalize() {}
-};
-
-class IErrorHandler
-{
-   public:
-    virtual ~IErrorHandler() = default;
-    virtual void handleError(const ProcessingError& error) = 0;
 };
 
 class IPipelineOrchestrator

@@ -210,37 +210,51 @@ pip install -r requirements.txt
 
 Uses a **producer/consumer concurrency pattern** with threads created in ```src/main.cpp```. Shared data and synchronization are handled by ```SharedDataManager()``` from ```src/shared_data_manager.h```
 
-Key architectural features include:
 
-**Pipeline Execution Model**: Signal processing steps are executed sequentially using the Pipeline Pattern. The Pipeline class is created and initialized in ```src/main.cpp``` and it's method ```process()``` calls the main signal processing loop ```dataProcess()``` and wraps it in a ```try/catch``` block.
+At launch, the Listener builds a custom processing flow from your JSON spec using the **PipelineBuilder** (`pipeline_builder.cpp`):
 
-**Factory Pattern**: Objects for various algorithms (e.g., filters, detection modules) are dynamically created using a factory.
+1. **Stage List Creation**  
+   The builder reads each entry under `"pipelineStages"` and instantiates the corresponding stage objects (e.g. data acquisition, filtering, detection, tracking).
 
-### Signal Processing Pipeline
-The signal processing pipeline consists of a feature extraction phase, where key signal characteristics are computed and logged to a file. This is followed by optional steps that include multi-target tracking and neural network inference for further analysis.
+2. **Shared Context**  
+   All stages share a single `ProcessingContext` that carries raw samples, timestamps, intermediate buffers, and detection results through the pipeline.
 
-#### Feature Extraction
+3. **Orchestration Loop**  
+   The `PipelineOrchestrator` (`pipeline_orchestrator.cpp`) steps through your configured stages in order—calling `execute()` on each—and hands off the updated context to the next stage.
 
-1. *Time Domain Detection*: A time domain detector is applied to identify segments of interest. This step reduces computational overhead by filtering irrelevant data.
+4. **Pluggable Implementations**  
+   Because each stage implements a common interface, you can swap algorithms simply by changing the name in your JSON:
+   - Replace the default click detector with a new one by registering it in `time_domain_detectors_factory.h`.
+   - Swap an FIR filter for a polyphase filter via the filter factory in `time_domain_filters_factory.h`.
 
-2. *Frequency Domain Transformation and Filtering*: The detected signal segments are transformed into the frequency domain using the Fast Fourier Transform (FFT). If filtering is enabled, Finite Impulse Response (FIR) filters are applied in the frequency domain to isolate frequency bands of interest. The filter coefficients are loaded from a configuration file in the ```filters/``` directory, and the frequency-domain representation is computed dynamically at runtime.
+**Example Workflow**  
+The config file ```config_files/volumetric.json``` specifies ```template``` as **MultiChannelFrequencyDomainTracking**. In ```pipeline_factory.cpp```, this build the pipeline through the fucntoin call to ```multiChannelFrequencyDomainTracking``` which builds the pipeline by adding the following stages:
 
-3. *Frequency Domain Detection*: A frequency domain detector is applied to identify segments of interest. This step reduces computational overhead by filtering irrelevant data.
+- **.addDataAcquisition(...)**
+Reads raw audio packets from SharedDataManager and converts them into floating‑point data. **This stage is required.**
+- **.addTimeDomainDetection(...)**
+Applies a time‑domain detector (e.g., energy detector) to flag candidate signal segments. This step reduces computational overhead by filtering irrelevant data.
+- **.addFrequencyDomainTransform(...)**
+Converts each channel’s time‑domain data into the frequency domain - either a straight FFT or an FFT plus frequency‑domain filtering - based on the provided parameters.
+Finite Impulse Response (FIR) filters are applied in the frequency domain to isolate frequency bands of interest. The filter coefficients are loaded from a configuration file in the ```filters/``` directory, and the frequency-domain representation is computed dynamically at runtime.
+- **.addFrequencyDomainDetection(...)**
+Identifies spectral events by applying frequency‑domain detector to the transformed data.
+- **.addONNXClassification(...)**
+Executes an ONNX‑based neural network classifier. The *.onnx* model file is loaded from the path ```ML_models/``` along with a *.json* file which specifies how the input data should be normalized. See section **Runtime Configuration** to see how these paths are specified. All code for loading the models and running inference exists in the folder ```src/ML/```. 
+- **.addFrequencyDomainDoaEstimation(...)**
+Estimates the Direction of Arrival for each detected event by analyzing inter‑channel phase differences in the frequency domain. Time Difference of Arrival (TDOA) is calculated using the Generalized Cross-Correlation with Phase Transform (GCC-PHAT) algorithm. The Direction of Arrival (DOA) of detected signals is estimated using a computationally efficient approach. This step leverages precomputed matrices derived from the Singular Value Decomposition (SVD) of the hydrophone position matrix. The hydrophone position matrix is loaded from a file in the ```receiver_pos/``` directory.
+- **.addTracking(...)**
+Runs the tracking algorithm. See section ```Multi-Target Tracking``` for a brief description (paper coming soon!).
+- **.setFileOutput(...)**
+Configures persistent logging of detections, tracks, and metrics to disk.
+- **.setConsoleOutput(...)**
+Enables real‑time logging of status updates and detection summaries to the console.
+- **.setErrorLogging(...)**
+Registers an error handler (e.g., file, console) to catch and report exceptions during processing.
+- **.build(...)**
+Finalizes the pipeline construction and returns a ready‑to‑run Pipeline instance with all configured stages and parameters.
 
-4. *TDOA Estimation with GCC-PHAT*:
-Time Difference of Arrival (TDOA) is calculated using the Generalized Cross-Correlation with Phase Transform (GCC-PHAT) algorithm. 
-
-5. *DOA Estimation*: The Direction of Arrival (DOA) of detected signals is estimated using a computationally efficient approach. This step leverages precomputed matrices derived from the Singular Value Decomposition (SVD) of the hydrophone position matrix. The hydrophone position matrix is loaded from a file in the ```receiver_pos/``` directory.
-
-#### Neural Network Inference (optional)
-Once the feature extraction phase is complete, a neural network classifier can be applied to the extracted frequency-domain representations. The classification step is performed using ONNX Runtime, allowing efficient execution on resource-constrained hardware.
-
-The *.onnx* model file is loaded from the path ```ML_models/``` along with a *.json* file which specifies how the input data should be normalized. See section **Runtime Configuration** to see how these paths are specified. All code for loading the models and running inference exists in the folder ```src/ML/```. 
-
-#### Multi-Target Tracking (optional)
-After DOA estimation (step 5), our novel multi-target tracking algorithm can be used to track multiple detected sources over time.
-
-##### **How It Works**
+##### Multi-Target Tracking
 - **Clustering (DBSCAN)**: Detected DOA estimates are grouped using the **DBSCAN** clustering algorithm to determine the number of active sources.
 - **Kalman Filtering**: Each detected source is assigned a **Kalman filter**, which continuously updates its estimated position based on new DOA observations.
 - **Association Mechanism**: A **nearest-neighbor with gating strategy** links new detections to existing tracks.
@@ -257,43 +271,67 @@ After DOA estimation (step 5), our novel multi-target tracking algorithm can be 
 
 
 ### **Configuration Variables**
-The program's runtime behavior is controlled by JSON configuration files stored in the ```config_files/``` directory. These files specify parameters for network communication, signal processing, tracking, and neural network inference. Users can adjust these settings to customize system behavior without modifying or recompiling the code.
+The program's runtime behavior is controlled by JSON configuration files stored in the ```config_files/``` directory. These files specify parameters for network communication, signal processing, tracking, and neural network inference. Users can adjust these settings to customize system behavior without modifying or recompiling the code. Here we discuss the example ```config_files/volumetric.json```:
 
-- **`enableIntegrationTesting`**: Enables or disables integration testing mode. Set to `true` to run CI/CD integration tests, otherwise `false`.
+- **enableIntegrationTesting**: `false`  
+  When `true`, runs in integration testing mode (CI/CD); otherwise normal operation.
 
-- **`logDirectory`**: Specifies the directory where logs and output files will be stored.
+- **template**: `"MultiChannelFrequencyDomainTracking"`  
+  Pipeline template selecting the stage sequence for multi-channel frequency-domain tracking.
 
-- **`networkIPAddress`**: Defines the IP address for network communication. Use `"self"` for local execution.
+- **logDirectory**: `"deployment_files/"`  
+  Directory path where log files and outputs will be written.
 
-- **`networkPort`**: The port number on which the program will listen for incoming data.
+- **networkIPAddress**: `"self"`  
+  IP address to listen for incoming UDP data; `"self"` binds to localhost.
 
-- **`useFirmware1240WithIMU`**: Indicates whether to use firmware version 1240 with IMU support. Set to `true` if using IMU-enhanced firmware.
+- **networkPort**: `1045`  
+  Port number used for receiving data packets.
 
-- **`speedOfSound_mps`**: The assumed speed of sound in meters per second (m/s), used for TDOA and DOA calculations.
+- **firmware**: `"1240"`  
+  Firmware version identifier.
 
-- **`timeDomainDetector`**: The selected detection method applied in the time domain. Options include `"None"`, `"PeakAmplitude"`, etc.
+- **speedOfSound_mps**: `1482.965459`  
+  Speed of sound (m/s) for accurate TDOA/DOA calculations.
 
-- **`timeDomainThreshold`**: Defines the threshold value used in time domain detection for identifying relevant signal events.
+- **timeDomainDetector**: `"PeakAmplitude"`  
+  Time-domain detection algorithm applied to identify candidate events.
 
-- **`frequencyDomainStrategy`**: Specifies the strategy for frequency domain processing. Options include `"None"`, `"Filter"`, etc.
+- **timeDomainFilter**: `"Multiply"`  
+  Time-domain filtering strategy to preprocess signals.
 
-- **`frequencyDomainDetector`**: The selected detection method applied in the frequency domain. Options include `"None"`, `"AverageEnergy"`, etc.
+- **timeDomainThreshold**: `20`  
+  Threshold (counts) for time-domain detection.
 
-- **`frequencyDomainThreshold`**: Defines the threshold value used in frequency domain detection for filtering out weak signals.
+- **frequencyDomainStrategy**: `"Filter"`  
+  Approach for frequency-domain processing (e.g., apply filter).
 
-- **`filterWeightsFile`**: Path to the filter coefficient file used for frequency domain filtering.
+- **frequencyDomainDetector**: `"AverageEnergy"`  
+  Frequency-domain detection algorithm to identify spectral events.
 
-- **`receiverPositionsFile`**: Path to the file containing hydrophone or receiver positions used for DOA estimation.
+- **frequencyDomainThreshold**: `100`  
+  Threshold value for frequency-domain detection.
 
-- **`enableTracking`**: Enables or disables multi-target tracking. Set to `true` to activate tracking functionality.
+- **filterWeightsFile**: `"filters/highpass_taps@101_cutoff@20k_window@hamming_fs@100k.txt"`  
+  Path to FIR filter coefficient file used in frequency-domain filtering.
 
-- **`clusteringIntervalSeconds`**: Defines how often the clustering algorithm runs to group detected sources, in seconds.
+- **receiverPositionsFile**: `"receiver_pos/SOCAL_H_72_HS_harp4chPar_recPos.txt"`  
+  File containing hydrophone/receiver coordinates for DOA estimation.
 
-- **`clusteringWindowSeconds`**: Specifies the time span of recent data considered in each clustering iteration, in seconds.
+- **enableTracking**: `true`  
+  When `true`, enables multi-target tracking; otherwise disables tracking.
 
-- **`onnxModelPath`**: Path to the ONNX model used for neural network inference.
+- **clusteringIntervalSeconds**: `60`  
+  Interval (sec) between clustering runs to group detected sources.
 
-- **`onnxNormalizationParams`**: Path to the JSON file containing normalization parameters for preprocessing inputs to the ONNX model.
+- **clusteringWindowSeconds**: `30`  
+  Time window (sec) of data used for each clustering iteration.
+
+- **onnxModelPath**: `""`  
+  Path to ONNX model for neural inference; empty disables classification.
+
+- **onnxNormalizationParams**: `"ML_models/scaler_params103.json"`  
+  Path to JSON file containing normalization parameters for the ONNX model.
 
 
 

@@ -1,17 +1,16 @@
 #pragma once
 
-#include "ML/onnx_model.h"
-#include "algorithms/doa_utils.h"
-#include "algorithms/frequency_domain_detectors_factory.h"
-#include "algorithms/frequency_domain_transformation_factory.h"
-#include "algorithms/gcc_phat.h"
-#include "algorithms/time_domain_detectors_factory.h"
-// #include "algorithms/time_domain_filters_factory.h"
-#include "algorithms/time_domain_filters.h"
-#include "firmware/firmware_interface.h"
-#include "interfaces.h"
-#include "shared_data_manager.h"
-#include "tracker/tracker.h"
+#include "../ML/onnx_model.h"
+#include "../algorithms/detectors/frequency_domain_detectors_factory.h"
+#include "../algorithms/detectors/time_domain_detectors_factory.h"
+#include "../algorithms/frequency_domain_transformation_factory.h"
+#include "../algorithms/localization/doa_utils.h"
+#include "../algorithms/localization/gcc_phat.h"
+#include "../algorithms/time_domain_filters.h"
+#include "../firmware/firmware_interface.h"
+#include "../shared_data_manager.h"
+#include "../tracker/tracker.h"
+#include "core_interfaces.h"
 
 // ============================================================================
 // PROCESSING STAGE IMPLEMENTATIONS

@@ -2,12 +2,16 @@
 
 #include <fstream>
 
-#include "interfaces.h"
+// #include "interfaces.h"
 #include "shared_data_manager.h"
+#include "structs.h"
 
-// ============================================================================
-// ERROR HANDLER IMPLEMENTATIONS
-// ============================================================================
+class IErrorHandler
+{
+   public:
+    virtual ~IErrorHandler() = default;
+    virtual void handleError(const ProcessingError& error) = 0;
+};
 
 class DefaultErrorHandler : public IErrorHandler
 {

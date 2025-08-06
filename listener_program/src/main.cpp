@@ -2,9 +2,9 @@
 #include <iostream>
 #include <thread>
 
+#include "core/pipeline_factory.h"
 #include "io/udp_socket_manager.h"
 #include "listener_thread.h"
-#include "pipeline_factory.h"
 #include "shared_data_manager.h"
 #include "utils.h"  // for parseJsonConfig, printMode
 
@@ -26,7 +26,6 @@ int main(int argc, char* argv[])
         socketManager->restartListener();
         SharedDataManager sharedDataManager;
 
-        // Factory invocation:
         auto pipeline = PipelineFactory::createPipeline(sharedDataManager, pipelineVars, std::stoi(argv[2]));
 
         std::thread producerThread(runListenerLoop, std::ref(sharedDataManager), std::ref(socketManager));

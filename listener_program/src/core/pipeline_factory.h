@@ -2,9 +2,9 @@
 #pragma once
 #include <memory>
 
+#include "../shared_data_manager.h"
+#include "../utils.h"  // for PipelineVariables
 #include "pipeline.h"
-#include "shared_data_manager.h"
-#include "utils.h"  // for PipelineVariables
 
 /// Add new pipeline kinds here as you implement them.
 enum class PipelineType

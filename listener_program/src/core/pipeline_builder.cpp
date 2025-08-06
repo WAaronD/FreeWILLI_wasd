@@ -288,7 +288,7 @@ void PipelineBuilder::validateConfiguration() const
 
     // Check if we have data acquisition stage (should be first)
     const IProcessingStage* firstStage = mOrchestrator->getStage(0);
-    if (!firstStage || firstStage->getName() != "DataAcquisition")
+    if (!firstStage || firstStage->getName() != "Data Acquisition")
     {
         throw std::runtime_error("Pipeline must start with a DataAcquisition stage");
     }
