@@ -3,10 +3,6 @@
 #include <iostream>
 #include <stdexcept>
 
-// ============================================================================
-// FILE OUTPUT HANDLER IMPLEMENTATION
-// ============================================================================
-
 FileOutputHandler::FileOutputHandler(const std::string& loggingDir, bool integrationTesting)
     : mLoggingDirectory(loggingDir),
       mFlushInterval(std::chrono::seconds(30)),
@@ -367,16 +363,6 @@ void ConsoleOutputHandler::finalize()
     std::cout << "Total detections processed: " << mDetectionCount << std::endl;
     std::cout << "=======================================" << std::endl;
 }
-
-// NetworkOutputHandler.cpp
-/*
-#include <arpa/inet.h>  // for inet_pton()
-#include <unistd.h>  // for close()
-
-#include <cstring>  // for memset, strlen
-#include <stdexcept>
-*/
-// #include "NetworkOutputHandler.h"
 
 NetworkOutputHandler::NetworkOutputHandler(const std::string& ip, int port) : mIp(ip), mPort(port), mSockfd(-1)
 {

@@ -216,7 +216,7 @@ A JSON spec (e.g. ```config_files/volumetric.json```) that drives every aspect o
 - **<runtime_seconds>**
 Total duration (in seconds) before the program shuts down cleanly.
 
-The program uses a producer/consumer concurrency pattern with threads created in ```src/main.cpp```. Data that is shared between threads and synchronization are handled by ```SharedDataManager()``` from ```src/shared_data_manager.h```
+The program uses a producer/consumer concurrency pattern with threads created in ```src/main.cpp```. Synchronization for data that is shared between threads is handled by ```SharedDataManager()``` from ```src/shared_data_manager.h```
 
 
 At launch, the Listener builds a custom processing flow from your JSON spec using the ```PipelineBuilder``` (`pipeline_builder.cpp`):
@@ -225,10 +225,10 @@ At launch, the Listener builds a custom processing flow from your JSON spec usin
    The builder reads each entry under `"pipelineStages"` and instantiates the corresponding stage objects (e.g. data acquisition, filtering, detection, tracking).
 
 2. **Shared Context**  
-   All stages share a single `ProcessingContext` that carries raw samples, timestamps, intermediate data, and detection results through the pipeline. Custom builds may need to define there own `ProcessingContext` structs.
+   All stages share a single `ProcessingContext` that carries raw samples, timestamps, intermediate data, and detection results through the pipeline. Custom builds may need to define their own `ProcessingContext` structs.
 
 3. **Orchestration Loop**  
-   The `PipelineOrchestrator` (`pipeline_orchestrator.cpp`) steps through the configured stages in order—calling `execute()` on each—and hands off the updated context to the next stage.
+   The `PipelineOrchestrator` (`pipeline_orchestrator.cpp`) steps through the configured stages in order—calling `execute()` on each and hands off the updated context to the next stage.
 
 4. **Pluggable Implementations**  
    Because each stage implements a common interface, you can swap algorithms simply by changing the name in your JSON.
@@ -271,10 +271,6 @@ Finalizes the pipeline construction and returns a ready‑to‑run Pipeline inst
 - **Clustering Interval (seconds)** (`clusterIntervalSeconds`): Defines how often the clustering algorithm runs to group detected sources. A higher value reduces computational load but may delay updates to active tracks.
 - **Clustering Window Duration (seconds)** (`clusterWindowSeconds`): Specifies the time span of recent data considered in each clustering iteration. A longer window allows for more stable clustering but may include outdated detections.
 - **Track Inactivity Threshold**: Specifies the maximum duration a tracked source can remain unassociated across clustering iterations before being considered lost and removed.
-
-
-### Runtime Configuration
-
 
 ### **Configuration Variables**
 The program's runtime behavior is controlled by JSON configuration files stored in the ```config_files/``` directory. These files specify parameters for network communication, signal processing, tracking, and neural network inference. Users can adjust these settings to customize system behavior without modifying or recompiling the code. Here we discuss the example ```config_files/volumetric.json```:
