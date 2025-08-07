@@ -12,14 +12,8 @@ class ITimeDomainFiltersFactory
     {
         if (timeDomainDetector == "FIRFilter")
         {
-            return std::make_unique<FIRFilter>(filterWeightsPath, channelData, numChannels);
+            return std::make_unique<FIRFilter>(filterWeightsPath, channelData);
         }
-        /*
-        else if (timeDomainDetector == "TimeDomainFIR")
-        {
-            return std::make_unique<MultiplyFilter>(timeDomainThreshold);
-        }
-        */
         else
         {
             throw std::invalid_argument("Unknown Time Domain Filter type: " + timeDomainDetector);

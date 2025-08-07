@@ -1,13 +1,6 @@
 #pragma once
 
-#include <memory>
-#include <vector>
-
 #include "core_interfaces.h"
-
-// ============================================================================
-// PIPELINE ORCHESTRATOR IMPLEMENTATION
-// ============================================================================
 
 class PipelineOrchestrator : public IPipelineOrchestrator
 {

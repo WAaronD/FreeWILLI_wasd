@@ -66,14 +66,11 @@ bool PipelineOrchestrator::executeStages(std::shared_ptr<ProcessingContext> cont
         }
         catch (const std::exception& e)
         {
-            // Create detailed error information
-            ProcessingError error(
-                stage->getName(), "Stage processing failed: " + std::string(e.what()), std::current_exception(),
-                *context);
-
             std::cerr << "Error in stage " << stage->getName() << ": " << e.what() << std::endl;
 
-            throw error;
+            throw ProcessingError(
+                stage->getName(), "Stage processing failed: " + std::string(e.what()), std::current_exception(),
+                *context);
         }
     }
 

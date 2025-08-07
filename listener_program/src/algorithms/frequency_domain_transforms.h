@@ -28,7 +28,6 @@ class FrequencyDomainFIRFilter : public IFrequencyDomainTransform
     void initializeFilterWeights(const std::vector<float>& filterWeights);
     void initializeFFT(Eigen::MatrixXf& channelData);
 
-   private:
     int mNumChannels;
     int mPaddedLength;
     int mFftOutputSize;

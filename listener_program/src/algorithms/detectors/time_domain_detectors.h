@@ -32,8 +32,8 @@ class RuCCUSDetector : public ITimeDomainDetector
     float getLastDetection() const override;
 
    private:
-    float m_threshdet;
-    float m_lastDetection;  // 1.0f = click detected, 0.0f = no click
+    float mThreshdet;
+    float mLastDetection;  // 1.0f = click detected, 0.0f = no click
 };
 
 /*

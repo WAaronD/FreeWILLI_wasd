@@ -10,7 +10,7 @@
 PipelineBuilder::PipelineBuilder() : mOrchestrator(std::make_unique<PipelineOrchestrator>()) {}
 
 PipelineBuilder& PipelineBuilder::addDataAcquisition(
-    SharedDataManager& manager, std::shared_ptr<const IFirmware> firmware)
+    SharedDataManager& manager, const std::shared_ptr<const IFirmware>& firmware)
 {
     if (!firmware)
     {
@@ -264,7 +264,7 @@ PipelineBuilder& PipelineBuilder::setErrorLogging(const std::string& logFile)
 
 std::unique_ptr<Pipeline> PipelineBuilder::build(
     SharedDataManager& sharedDataManager, std::chrono::seconds programRuntime,
-    std::shared_ptr<ProcessingContext> processingContext)
+    const std::shared_ptr<ProcessingContext>& processingContext)
 {
     validateConfiguration();
 

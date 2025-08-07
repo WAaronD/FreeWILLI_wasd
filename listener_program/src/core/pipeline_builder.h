@@ -15,27 +15,13 @@ class ONNXModel;
 class Tracker;
 class IFirmware;
 
-// ============================================================================
-// PIPELINE BUILDER (Factory Pattern)
-// ============================================================================
-
 class PipelineBuilder
 {
-   private:
-    std::unique_ptr<PipelineOrchestrator> mOrchestrator;
-    std::unique_ptr<IOutputHandler> mOutputHandler;
-    std::unique_ptr<IErrorHandler> mErrorHandler;
-
-    // Store components needed for direction estimation
-    // std::optional<GCC_PHAT> mGccPhat;
-    // std::optional<Eigen::MatrixXf> mCachedLeastSquares;
-    // std::optional<int> mHydrophoneMatrixRank;
-
    public:
     PipelineBuilder();
 
     // Stage addition methods
-    PipelineBuilder& addDataAcquisition(SharedDataManager& manager, std::shared_ptr<const IFirmware> firmware);
+    PipelineBuilder& addDataAcquisition(SharedDataManager& manager, const std::shared_ptr<const IFirmware>& firmware);
 
     PipelineBuilder& addTimeDomainDetection(std::unique_ptr<ITimeDomainDetector> detector);
 
@@ -75,9 +61,13 @@ class PipelineBuilder
     // Build the final pipeline
     std::unique_ptr<Pipeline> build(
         SharedDataManager& sharedDataManager, std::chrono::seconds programRuntime,
-        std::shared_ptr<ProcessingContext> processingContext);
+        const std::shared_ptr<ProcessingContext>& processingContext);
 
    private:
     void ensureCompositeOutputHandler();
     void validateConfiguration() const;
+
+    std::unique_ptr<PipelineOrchestrator> mOrchestrator;
+    std::unique_ptr<IOutputHandler> mOutputHandler;
+    std::unique_ptr<IErrorHandler> mErrorHandler;
 };

@@ -1,16 +1,9 @@
 #pragma once
 
-// #include <chrono>
-// #include <memory>
-
 #include "../error_handlers.h"
 #include "../io/output_handlers.h"
 #include "../shared_data_manager.h"
 #include "core_interfaces.h"
-
-// ============================================================================
-// REFACTORED PIPELINE CLASS
-// ============================================================================
 
 class Pipeline
 {

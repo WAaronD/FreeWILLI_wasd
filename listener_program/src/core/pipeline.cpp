@@ -131,9 +131,10 @@ void Pipeline::processLoop()
                 std::cout << "Detection at: " << iterationCount << std::endl;
             }
 
+            // Some stages have internal processing stages that must be 'ticked' each timestep
             mOrchestrator->tickPeriodicStages();
 
-            // Periodic flush of output handlers
+            // Some handlers must flush periodically
             mOutputHandler->flush();
 
             // Periodic status update

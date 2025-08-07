@@ -92,9 +92,9 @@ void DefaultErrorHandler::logErrorToFile(const ProcessingError& error)
         if (logFile.is_open())
         {
             auto now = std::chrono::system_clock::now();
-            auto time_t = std::chrono::system_clock::to_time_t(now);
+            auto timeT = std::chrono::system_clock::to_time_t(now);
 
-            logFile << std::put_time(std::localtime(&time_t), "%Y-%m-%d %H:%M:%S");
+            logFile << std::put_time(std::localtime(&timeT), "%Y-%m-%d %H:%M:%S");
             logFile << " [ERROR] Stage: " << error.stageName << " | Message: " << error.errorMessage << std::endl;
 
             logFile.close();
@@ -109,13 +109,7 @@ void DefaultErrorHandler::logErrorToFile(const ProcessingError& error)
 void DefaultErrorHandler::handleDataAcquisitionError(const ProcessingError& error)
 {
     std::cerr << "\n--- Data Acquisition Error Recovery ---" << std::endl;
-    std::cerr << "Attempting to recover from data acquisition error..." << std::endl;
-
-    // Could implement specific recovery strategies:
-    // - Clear buffers
-    // - Reset firmware state
-    // - Attempt reconnection
-    // - Skip corrupted packets
+    std::cerr << "Error message: " << error.errorMessage << std::endl;
 
     std::cerr << "Data acquisition error handling completed." << std::endl;
     std::cerr << "---------------------------------------" << std::endl;
@@ -124,10 +118,7 @@ void DefaultErrorHandler::handleDataAcquisitionError(const ProcessingError& erro
 void DefaultErrorHandler::handleClassificationError(const ProcessingError& error)
 {
     std::cerr << "\n--- Classification Error Recovery ---" << std::endl;
-    std::cerr << "Classification failed, system will continue without ML inference" << std::endl;
-
-    // Classification errors are often non-fatal
-    // The system can continue processing without classification
+    std::cerr << "Error message: " << error.errorMessage << std::endl;
 
     std::cerr << "Classification error handling completed." << std::endl;
     std::cerr << "-------------------------------------" << std::endl;
@@ -136,12 +127,7 @@ void DefaultErrorHandler::handleClassificationError(const ProcessingError& error
 void DefaultErrorHandler::handleGenericError(const ProcessingError& error)
 {
     std::cerr << "\n--- Generic Error Handling ---" << std::endl;
-    std::cerr << "Applying generic error recovery procedures..." << std::endl;
-
-    // Generic recovery strategies:
-    // - Log detailed information
-    // - Attempt to continue processing
-    // - Reset stage-specific state if possible
+    std::cerr << "Error message: " << error.errorMessage << std::endl;
 
     // Attempt to re-throw and examine the original exception
     if (error.exception)

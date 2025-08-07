@@ -13,12 +13,6 @@ class KalmanFilter
     explicit KalmanFilter(const Eigen::Vector3f& initialState);
     void predict(std::chrono::time_point<std::chrono::steady_clock> currentTime);  // Now accepts deltaT as input
     void update(const Eigen::VectorXf& observation);
-    /*
-    auto filterUpdate(
-        std::chrono::time_point<std::chrono::steady_clock> currentTime,
-        const Eigen::VectorXf* filteredStateMean = nullptr, const Eigen::MatrixXf* filteredStateCovariance = nullptr,
-        const Eigen::VectorXf* observation = nullptr) -> std::pair<Eigen::VectorXf, Eigen::MatrixXf>;
-    */
     const Eigen::MatrixXf& getObservationMatrix() const;
     const Eigen::VectorXf& getPredictedState() const;
     const Eigen::VectorXf& getCurrentState() const;

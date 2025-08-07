@@ -46,8 +46,6 @@ void NetworkOutputHandler::handleOutput(const DetectionResult& /*result*/)
     }
 }
 
-void NetworkOutputHandler::flush() {}
-
 void NetworkOutputHandler::finalize()
 {
     // no-op

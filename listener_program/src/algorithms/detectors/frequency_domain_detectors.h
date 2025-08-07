@@ -11,22 +11,22 @@ class IFrequencyDomainDetector
 
 class AverageMagnitudeDetector : public IFrequencyDomainDetector
 {
-   private:
-    float detectionThreshold;
-
    public:
     explicit AverageMagnitudeDetector(float threshold);
 
     bool detect(const Eigen::VectorXcf& frequencyDomainData) const override;
+
+   private:
+    float detectionThreshold;
 };
 
 class NoFrequencyDomainDetector : public IFrequencyDomainDetector
 {
-   private:
-    float detectionThreshold;
-
    public:
     explicit NoFrequencyDomainDetector();
 
     bool detect(const Eigen::VectorXcf& frequencyDomainData) const override;
+
+   private:
+    float detectionThreshold;
 };

@@ -15,15 +15,11 @@ FileOutputHandler::FileOutputHandler(const std::string& loggingDir, bool integra
 }
 
 void FileOutputHandler::initialize(const TimePoint& timestamp, int numChannels)
+
 {
     mOutputFile = mLoggingDirectory + convertTimePointToString(timestamp);
     std::cout << "Creating and writing to file: " << mOutputFile << std::endl;
 
-    initializeFileWithHeaders(numChannels);
-}
-
-void FileOutputHandler::initializeFileWithHeaders(int numChannels)
-{
     std::ofstream file(mOutputFile, std::ofstream::out | std::ofstream::trunc);
     if (!file.is_open())
     {
@@ -78,12 +74,6 @@ void FileOutputHandler::handleOutput(const DetectionResult& result)
         return;
     }
 
-    appendToBuffer(result);
-    flushIfNecessary();
-}
-
-void FileOutputHandler::appendToBuffer(const DetectionResult& result)
-{
     mBuffer.mAmps.push_back(result.peakAmplitude);
     mBuffer.mDoaX.push_back(result.directionOfArrival.x());
     mBuffer.mDoaY.push_back(result.directionOfArrival.y());
@@ -93,7 +83,7 @@ void FileOutputHandler::appendToBuffer(const DetectionResult& result)
     mBuffer.mPeakTimes.push_back(result.timestamp);
 }
 
-void FileOutputHandler::flushIfNecessary()
+void FileOutputHandler::flush()
 {
     if (mBuffer.empty())
     {
@@ -108,20 +98,10 @@ void FileOutputHandler::flushIfNecessary()
 
     if (shouldFlush)
     {
-        flush();
+        writeBufferToFile();
+        clearBuffer();
+        mLastFlushTime = std::chrono::steady_clock::now();
     }
-}
-
-void FileOutputHandler::flush()
-{
-    if (mBuffer.empty())
-    {
-        return;
-    }
-
-    writeBufferToFile();
-    clearBuffer();
-    mLastFlushTime = std::chrono::steady_clock::now();
 }
 
 void FileOutputHandler::writeBufferToFile()

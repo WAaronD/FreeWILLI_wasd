@@ -111,11 +111,6 @@ bool TimeDomainFilteringStage::process(std::shared_ptr<ProcessingContext> contex
     // Apply frequency domain filter
     mFilter->apply();
 
-    // Store filtered and unfiltered frequency domain data
-    // context->frequencyDomainData = mFilter->getFrequencyDomainData();
-    // context->beforeFilterData = mFilter->mBeforeFilter;
-    // std::cout << context->channelData.row(0).head(5) << "     " << context->channelData.row(0).tail(5) << std::endl;
-
     return true;
 }
 

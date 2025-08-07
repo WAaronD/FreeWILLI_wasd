@@ -1,6 +1,5 @@
 // pipeline_factory.h
 #pragma once
-#include <memory>
 
 #include "../shared_data_manager.h"
 #include "../utils.h"  // for PipelineVariables
