@@ -103,6 +103,8 @@ TimeDomainFilteringStage::TimeDomainFilteringStage(std::unique_ptr<ITimeDomainFi
 
 bool TimeDomainFilteringStage::process(std::shared_ptr<ProcessingContext> context)
 {
+    (void)context;  // silence unused-parameter
+
     if (!mFilter)
     {
         return false;

@@ -93,11 +93,6 @@ PipelineBuilder& PipelineBuilder::addONNXClassification(std::unique_ptr<ONNXMode
 PipelineBuilder& PipelineBuilder::addFrequencyDomainDoaEstimation(
     std::unique_ptr<GCC_PHAT> gccPhat, const Eigen::MatrixXf& cachedLS, int rank)
 {
-    // mCachedLeastSquares = cachedLS;
-    // mHydrophoneMatrixRank = rank;
-
-    // auto stage =
-    //     std::make_unique<DirectionEstimationStage>(std::move(gccPhat), mCachedLeastSquares, mHydrophoneMatrixRank);
     auto stage = std::make_unique<DirectionEstimationStage>(std::move(gccPhat), cachedLS, rank);
     mOrchestrator->addStage(std::move(stage));
 

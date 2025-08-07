@@ -62,7 +62,7 @@ std::unique_ptr<Pipeline> multiChannelFrequencyDomainTracking(
 
     // --- build pipeline ---
     auto pipeline = PipelineBuilder()
-                        .addDataAcquisition(sharedDataManager, std::move(firmware))
+                        .addDataAcquisition(sharedDataManager, firmware)
                         .addTimeDomainDetection(std::move(tdet))
                         .addFrequencyDomainTransform(std::move(filter))
                         .addFrequencyDomainDetection(std::move(fdet))
@@ -112,7 +112,7 @@ std::unique_ptr<Pipeline> multiChannelTimeDomainClassification(
 
     // --- build pipeline ---
     auto pipeline = PipelineBuilder()
-                        .addDataAcquisition(sharedDataManager, std::move(firmware))
+                        .addDataAcquisition(sharedDataManager, firmware)
                         //.addTimeDomainDetection(std::move(tdet))
                         .addTimeDomainFilter(std::move(filter))
                         .addTimeDomainDetection(std::move(tclass))
