@@ -1,25 +1,16 @@
 #include "processing_stages.h"
 
-#include <chrono>
-#include <iostream>
-
 #include "../algorithms/localization/hydrophone_position_processing.h"
 
-// ============================================================================
-// DATA ACQUISITION STAGE
-// ============================================================================
-
 DataAcquisitionStage::DataAcquisitionStage(SharedDataManager& manager, std::shared_ptr<const IFirmware> firmware)
-    : mSharedDataManager(manager), mFirmware(firmware)
+    : mSharedDataManager(manager), mFirmware(std::move(firmware))
 {
 }
 
 bool DataAcquisitionStage::process(std::shared_ptr<ProcessingContext> context)
 {
-    // Wait for data from shared manager
     mSharedDataManager.waitForData(context->dataBytes, mFirmware->numPacketsToDetect());
 
-    // Generate timestamps for the data
     context->dataTimes = mFirmware->generateTimestamp(context->dataBytes);
 
     // Validate data integrity
@@ -32,33 +23,14 @@ bool DataAcquisitionStage::process(std::shared_ptr<ProcessingContext> context)
         mPreviousTimeSet = true;
     }
 
-    // Insert data into channel matrix
     mFirmware->insertDataIntoChannelMatrix(context->channelData, context->dataBytes);
-    // std::cout << context->channelData.row(0).head(5) << "    " << context->channelData.row(0).tail(5) << std::endl;
+
     return context->pipelineInitialized;
 }
 
 std::string DataAcquisitionStage::getName() const { return "Data Acquisition"; }
 
-void DataAcquisitionStage::initialize(std::shared_ptr<ProcessingContext> context)
-{
-    /*
-    // Ensure channel data matrix is properly sized
-    if (context.channelData.rows() != mFirmware->numChannels() ||
-        context.channelData.cols() != mFirmware->channelSize())
-    {
-        const_cast<ProcessingContext&>(context).channelData =
-            Eigen::MatrixXf::Zero(mFirmware->numChannels(), mFirmware->channelSize());
-    }
-
-    // Resize data containers
-    const_cast<ProcessingContext&>(context).dataBytes.resize(mFirmware->numPacketsToDetect());
-    */
-}
-
-// ============================================================================
-// TIME DOMAIN DETECTION STAGE
-// ============================================================================
+void DataAcquisitionStage::initialize(std::shared_ptr<ProcessingContext> context) {}
 
 TimeDomainDetectionStage::TimeDomainDetectionStage(std::unique_ptr<ITimeDomainDetector> detector)
     : mDetector(std::move(detector))
@@ -73,7 +45,6 @@ bool TimeDomainDetectionStage::process(std::shared_ptr<ProcessingContext> contex
     }
 
     // Perform time domain detection on first channel
-    // std::cout << context.channelData.row(0) << std::endl;
     bool detected = mDetector->detect(context->channelData.row(0));
 
     if (detected)
@@ -91,10 +62,6 @@ bool TimeDomainDetectionStage::process(std::shared_ptr<ProcessingContext> contex
 }
 
 std::string TimeDomainDetectionStage::getName() const { return "Time Domain Detection"; }
-
-// ============================================================================
-// TIME DOMAIN FILTERING STAGE
-// ============================================================================
 
 TimeDomainFilteringStage::TimeDomainFilteringStage(std::unique_ptr<ITimeDomainFilter> filter)
     : mFilter(std::move(filter))
