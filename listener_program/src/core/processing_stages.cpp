@@ -33,25 +33,25 @@ std::string DataAcquisitionStage::getName() const { return "Data Acquisition"; }
 void DataAcquisitionStage::initialize(std::shared_ptr<ProcessingContext> context) {}
 
 TimeDomainDetectionStage::TimeDomainDetectionStage(std::unique_ptr<ITimeDomainDetector> detector)
-    : mDetector(std::move(detector))
+    : mFunction(std::move(detector))
 {
 }
 
 bool TimeDomainDetectionStage::process(std::shared_ptr<ProcessingContext> context)
 {
-    if (!mDetector)
+    if (!mFunction)
     {
         return true;  // Skip if no detector configured
     }
 
     // Perform time domain detection on first channel
-    bool detected = mDetector->detect(context->channelData.row(0));
+    bool detected = mFunction->detect(context->channelData.row(0));
 
     if (detected)
     {
         // Store detection amplitude and timestamp
-        context->timeDomainDetectionValue = mDetector->getLastDetection();
-        context->currentResult.peakAmplitude = mDetector->getLastDetection();
+        context->timeDomainDetectionValue = mFunction->getLastDetection();
+        context->currentResult.peakAmplitude = mFunction->getLastDetection();
         if (!context->dataTimes.empty())
         {
             context->currentResult.timestamp = context->dataTimes[0];
@@ -64,7 +64,7 @@ bool TimeDomainDetectionStage::process(std::shared_ptr<ProcessingContext> contex
 std::string TimeDomainDetectionStage::getName() const { return "Time Domain Detection"; }
 
 TimeDomainFilteringStage::TimeDomainFilteringStage(std::unique_ptr<ITimeDomainFilter> filter)
-    : mFilter(std::move(filter))
+    : mFunction(std::move(filter))
 {
 }
 
@@ -72,41 +72,37 @@ bool TimeDomainFilteringStage::process(std::shared_ptr<ProcessingContext> contex
 {
     (void)context;  // silence unused-parameter
 
-    if (!mFilter)
+    if (!mFunction)
     {
         return false;
     }
 
     // Apply frequency domain filter
-    mFilter->apply();
+    mFunction->apply();
 
     return true;
 }
 
 std::string TimeDomainFilteringStage::getName() const { return "Time Domain Filtering"; }
 
-// ============================================================================
-// FREQUENCY DOMAIN FILTERING STAGE
-// ============================================================================
-
 FrequencyDomainFilteringStage::FrequencyDomainFilteringStage(std::unique_ptr<IFrequencyDomainTransform> filter)
-    : mFilter(std::move(filter))
+    : mFunction(std::move(filter))
 {
 }
 
 bool FrequencyDomainFilteringStage::process(std::shared_ptr<ProcessingContext> context)
 {
-    if (!mFilter)
+    if (!mFunction)
     {
         return false;
     }
 
     // Apply frequency domain filter
-    mFilter->apply();
+    mFunction->apply();
 
     // Store filtered and unfiltered frequency domain data
-    context->frequencyDomainData = mFilter->getFrequencyDomainData();
-    context->beforeFilterData = mFilter->mBeforeFilter;
+    context->frequencyDomainData = mFunction->getFrequencyDomainData();
+    context->beforeFilterData = mFunction->mBeforeFilter;
     return true;
 }
 
@@ -117,35 +113,31 @@ std::string FrequencyDomainFilteringStage::getName() const { return "Frequency D
 // ============================================================================
 
 FrequencyDomainDetectionStage::FrequencyDomainDetectionStage(std::unique_ptr<IFrequencyDomainDetector> detector)
-    : mDetector(std::move(detector))
+    : mFunction(std::move(detector))
 {
 }
 
 bool FrequencyDomainDetectionStage::process(std::shared_ptr<ProcessingContext> context)
 {
-    if (!mDetector || context->frequencyDomainData.cols() == 0)
+    if (!mFunction || context->frequencyDomainData.cols() == 0)
     {
         return true;  // Skip if no detector or no frequency data
     }
 
     // Perform frequency domain detection on first channel
-    return mDetector->detect(context->frequencyDomainData.col(0));
+    return mFunction->detect(context->frequencyDomainData.col(0));
 }
 
 std::string FrequencyDomainDetectionStage::getName() const { return "FrequencyDomainDetection"; }
 
-// ============================================================================
-// CLASSIFICATION STAGE
-// ============================================================================
-
 ONNXClassificationStage::ONNXClassificationStage(std::unique_ptr<ONNXModel> model, size_t spectraSize)
-    : mModel(std::move(model)), mSpectraSize(spectraSize)
+    : mFunction(std::move(model)), mSpectraSize(spectraSize)
 {
 }
 
 bool ONNXClassificationStage::process(std::shared_ptr<ProcessingContext> context)
 {
-    if (!mModel || context->beforeFilterData.rows() == 0)
+    if (!mFunction || context->beforeFilterData.rows() == 0)
     {
         return true;  // Skip if no model or no data
     }
@@ -169,7 +161,7 @@ bool ONNXClassificationStage::process(std::shared_ptr<ProcessingContext> context
             spectraForInference.data(), spectraForInference.data() + spectraForInference.size());
 
         // Run inference
-        std::vector<float> output = mModel->runInference(spectraVector);
+        std::vector<float> output = mFunction->runInference(spectraVector);
 
         // Check classification result (assuming binary classification: [noise, signal])
         if (output.size() >= 2 && output[1] < output[0])
@@ -195,7 +187,7 @@ std::string ONNXClassificationStage::getName() const { return "Classification"; 
 
 DirectionEstimationStage::DirectionEstimationStage(
     std::unique_ptr<GCC_PHAT> gccPhat, const Eigen::MatrixXf& cachedLS, int rank)
-    : mComputeTDOAs(std::move(gccPhat)), mCachedLeastSquares(cachedLS), mHydrophoneMatrixRank(rank)
+    : mFunction(std::move(gccPhat)), mCachedLeastSquares(cachedLS), mHydrophoneMatrixRank(rank)
 {
 }
 
@@ -212,7 +204,7 @@ bool DirectionEstimationStage::process(std::shared_ptr<ProcessingContext> contex
         auto beforeGCC = std::chrono::steady_clock::now();
 
         // Compute TDOAs and cross-correlation amplitudes
-        auto [tdoaVector, xCorrAmps] = mComputeTDOAs->process(context->frequencyDomainData);
+        auto [tdoaVector, xCorrAmps] = mFunction->process(context->frequencyDomainData);
 
         auto afterGCC = std::chrono::steady_clock::now();
         std::chrono::duration<double> duration = afterGCC - beforeGCC;
@@ -252,11 +244,11 @@ std::string DirectionEstimationStage::getName() const { return "DirectionEstimat
 // TRACKING STAGE
 // ============================================================================
 
-TrackingStage::TrackingStage(std::unique_ptr<Tracker> tracker) : mTracker(std::move(tracker)) {}
+TrackingStage::TrackingStage(std::unique_ptr<Tracker> tracker) : mFunction(std::move(tracker)) {}
 
 bool TrackingStage::process(std::shared_ptr<ProcessingContext> context)
 {
-    if (!mTracker)
+    if (!mFunction)
     {
         return true;  // Skip if no tracker configured
     }
@@ -264,13 +256,13 @@ bool TrackingStage::process(std::shared_ptr<ProcessingContext> context)
     try
     {
         // Update tracker buffer with new direction
-        mTracker->updateTrackerBuffer(context->directionOfArrival);
+        mFunction->updateTrackerBuffer(context->directionOfArrival);
 
         // Update Kalman filters if tracker is initialized
-        if (mTracker->mIsTrackerInitialized && !context->dataTimes.empty())
+        if (mFunction->mIsTrackerInitialized && !context->dataTimes.empty())
         {
             int trackingLabel =
-                mTracker->updateKalmanFiltersContinuous(context->directionOfArrival, context->dataTimes[0]);
+                mFunction->updateKalmanFiltersContinuous(context->directionOfArrival, context->dataTimes[0]);
 
             // Store tracking label in result
             context->currentResult.trackingLabel = trackingLabel;
@@ -296,13 +288,13 @@ std::string TrackingStage::getName() const { return "Tracking"; }
 
 void TrackingStage::initialize(std::shared_ptr<ProcessingContext> context)
 {
-    std::cout << "mTracker: " << mTracker << std::endl;
-    std::cout << "!context.dataTimes.empty(): " << !context->dataTimes.empty() << std::endl;
-    if (mTracker && !context->dataTimes.empty())
+    // std::cout << "mTracker: " << mTracker << std::endl;
+    // std::cout << "!context.dataTimes.empty(): " << !context->dataTimes.empty() << std::endl;
+    if (mFunction && !context->dataTimes.empty())
     {
         // Initialize tracker output file with first timestamp
         std::cout << "before tracker init: " << " " << std::endl;
-        mTracker->initializeOutputFile(context->dataTimes[0]);
+        mFunction->initializeOutputFile(context->dataTimes[0]);
         std::cout << "after tracker init: " << std::endl;
     }
 }
@@ -311,6 +303,9 @@ bool TrackingStage::requiresPeriodicTick() const { return true; }
 
 void TrackingStage::tick()
 {
-    // Schedule cluster processing
-    mTracker->scheduleCluster();
+    if (mFunction)
+    {
+        // Schedule cluster processing
+        mFunction->scheduleCluster();
+    }
 }

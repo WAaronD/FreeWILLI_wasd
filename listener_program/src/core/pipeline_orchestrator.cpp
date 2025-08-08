@@ -1,11 +1,5 @@
 #include "pipeline_orchestrator.h"
 
-#include <iostream>
-
-// ============================================================================
-// PIPELINE ORCHESTRATOR IMPLEMENTATION
-// ============================================================================
-
 PipelineOrchestrator::PipelineOrchestrator() {}
 
 void PipelineOrchestrator::addStage(std::unique_ptr<IProcessingStage> stage)
@@ -56,6 +50,7 @@ bool PipelineOrchestrator::executeStages(std::shared_ptr<ProcessingContext> cont
     {
         try
         {
+            // std::cout << "Executing stage"
             bool shouldContinue = stage->process(context);
 
             if (!shouldContinue)
@@ -101,7 +96,6 @@ void PipelineOrchestrator::tickPeriodicStages()
         {
             std::cerr << "Error in tick() for stage " << mStages[stageIndex]->getName() << ": " << e.what()
                       << std::endl;
-            // Don't throw - tick errors shouldn't stop the pipeline
         }
     }
 }

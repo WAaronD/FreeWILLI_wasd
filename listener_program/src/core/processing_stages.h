@@ -35,7 +35,7 @@ class TimeDomainDetectionStage : public IProcessingStage
     std::string getName() const override;
 
    private:
-    std::unique_ptr<ITimeDomainDetector> mDetector;
+    std::unique_ptr<ITimeDomainDetector> mFunction;
 };
 
 class FrequencyDomainFilteringStage : public IProcessingStage
@@ -46,7 +46,7 @@ class FrequencyDomainFilteringStage : public IProcessingStage
     std::string getName() const override;
 
    private:
-    std::unique_ptr<IFrequencyDomainTransform> mFilter;
+    std::unique_ptr<IFrequencyDomainTransform> mFunction;
 };
 
 class TimeDomainFilteringStage : public IProcessingStage
@@ -57,7 +57,7 @@ class TimeDomainFilteringStage : public IProcessingStage
     std::string getName() const override;
 
    private:
-    std::unique_ptr<ITimeDomainFilter> mFilter;
+    std::unique_ptr<ITimeDomainFilter> mFunction;
 };
 
 class FrequencyDomainDetectionStage : public IProcessingStage
@@ -68,7 +68,7 @@ class FrequencyDomainDetectionStage : public IProcessingStage
     std::string getName() const override;
 
    private:
-    std::unique_ptr<IFrequencyDomainDetector> mDetector;
+    std::unique_ptr<IFrequencyDomainDetector> mFunction;
 };
 
 class ONNXClassificationStage : public IProcessingStage
@@ -79,7 +79,7 @@ class ONNXClassificationStage : public IProcessingStage
     std::string getName() const override;
 
    private:
-    std::unique_ptr<ONNXModel> mModel;
+    std::unique_ptr<ONNXModel> mFunction;
     size_t mSpectraSize;
 };
 
@@ -91,7 +91,7 @@ class DirectionEstimationStage : public IProcessingStage
     std::string getName() const override;
 
    private:
-    std::unique_ptr<GCC_PHAT> mComputeTDOAs;
+    std::unique_ptr<GCC_PHAT> mFunction;
     Eigen::MatrixXf mCachedLeastSquares;
     int mHydrophoneMatrixRank;
 };
@@ -107,5 +107,5 @@ class TrackingStage : public IProcessingStage
     void tick() override;
 
    private:
-    std::unique_ptr<Tracker> mTracker;
+    std::unique_ptr<Tracker> mFunction;
 };
