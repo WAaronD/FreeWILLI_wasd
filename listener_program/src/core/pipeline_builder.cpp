@@ -244,6 +244,7 @@ PipelineBuilder& PipelineBuilder::setErrorHandler(std::unique_ptr<IErrorHandler>
     return *this;
 }
 
+/*
 PipelineBuilder& PipelineBuilder::setErrorLogging(const std::string& logFile)
 {
     if (logFile.empty())
@@ -256,6 +257,7 @@ PipelineBuilder& PipelineBuilder::setErrorLogging(const std::string& logFile)
     std::cout << "Set error logging to file: " << logFile << std::endl;
     return *this;
 }
+*/
 
 std::unique_ptr<Pipeline> PipelineBuilder::build(
     SharedDataManager& sharedDataManager, std::chrono::seconds programRuntime,

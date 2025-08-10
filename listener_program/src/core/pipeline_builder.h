@@ -56,7 +56,7 @@ class PipelineBuilder
 
     PipelineBuilder& setErrorHandler(std::unique_ptr<IErrorHandler> handler);
 
-    PipelineBuilder& setErrorLogging(const std::string& logFile);
+    // PipelineBuilder& setErrorLogging(const std::string& logFile);
 
     // Build the final pipeline
     std::unique_ptr<Pipeline> build(

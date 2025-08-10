@@ -60,6 +60,8 @@ std::unique_ptr<Pipeline> multiChannelFrequencyDomainTracking(
     auto tracker = ITracker::create(config);
     std::cout << (tracker ? "Tracker loaded\n" : "No tracker\n");
 
+    std::unique_ptr<IErrorHandler> errorHandler = std::make_unique<DefaultErrorHandler>(nullptr, "error.log");
+
     // --- build pipeline ---
     auto pipeline = PipelineBuilder()
                         .addDataAcquisition(sharedDataManager, firmware)
@@ -71,7 +73,7 @@ std::unique_ptr<Pipeline> multiChannelFrequencyDomainTracking(
                         .addTracking(std::move(tracker))
                         .setFileOutput(config.loggingDirectory, config.integrationTesting)
                         .setConsoleOutput(false)
-                        .setErrorLogging(config.loggingDirectory + "error.log")
+                        .setErrorHandler(std::move(errorHandler))
                         .build(sharedDataManager, std::chrono::seconds(runtime), ctx);
 
     std::cout << "Pipeline created successfully!\n";
@@ -110,6 +112,8 @@ std::unique_ptr<Pipeline> multiChannelTimeDomainClassification(
     auto tclass = ITimeDomainDetectorFactory::create("RuCCUS", 500);
     if (!tdet) throw std::runtime_error("Failed to create time-domain detector");
 
+    std::unique_ptr<IErrorHandler> errorHandler = std::make_unique<DefaultErrorHandler>(nullptr, "error.log");
+
     // --- build pipeline ---
     auto pipeline = PipelineBuilder()
                         .addDataAcquisition(sharedDataManager, firmware)
@@ -119,7 +123,7 @@ std::unique_ptr<Pipeline> multiChannelTimeDomainClassification(
                         .setFileOutput(config.loggingDirectory, config.integrationTesting)
                         .setConsoleOutput(false)
                         .setNetworkOutput("127.0.0.1", 55001)
-                        .setErrorLogging(config.loggingDirectory + "error.log")
+                        .setErrorHandler(std::move(errorHandler))
                         .build(sharedDataManager, std::chrono::seconds(runtime), ctx);
 
     std::cout << "Pipeline created successfully!\n";
