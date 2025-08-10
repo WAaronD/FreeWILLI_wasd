@@ -216,22 +216,35 @@ A JSON spec (e.g. ```config_files/volumetric.json```) that drives every aspect o
 - **<runtime_seconds>**
 Total duration (in seconds) before the program shuts down cleanly.
 
-The program uses a producer/consumer concurrency pattern with threads created in ```src/main.cpp```. Synchronization for data that is shared between threads is handled by ```SharedDataManager()``` from ```src/shared_data_manager.h```
+The program uses a producer/consumer concurrency pattern with threads created in ```src/main.cpp```. Synchronization for data that is shared between threads is handled by ```SharedDataManager()``` in ```src/shared_data_manager.h```
 
+**How the Pipeline is Built and Runs (Fluent Builder Pattern)**
+At launch, the Listener uses a **Fluent Builder Pattern** (see ```pipeline_builder.cpp```) to assemble the processing flow as specified in your JSON. 
+- Each ```add...()``` call creates a stage object and appends it to the ```PipelineOrchestrator``` owned by the PipelineBuilder.
+- Each ```set...()``` call configures one of the ```PipelineBuilder```’s own member variables (e.g., output handler, error handler, logging path).
+Because each method returns the same ```PipelineBuilder&```, these calls are chained into a single, readable configuration sequence.
 
-At launch, the Listener builds a custom processing flow from your JSON spec using the ```PipelineBuilder``` (`pipeline_builder.cpp`):
+**Order of operations:**
+1. **Determine build function and configure stages**
+When the program starts, the template field in your JSON (e.g., ```"MultiChannelFrequencyDomainTracking"```) tells the system which predefined build function in ```pipeline_factory.cpp``` to call.
+Each build function is essentially a recipe for constructing a specific pipeline: it uses the ```PipelineBuilder``` to add a fixed sequence of signal processing stages (data acquisition, filtering, detection, tracking, classification, etc.) in a predefined order. The factory method also uses other fields from the JSON (e.g., ```timeDomainDetector```, ```frequencyDomainDetector```, ```firmware```) to determine which concrete implementations of each stage to instantiate.
 
-1. **Stage List Creation**  
-   The builder reads each entry under `"pipelineStages"` and instantiates the corresponding stage objects (e.g. data acquisition, filtering, detection, tracking).
+2. **Create Shared Context**  
+A single ```ProcessingContext``` is created to carry raw samples, timestamps, intermediate transforms, and detection results through all stages. Custom builds can extend this context as needed.
 
-2. **Shared Context**  
-   All stages share a single `ProcessingContext` that carries raw samples, timestamps, intermediate data, and detection results through the pipeline. Custom builds may need to define their own `ProcessingContext` structs.
+3. **Build → Transfer Ownership**  
+   When ```.build(...)``` is called, the builder **moves** its owned components (including the ```PipelineOrchestrator```) into a new ```Pipeline``` instance and returns ```std::unique_ptr<Pipeline>```. The builder can then go out of scope.
 
-3. **Orchestration Loop**  
-   The `PipelineOrchestrator` (`pipeline_orchestrator.cpp`) steps through the configured stages in order—calling `execute()` on each and hands off the updated context to the next stage.
-
-4. **Pluggable Implementations**  
-   Because each stage implements a common interface, you can swap algorithms simply by changing the name in your JSON.
+4. **Pipeline = Infrastructure + Orchestration**  
+   The ```Pipeline``` class owns:
+   - **Infrastructure:** error handling and logging, output handlers (file/console/network), lifecycle/termination control, and high-level exception boundaries.
+   - **Execution Engine:** a ```PipelineOrchestrator``` member that knows the ordered list of stages and how to run them.
+5. **Run Loop (Execution Path)**  
+The ```Pipeline``` drives the processing loop. For each cycle it:
+    -Resets/updates the ```ProcessingContext```.
+    -Delegates to ```PipelineOrchestrator::executeStages(context)```, which calls each stage’s ```process(context)``` in the configured order.
+    -Handles results and errors via its output/error subsystems.
+    -Checks termination conditions (runtime, signals, health checks) and exits cleanly.
 
 **Example Workflow**  
 The config file ```config_files/volumetric.json``` specifies ```template``` as **MultiChannelFrequencyDomainTracking**. In ```pipeline_factory.cpp```, this builds the pipeline through the function ```multiChannelFrequencyDomainTracking``` which builds the pipeline by adding the following stages:
