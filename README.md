@@ -18,6 +18,9 @@ The FreeWILLI project provides a modular suite of algorithms for real-time passi
  
 Originally developed for real-time marine mammal monitoring, FreeWILLI is adaptable for a wide range of low-power applications. Feel free to leverage and customize this software for your needs!
 
+#### Contact
+Joe Walker
+jlw222[at]ucsd[dot]com
 
 #### Branches
 ```main```: Designed for desktop machines (Linux/macOS) and Raspberry Pi.
