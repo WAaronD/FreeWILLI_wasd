@@ -1,7 +1,7 @@
 #pragma once
 #include "pch.h"
-#include "pipeline_variables.h"
 #include "socket_variables.h"
+#include "structs.h"
 
 auto parseJsonConfig(const std::string& jsonFilePath) -> std::tuple<SocketVariables, PipelineVariables>;
 

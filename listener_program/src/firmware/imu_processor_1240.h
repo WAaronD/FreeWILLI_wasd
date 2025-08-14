@@ -1,6 +1,6 @@
 #pragma once
-#include "../algorithms/ecompass.h"
-#include "../algorithms/madgwickAHRS.h"
+#include "../algorithms/imu/ecompass.h"
+#include "../algorithms/imu/madgwickAHRS.h"
 #include "../pch.h"
 #include "imu_processor_interface.h"
 

@@ -1,10 +1,11 @@
 #pragma once
 #include "../pch.h"
-#include "isocket_manager.h"
+#include "socket_manager_interface.h"
 
 class SocketVariables;
+
 /**
- * @brief Manages UDP socket operations, including creating, restarting, and configuring the listener.
+ * @brief Manages UDP socket operations, including creating, restarting, and configuring the socket.
  */
 class UdpSocketManager : public ISocketManager
 {
@@ -13,19 +14,12 @@ class UdpSocketManager : public ISocketManager
 
     void restartListener() override;
 
-    int getSocket() const override { return mDatagramSocket; }
-    int getPort() const override { return mUdpPort; }
-    std::string getIp() const override { return mUdpIp; }
-
-    int receiveData(int flags, struct sockaddr* addr, socklen_t* addrlen) override;
-
-    std::vector<uint8_t>& getReceivedData() override { return mDataBytes; }
-    void setReceiveBufferSize(size_t newSize) override { mDataBytes.resize(newSize); }
+    std::vector<uint8_t>& receiveData(int flags, struct sockaddr* addr, socklen_t* addrlen) override;
 
    private:
-    int mDatagramSocket;  ///< UDP socket descriptor.
-    int mUdpPort;  ///< Port number for the UDP connection.
-    std::string mUdpIp;  ///< IP address of the data logger or simulator.
+    int mDatagramSocket;
+    int mUdpPort;
+    std::string mUdpIp;
 
     // Store dataBytes as a member to allow easier mocking and testing.
     std::vector<uint8_t> mDataBytes;

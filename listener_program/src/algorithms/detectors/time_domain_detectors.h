@@ -1,0 +1,59 @@
+#pragma once
+#include "../../pch.h"
+
+class ITimeDomainDetector
+{
+   public:
+    virtual ~ITimeDomainDetector() = default;
+    virtual bool detect(const Eigen::VectorXf& timeDomainData) = 0;
+    virtual float getLastDetection() const = 0;
+};
+
+class PeakAmplitudeDetector : public ITimeDomainDetector
+{
+   private:
+    float detectionThreshold;
+    float peakAmplitude;
+
+   public:
+    explicit PeakAmplitudeDetector(float threshold);
+
+    bool detect(const Eigen::VectorXf& timeDomainData) override;
+    float getLastDetection() const override;
+};
+
+class RuCCUSDetector : public ITimeDomainDetector
+{
+   public:
+    explicit RuCCUSDetector(float threshdet);
+
+    bool detect(const Eigen::VectorXf& timeDomainData) override;
+
+    float getLastDetection() const override;
+
+   private:
+    float mThreshdet;
+    float mLastDetection;  // 1.0f = click detected, 0.0f = no click
+};
+
+/*
+class NoTimeDomainDetector : public ITimeDomainDetector
+{
+   private:
+    float peakAmplitude;
+
+   public:
+    NoTimeDomainDetector() = default;
+
+    bool detect(const Eigen::VectorXf& timeDomainData) override
+    {
+        int peakIndex = 0;
+
+        peakAmplitude = timeDomainData.maxCoeff(&peakIndex);
+
+        return true;
+    }
+
+    float getLastDetection() const override { return peakAmplitude; }
+};
+*/

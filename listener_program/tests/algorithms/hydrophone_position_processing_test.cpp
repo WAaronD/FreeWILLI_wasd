@@ -1,4 +1,4 @@
-#include "../../src/algorithms/hydrophone_position_processing.h"
+#include "../../src/algorithms/localization/hydrophone_position_processing.h"
 
 #include "gtest/gtest.h"
 

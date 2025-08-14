@@ -1,0 +1,23 @@
+{
+    "enableIntegrationTesting": false,
+    "template": "MultiChannelTimeDomainClassification",
+    "logDirectory": "deployment_files/",
+    "networkIPAddress": "self",
+    "networkPort": 1045,
+    "firmware": "1240",
+    "speedOfSound_mps": 1482.965459,
+    "timeDomainDetector": "PeakAmplitude",
+    "timeDomainFilter": "FIRFilter",
+    "timeDomainThreshold": 20,
+    "frequencyDomainStrategy": "Filter",
+    "frequencyDomainDetector": "AverageEnergy",
+    "frequencyDomainThreshold": 100,
+    "filterWeightsFile": "filters/highpass_taps@101_cutoff@15k_window@hamming_fs@100k.txt",
+    "receiverPositionsFile": "receiver_pos/SOCAL_H_72_HS_harp4chPar_recPos.txt",
+    "enableTracking": true,
+    "clusteringIntervalSeconds": 60,
+    "clusteringWindowSeconds": 30,
+    "onnxModelPath": "",
+    "onnxNormalizationParams": "ML_models/scaler_params103.json"
+}
+

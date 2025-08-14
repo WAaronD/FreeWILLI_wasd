@@ -1,6 +1,6 @@
 #include "tracker.h"
 
-#include "../algorithms/kalman_filter.h"
+#include "../algorithms/localization/kalman_filter.h"
 #include "tracker_utils.h"
 
 // Tracker class implementation
@@ -402,5 +402,6 @@ void Tracker::updateTrackerBuffer(const Eigen::VectorXf& directionOfArrival)
 
 void Tracker::initializeOutputFile(const TimePoint& timestamp)
 {
+    std::cout << convertTimePointToString(timestamp) << std::endl;
     mOutputfile = mOutputDirectory + convertTimePointToString(timestamp) + "_tracker";
 }

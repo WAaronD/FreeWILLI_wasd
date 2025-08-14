@@ -70,7 +70,10 @@ std::vector<TimePoint> Firmware1240::generateTimestamp(std::vector<std::vector<u
         timeStruct.tm_min = min;
         timeStruct.tm_sec = sec;
 
-        std::time_t timeResult = std::mktime(&timeStruct);
+        // std::time_t timeResult = std::mktime(&timeStruct); // Converts tm as local time -> time_t (affected by system
+        // timezone & DST)
+        std::time_t timeResult =
+            timegm(&timeStruct);  // Use timegm to interpret tm as UTC -> time_t (no DST or local timezone adjustments)
         auto currentTime = std::chrono::system_clock::from_time_t(timeResult) + std::chrono::microseconds(microseconds);
 
         outputTimes[i] = currentTime;
