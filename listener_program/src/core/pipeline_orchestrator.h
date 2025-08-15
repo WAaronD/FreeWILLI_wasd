@@ -12,7 +12,8 @@ class PipelineOrchestrator : public IPipelineOrchestrator
     void initializeStages(std::shared_ptr<ProcessingContext> context) override;
     void tickPeriodicStages() override;
     size_t getStageCount() const;
-    const IProcessingStage* getStage(size_t index) const;
+    const IProcessingStage* getStageIndex(size_t index) const;
+    const IProcessingStage* getStageName(const std::string& name) const;
 
    private:
     std::vector<std::unique_ptr<IProcessingStage>> mStages;

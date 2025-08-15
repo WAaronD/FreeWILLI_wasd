@@ -3,6 +3,7 @@
 #include <thread>
 
 #include "core/pipeline_factory.h"
+#include "firmware/firmware_factory.h"
 #include "io/udp_socket_manager.h"
 #include "listener_thread.h"
 #include "shared_data_manager.h"
@@ -26,7 +27,10 @@ int main(int argc, char* argv[])
         socketManager->restartListener();
         SharedDataManager sharedDataManager;
 
-        auto pipeline = PipelineFactory::createPipeline(sharedDataManager, pipelineVars, std::stoi(argv[2]));
+        auto processingContext = std::make_shared<ProcessingContext>(FirmwareFactory::create(pipelineVars.firmware));
+
+        auto pipeline =
+            PipelineFactory::createPipeline(sharedDataManager, pipelineVars, processingContext, std::stoi(argv[2]));
 
         std::thread producerThread(runListenerLoop, std::ref(sharedDataManager), std::ref(socketManager));
         std::thread consumerThread(&Pipeline::process, pipeline.get());

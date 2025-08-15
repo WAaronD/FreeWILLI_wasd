@@ -7,7 +7,7 @@
 #include "pipeline_orchestrator.h"
 #include "processing_stages.h"
 
-// Forward declarations for factory functions
+// Forward declarations
 class ITimeDomainDetector;
 class IFrequencyDomainDetector;
 class IFrequencyDomainStrategy;
@@ -20,23 +20,27 @@ class PipelineBuilder
    public:
     PipelineBuilder();
 
-    // Stage addition methods
-    PipelineBuilder& addDataAcquisition(SharedDataManager& manager, const std::shared_ptr<const IFirmware>& firmware);
+    // Stage addition methods with object creation
+    PipelineBuilder& addDataAcquisition(SharedDataManager& manager, const std::string& firmwareType);
 
-    PipelineBuilder& addTimeDomainDetection(std::unique_ptr<ITimeDomainDetector> detector);
+    PipelineBuilder& addTimeDomainDetection(const std::string& detectorType, double threshold);
 
-    PipelineBuilder& addTimeDomainFilter(std::unique_ptr<ITimeDomainFilter> filter);
+    PipelineBuilder& addTimeDomainFilter(
+        const std::string& filterType, const std::string& weightsPath, const std::shared_ptr<ProcessingContext>& ctx,
+        int numChannels);
 
-    PipelineBuilder& addFrequencyDomainTransform(std::unique_ptr<IFrequencyDomainTransform> filter);
+    PipelineBuilder& addFrequencyDomainTransform(
+        const std::string& strategyType, const std::string& weightsPath, const std::shared_ptr<ProcessingContext>& ctx,
+        int numChannels);
 
-    PipelineBuilder& addFrequencyDomainDetection(std::unique_ptr<IFrequencyDomainDetector> detector);
+    PipelineBuilder& addFrequencyDomainDetection(const std::string& detectorType, double threshold);
 
-    PipelineBuilder& addONNXClassification(std::unique_ptr<ONNXModel> model, size_t spectraSize = 500);
+    PipelineBuilder& addONNXClassification(const PipelineVariables& config);
 
     PipelineBuilder& addFrequencyDomainDoaEstimation(
-        std::unique_ptr<GCC_PHAT> gccPhat, const Eigen::MatrixXf& cachedLS, int rank);
+        const std::string& receiverPositionsPath, const std::shared_ptr<ProcessingContext>& ctx, float speedOfSound);
 
-    PipelineBuilder& addTracking(std::unique_ptr<Tracker> tracker);
+    PipelineBuilder& addTracking(const PipelineVariables& config);
 
     // Custom stage addition
     PipelineBuilder& addCustomStage(std::unique_ptr<IProcessingStage> stage);
@@ -46,7 +50,7 @@ class PipelineBuilder
 
     PipelineBuilder& setConsoleOutput(bool verbose = false);
 
-    PipelineBuilder& setNetworkOutput(const std::string&, int port);
+    PipelineBuilder& setNetworkOutput(const std::string& ip, int port);
 
     PipelineBuilder& setCompositeOutput();
 
@@ -54,9 +58,7 @@ class PipelineBuilder
 
     PipelineBuilder& setOutputHandler(std::unique_ptr<IOutputHandler> handler);
 
-    PipelineBuilder& setErrorHandler(std::unique_ptr<IErrorHandler> handler);
-
-    // PipelineBuilder& setErrorLogging(const std::string& logFile);
+    PipelineBuilder& setErrorHandler(const std::string& outputFile);
 
     // Build the final pipeline
     std::unique_ptr<Pipeline> build(
@@ -70,4 +72,8 @@ class PipelineBuilder
     std::unique_ptr<PipelineOrchestrator> mOrchestrator;
     std::unique_ptr<IOutputHandler> mOutputHandler;
     std::unique_ptr<IErrorHandler> mErrorHandler;
+    std::shared_ptr<const IFirmware> mFirmware;  // Store firmware for later stages
+
+    // int mPaddedLength;
+    // int mFrequencyRows;
 };
