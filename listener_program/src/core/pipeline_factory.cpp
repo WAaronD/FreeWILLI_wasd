@@ -46,6 +46,9 @@ std::unique_ptr<Pipeline> multiChannelFrequencyDomainTracking(
         firmware->sampleRate());
     std::cout << "GCC-PHAT ready\n";
 
+    std::cout << "GCC PHAT args: " << filter->getPaddedLength() << " " << filter->getFrequencyDomainData().rows() << " "
+              << firmware->numChannels() << " " << firmware->sampleRate();
+
     // --- detectors ---
     auto tdet = ITimeDomainDetectorFactory::create(config.timeDomainDetector, config.timeDomainThreshold);
     if (!tdet) throw std::runtime_error("Failed to create time-domain detector");
