@@ -14,9 +14,9 @@ std::unique_ptr<Pipeline> PipelineFactory::createPipeline(
             .addFrequencyDomainTransform(
                 config.frequencyDomainStrategy, config.filterWeightsPath, ctx, ctx->firmware->numChannels())
             .addFrequencyDomainDetection(config.frequencyDomainDetector, config.energyDetectionThreshold)
-            //.addONNXClassification(config)
+            .addONNXClassification(config)
             .addFrequencyDomainDoaEstimation(config.receiverPositionsPath, ctx, config.speedOfSound)
-            //.addTracking(config)
+            .addTracking(config)
             .setFileOutput(config.loggingDirectory, config.integrationTesting)
             .setConsoleOutput(false)
             .setErrorHandler("error.log")

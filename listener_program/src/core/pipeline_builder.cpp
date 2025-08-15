@@ -9,14 +9,11 @@
 #include "../firmware/firmware_factory.h"
 #include "../tracker/tracker.h"
 
-// ============================================================================
-// PIPELINE BUILDER IMPLEMENTATION
-// ============================================================================
-
 PipelineBuilder::PipelineBuilder() : mOrchestrator(std::make_unique<PipelineOrchestrator>()) {}
 
 PipelineBuilder& PipelineBuilder::addDataAcquisition(SharedDataManager& manager, const std::string& firmwareType)
 {
+    std::cout << "Adding DataAcquisition stage to pipeline" << std::endl;
     auto firmware = FirmwareFactory::create(firmwareType);
     if (!firmware)
     {
@@ -29,12 +26,12 @@ PipelineBuilder& PipelineBuilder::addDataAcquisition(SharedDataManager& manager,
     auto stage = std::make_unique<DataAcquisitionStage>(manager, firmware);
     mOrchestrator->addStage(std::move(stage));
 
-    std::cout << "Added DataAcquisition stage to pipeline" << std::endl;
     return *this;
 }
 
 PipelineBuilder& PipelineBuilder::addTimeDomainDetection(const std::string& detectorType, double threshold)
 {
+    std::cout << "Adding TimeDomainDetection stage to pipeline" << std::endl;
     auto detector = ITimeDomainDetectorFactory::create(detectorType, threshold);
     if (!detector)
     {
@@ -44,7 +41,6 @@ PipelineBuilder& PipelineBuilder::addTimeDomainDetection(const std::string& dete
     auto stage = std::make_unique<TimeDomainDetectionStage>(std::move(detector));
     mOrchestrator->addStage(std::move(stage));
 
-    std::cout << "Added TimeDomainDetection stage to pipeline" << std::endl;
     return *this;
 }
 
@@ -52,6 +48,7 @@ PipelineBuilder& PipelineBuilder::addTimeDomainFilter(
     const std::string& filterType, const std::string& weightsPath, const std::shared_ptr<ProcessingContext>& ctx,
     int numChannels)
 {
+    std::cout << "Adding TimeDomainFiltering stage to pipeline" << std::endl;
     auto filter = ITimeDomainFiltersFactory::create(filterType, weightsPath, ctx->channelData, numChannels);
     if (!filter)
     {
@@ -61,7 +58,6 @@ PipelineBuilder& PipelineBuilder::addTimeDomainFilter(
     auto stage = std::make_unique<TimeDomainFilteringStage>(std::move(filter));
     mOrchestrator->addStage(std::move(stage));
 
-    std::cout << "Added TimeDomainFiltering stage to pipeline" << std::endl;
     return *this;
 }
 
@@ -69,10 +65,10 @@ PipelineBuilder& PipelineBuilder::addFrequencyDomainTransform(
     const std::string& strategyType, const std::string& weightsPath, const std::shared_ptr<ProcessingContext>& ctx,
     int numChannels)
 {
+    std::cout << "Adding FrequencyDomainTransform stage to pipeline" << std::endl;
     auto filter = IFrequencyDomainTransformFactory::create(strategyType, weightsPath, ctx->channelData, numChannels);
 
     ctx->frequencyDomainData = filter->getFrequencyDomainData();
-    // ctx->beforeFilterData = filter->mBeforeFilter;
 
     if (!filter)
     {
@@ -82,12 +78,12 @@ PipelineBuilder& PipelineBuilder::addFrequencyDomainTransform(
     auto stage = std::make_unique<FrequencyDomainFilteringStage>(std::move(filter));
     mOrchestrator->addStage(std::move(stage));
 
-    std::cout << "Added FrequencyDomainTransform stage to pipeline" << std::endl;
     return *this;
 }
 
 PipelineBuilder& PipelineBuilder::addFrequencyDomainDetection(const std::string& detectorType, double threshold)
 {
+    std::cout << "Adding FrequencyDomainDetection stage to pipeline" << std::endl;
     auto detector = IFrequencyDomainDetectorFactory::create(detectorType, threshold);
     if (!detector)
     {
@@ -97,7 +93,6 @@ PipelineBuilder& PipelineBuilder::addFrequencyDomainDetection(const std::string&
     auto stage = std::make_unique<FrequencyDomainDetectionStage>(std::move(detector));
     mOrchestrator->addStage(std::move(stage));
 
-    std::cout << "Added FrequencyDomainDetection stage to pipeline" << std::endl;
     return *this;
 }
 
@@ -117,12 +112,10 @@ PipelineBuilder& PipelineBuilder::addONNXClassification(const PipelineVariables&
 PipelineBuilder& PipelineBuilder::addFrequencyDomainDoaEstimation(
     const std::string& receiverPositionsPath, const std::shared_ptr<ProcessingContext>& ctx, float speedOfSound)
 {
+    std::cout << "Adding FrequencyDomainDoaEstimation stage to pipeline" << std::endl;
     auto gccPhat = std::make_unique<GCC_PHAT>(
-        ctx->frequencyDomainData.cols(), ctx->frequencyDomainData.rows(), ctx->firmware->numChannels(),
+        ctx->channelData.cols(), ctx->frequencyDomainData.rows(), ctx->firmware->numChannels(),
         ctx->firmware->sampleRate());
-
-    std::cout << "GCC args: " << ctx->frequencyDomainData.cols() << " " << ctx->frequencyDomainData.rows() << " "
-              << ctx->firmware->numChannels() << " " << ctx->firmware->sampleRate() << std::endl;
 
     if (!gccPhat)
     {
@@ -130,20 +123,20 @@ PipelineBuilder& PipelineBuilder::addFrequencyDomainDoaEstimation(
     }
 
     auto positions = getHydrophoneRelativePositions(receiverPositionsPath);
-    std::cout << "Hydrophone positions: " << positions.rows() << "×" << positions.cols() << "\n";
+    std::cout << "    Hydrophone positions: " << positions.rows() << "×" << positions.cols() << "\n";
     auto svd = computeSvd(positions);
     auto [LS, rank] = precomputePseudoInverseAndRank(svd, speedOfSound);
-    std::cout << "Precomputed LS, rank=" << rank << "\n";
+    std::cout << "    Precomputed LS, rank=" << rank << "\n";
 
     auto stage = std::make_unique<DirectionEstimationStage>(std::move(gccPhat), LS, rank);
     mOrchestrator->addStage(std::move(stage));
 
-    std::cout << "Added FrequencyDomainDoaEstimation stage to pipeline" << std::endl;
     return *this;
 }
 
 PipelineBuilder& PipelineBuilder::addTracking(const PipelineVariables& config)
 {
+    std::cout << "Adding Tracking stage to pipeline" << std::endl;
     std::unique_ptr<Tracker> tracker = nullptr;
 
     tracker = ITracker::create(config);
@@ -151,18 +144,17 @@ PipelineBuilder& PipelineBuilder::addTracking(const PipelineVariables& config)
     auto stage = std::make_unique<TrackingStage>(std::move(tracker));
     mOrchestrator->addStage(std::move(stage));
 
-    std::cout << "Added Tracking stage to pipeline" << std::endl;
     return *this;
 }
 
 PipelineBuilder& PipelineBuilder::addCustomStage(std::unique_ptr<IProcessingStage> stage)
 {
+    std::cout << "Adding custom stage '" << stage->getName() << "' to pipeline" << std::endl;
     if (!stage)
     {
         throw std::invalid_argument("Custom processing stage cannot be null");
     }
 
-    std::cout << "Added custom stage '" << stage->getName() << "' to pipeline" << std::endl;
     mOrchestrator->addStage(std::move(stage));
 
     return *this;
@@ -170,6 +162,7 @@ PipelineBuilder& PipelineBuilder::addCustomStage(std::unique_ptr<IProcessingStag
 
 PipelineBuilder& PipelineBuilder::setFileOutput(const std::string& loggingDir, bool integrationTesting)
 {
+    std::cout << "Adding file output to directory: " << loggingDir << std::endl;
     if (loggingDir.empty())
     {
         throw std::invalid_argument("Logging directory cannot be empty");
@@ -188,12 +181,12 @@ PipelineBuilder& PipelineBuilder::setFileOutput(const std::string& loggingDir, b
         mOutputHandler = std::move(fileHandler);
     }
 
-    std::cout << "Added file output to directory: " << loggingDir << std::endl;
     return *this;
 }
 
 PipelineBuilder& PipelineBuilder::setConsoleOutput(bool verbose)
 {
+    std::cout << "Adding console output (verbose: " << (verbose ? "ON" : "OFF") << ")" << std::endl;
     auto consoleHandler = std::make_unique<ConsoleOutputHandler>(verbose);
 
     if (mOutputHandler)
@@ -207,12 +200,12 @@ PipelineBuilder& PipelineBuilder::setConsoleOutput(bool verbose)
         mOutputHandler = std::move(consoleHandler);
     }
 
-    std::cout << "Added console output (verbose: " << (verbose ? "ON" : "OFF") << ")" << std::endl;
     return *this;
 }
 
 PipelineBuilder& PipelineBuilder::setNetworkOutput(const std::string& ip, int port)
 {
+    std::cout << "Adding network output at IP address: " << ip << " " << port << std::endl;
     if (ip.empty())
     {
         throw std::invalid_argument("IP address for network output cannot be empty");
@@ -231,7 +224,6 @@ PipelineBuilder& PipelineBuilder::setNetworkOutput(const std::string& ip, int po
         mOutputHandler = std::move(networkHandler);
     }
 
-    std::cout << "Added network output at IP address: " << ip << " " << port << std::endl;
     return *this;
 }
 
