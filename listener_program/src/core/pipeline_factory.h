@@ -5,13 +5,6 @@
 #include "../utils.h"  // for PipelineVariables
 #include "pipeline.h"
 
-/// Add new pipeline kinds here as you implement them.
-enum class PipelineType
-{
-    AcousticProcessing
-    // e.g. SpectralAnalysis, MLInference, etc.
-};
-
 /// A simple Factory for creating pipelines by type.
 class PipelineFactory
 {

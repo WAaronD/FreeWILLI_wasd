@@ -117,7 +117,7 @@ std::unique_ptr<Pipeline> multiChannelTimeDomainClassification(
     // --- build pipeline ---
     auto pipeline = PipelineBuilder()
                         .addDataAcquisition(sharedDataManager, firmware)
-                        //.addTimeDomainDetection(std::move(tdet))
+                        .addTimeDomainDetection(std::move(tdet))
                         .addTimeDomainFilter(std::move(filter))
                         .addTimeDomainDetection(std::move(tclass))
                         .setFileOutput(config.loggingDirectory, config.integrationTesting)
