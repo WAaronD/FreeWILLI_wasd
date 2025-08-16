@@ -34,8 +34,8 @@ def convert_all_mat_files(input_dir, output_dir, format='npy'):
             convert_mat_to_npy_or_hdf5(mat_file, output_dir, format=format)
 
 # Example usage
-input_dir = 'integration_test/'  # Directory containing .mat files
-output_dir = 'integration_test/'  # Directory to save the converted files
+input_dir = 'track132_5minchunks/'  # Directory containing .mat files
+output_dir = 'track132_5minchunks/'  # Directory to save the converted files
 format = 'npy'  # or 'hdf5'
 
 # Convert all .mat files in the input directory
