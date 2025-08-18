@@ -18,7 +18,6 @@ Tracker::Tracker(
       mClusterWindow(clusteringWindow),
       mNoClusterWindow(mClusterFrequency - mClusterWindow)
 {
-    std::cout << "Initializing tracker: \n";
     std::cout << "    output directory: " << mOutputDirectory << std::endl;
     std::cout << "    clustering frequency: " << mClusterFrequency.count() << std::endl;
     std::cout << "    clustering window: " << mClusterWindow.count() << std::endl;
@@ -402,6 +401,5 @@ void Tracker::updateTrackerBuffer(const Eigen::VectorXf& directionOfArrival)
 
 void Tracker::initializeOutputFile(const TimePoint& timestamp)
 {
-    std::cout << convertTimePointToString(timestamp) << std::endl;
     mOutputfile = mOutputDirectory + convertTimePointToString(timestamp) + "_tracker";
 }

@@ -108,10 +108,6 @@ bool FrequencyDomainFilteringStage::process(std::shared_ptr<ProcessingContext> c
 
 std::string FrequencyDomainFilteringStage::getName() const { return "Frequency Domain Filtering"; }
 
-// ============================================================================
-// FREQUENCY DOMAIN DETECTION STAGE
-// ============================================================================
-
 FrequencyDomainDetectionStage::FrequencyDomainDetectionStage(std::unique_ptr<IFrequencyDomainDetector> detector)
     : mFunction(std::move(detector))
 {
@@ -181,10 +177,6 @@ bool ONNXClassificationStage::process(std::shared_ptr<ProcessingContext> context
 
 std::string ONNXClassificationStage::getName() const { return "Classification"; }
 
-// ============================================================================
-// DIRECTION ESTIMATION STAGE
-// ============================================================================
-
 DirectionEstimationStage::DirectionEstimationStage(
     std::unique_ptr<GCC_PHAT> gccPhat, const Eigen::MatrixXf& cachedLS, int rank)
     : mFunction(std::move(gccPhat)), mCachedLeastSquares(cachedLS), mHydrophoneMatrixRank(rank)
@@ -240,10 +232,6 @@ bool DirectionEstimationStage::process(std::shared_ptr<ProcessingContext> contex
 
 std::string DirectionEstimationStage::getName() const { return "DirectionEstimation"; }
 
-// ============================================================================
-// TRACKING STAGE
-// ============================================================================
-
 TrackingStage::TrackingStage(std::unique_ptr<Tracker> tracker) : mFunction(std::move(tracker)) {}
 
 bool TrackingStage::process(std::shared_ptr<ProcessingContext> context)
@@ -266,13 +254,6 @@ bool TrackingStage::process(std::shared_ptr<ProcessingContext> context)
 
             // Store tracking label in result
             context->currentResult.trackingLabel = trackingLabel;
-
-            // Optional: Save spectra for training
-            // if (context.beforeFilterData.rows() > 0) {
-            //     mOutputManager->saveSpectraForTraining(
-            //         "training_data.csv", trackingLabel, context.beforeFilterData
-            //     );
-            // }>>
         }
 
         return true;
@@ -288,14 +269,10 @@ std::string TrackingStage::getName() const { return "Tracking"; }
 
 void TrackingStage::initialize(std::shared_ptr<ProcessingContext> context)
 {
-    // std::cout << "mTracker: " << mTracker << std::endl;
-    // std::cout << "!context.dataTimes.empty(): " << !context->dataTimes.empty() << std::endl;
     if (mFunction && !context->dataTimes.empty())
     {
         // Initialize tracker output file with first timestamp
-        std::cout << "before tracker init: " << " " << std::endl;
         mFunction->initializeOutputFile(context->dataTimes[0]);
-        std::cout << "after tracker init: " << std::endl;
     }
 }
 
@@ -305,7 +282,6 @@ void TrackingStage::tick()
 {
     if (mFunction)
     {
-        // Schedule cluster processing
         mFunction->scheduleCluster();
     }
 }
