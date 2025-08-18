@@ -25,6 +25,7 @@ auto parseJsonConfig(const std::string& jsonFilePath) -> std::tuple<SocketVariab
 
     // PipelineVariables parameters
     pipelineVariables.integrationTesting = jsonConfig.at("enableIntegrationTesting").get<bool>();
+    pipelineVariables.verbose = jsonConfig.at("verbose").get<bool>();
     pipelineVariables.firmware = jsonConfig.at("firmware").get<std::string>();
     pipelineVariables.pipelineTemplate = jsonConfig.at("template").get<std::string>();
     pipelineVariables.speedOfSound = jsonConfig.at("speedOfSound_mps").get<float>();

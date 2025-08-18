@@ -32,7 +32,8 @@ int main(int argc, char* argv[])
         auto pipeline =
             PipelineFactory::createPipeline(sharedDataManager, pipelineVars, processingContext, std::stoi(argv[2]));
 
-        std::thread producerThread(runListenerLoop, std::ref(sharedDataManager), std::ref(socketManager));
+        std::thread producerThread(
+            runListenerLoop, std::ref(sharedDataManager), std::ref(socketManager), pipelineVars.verbose);
         std::thread consumerThread(&Pipeline::process, pipeline.get());
 
         producerThread.join();

@@ -22,7 +22,7 @@ Pipeline::Pipeline(
     // Provide default error handler if none specified
     if (!mErrorHandler)
     {
-        mErrorHandler = std::make_unique<DefaultErrorHandler>(&mSharedDataManager);
+        throw std::invalid_argument("Error handler cannot be null");
     }
 
     // Validate required components
@@ -128,7 +128,6 @@ void Pipeline::processLoop()
                 // Processing successful, handle output
                 mOutputHandler->handleOutput(mContext->currentResult);
                 mSharedDataManager.detectionCounter++;
-                std::cout << "Detection at: " << iterationCount << std::endl;
             }
 
             // Some stages have internal processing stages that must be 'ticked' each timestep

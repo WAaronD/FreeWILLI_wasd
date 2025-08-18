@@ -18,8 +18,8 @@ std::unique_ptr<Pipeline> PipelineFactory::createPipeline(
             .addFrequencyDomainDoaEstimation(config.receiverPositionsPath, ctx, config.speedOfSound)
             .addTracking(config)
             .setFileOutput(config.loggingDirectory, config.integrationTesting)
-            .setConsoleOutput(false)
-            .setErrorHandler("error.log")
+            .setConsoleOutput(config.verbose)
+            .setErrorHandler(config.loggingDirectory + "error.log", sharedDataManager)
             .build(sharedDataManager, std::chrono::seconds(runtimeSeconds), ctx);
     }
     else if (config.pipelineTemplate == "MultiChannelTimeDomainClassification")
@@ -32,7 +32,7 @@ std::unique_ptr<Pipeline> PipelineFactory::createPipeline(
             .setFileOutput(config.loggingDirectory, config.integrationTesting)
             .setConsoleOutput(false)
             .setNetworkOutput("127.0.0.1", 55001)
-            .setErrorHandler("error.log")
+            .setErrorHandler(config.loggingDirectory + "error.log", sharedDataManager)
             .build(sharedDataManager, std::chrono::seconds(runtimeSeconds), ctx);
     }
     else

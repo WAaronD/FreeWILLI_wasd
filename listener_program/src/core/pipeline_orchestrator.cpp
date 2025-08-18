@@ -61,8 +61,6 @@ bool PipelineOrchestrator::executeStages(std::shared_ptr<ProcessingContext> cont
         }
         catch (const std::exception& e)
         {
-            std::cerr << "Error in stage " << stage->getName() << ": " << e.what() << std::endl;
-
             throw ProcessingError(
                 stage->getName(), "Stage processing failed: " + std::string(e.what()), std::current_exception(),
                 *context);
@@ -86,7 +84,7 @@ const IProcessingStage* PipelineOrchestrator::getStageIndex(size_t index) const
 
 const IProcessingStage* PipelineOrchestrator::getStageName(const std::string& name) const
 {
-        IProcessingStage* stagePointer = nullptr;
+    IProcessingStage* stagePointer = nullptr;
     for (auto& stage : mStages)
     {
         if (stage->getName() == name)

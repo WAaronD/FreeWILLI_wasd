@@ -58,7 +58,7 @@ class PipelineBuilder
 
     PipelineBuilder& setOutputHandler(std::unique_ptr<IOutputHandler> handler);
 
-    PipelineBuilder& setErrorHandler(const std::string& outputFile);
+    PipelineBuilder& setErrorHandler(const std::string& outputFile, SharedDataManager& sharedDataManager);
 
     // Build the final pipeline
     std::unique_ptr<Pipeline> build(

@@ -1,5 +1,6 @@
 {
     "enableIntegrationTesting": true,
+    "verbose": true,
     "template": "MultiChannelFrequencyDomainTracking",
     "logDirectory": "integration_testing/deployment_files/",
     "networkIPAddress": "self",

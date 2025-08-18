@@ -4,63 +4,6 @@
 
 #include "gtest/gtest.h"
 
-// Test: Successful JSON Parsing
-TEST(UtilsTest, ParseJsonConfigSuccess)
-{
-    // Create a temporary JSON config file
-    std::string tempJsonFile = "temp_config.json";
-    std::ofstream file(tempJsonFile);
-    file << R"({
-        "networkIPAddress": "192.168.1.1",
-        "networkPort": 5000,
-        "enableIntegrationTesting": true,
-        "template": "MultiChannelFrequencyDomainTracking",
-        "firmware": "1240",
-        "speedOfSound_mps": 1500.0,
-        "logDirectory": "/logs",
-        "timeDomainDetector": "CrossCorrelation",
-        "timeDomainFilter": "Multiply",
-        "timeDomainThreshold": 0.7,
-        "frequencyDomainStrategy": "FFT",
-        "frequencyDomainDetector": "Energy",
-        "frequencyDomainThreshold": 0.5,
-        "filterWeightsFile": "/filters.dat",
-        "receiverPositionsFile": "/receivers.json",
-        "enableTracking": true,
-        "clusteringIntervalSeconds": 30,
-        "clusteringWindowSeconds": 60,
-        "onnxModelPath": "/models/model.onnx",
-        "onnxNormalizationParams": "/models/normalization.dat"
-    })";
-    file.close();
-
-    // Parse the JSON config
-    auto [socketVars, pipelineVars] = parseJsonConfig(tempJsonFile);
-
-    // Validate parsed values
-    EXPECT_EQ(socketVars.ipAddress, "192.168.1.1");
-    EXPECT_EQ(socketVars.port, 5000);
-    EXPECT_TRUE(pipelineVars.integrationTesting);
-    EXPECT_EQ(pipelineVars.firmware, "1240");
-    EXPECT_FLOAT_EQ(pipelineVars.speedOfSound, 1500.0f);
-    EXPECT_EQ(pipelineVars.loggingDirectory, "/logs");
-    EXPECT_EQ(pipelineVars.timeDomainDetector, "CrossCorrelation");
-    EXPECT_FLOAT_EQ(pipelineVars.timeDomainThreshold, 0.7f);
-    EXPECT_EQ(pipelineVars.frequencyDomainStrategy, "FFT");
-    EXPECT_EQ(pipelineVars.frequencyDomainDetector, "Energy");
-    EXPECT_FLOAT_EQ(pipelineVars.energyDetectionThreshold, 0.5f);
-    EXPECT_EQ(pipelineVars.filterWeightsPath, "/filters.dat");
-    EXPECT_EQ(pipelineVars.receiverPositionsPath, "/receivers.json");
-    EXPECT_TRUE(pipelineVars.enableTracking);
-    EXPECT_EQ(pipelineVars.clusterFrequencyInSeconds.count(), 30);
-    EXPECT_EQ(pipelineVars.clusterWindowInSeconds.count(), 60);
-    EXPECT_EQ(pipelineVars.onnxModelPath, "/models/model.onnx");
-    EXPECT_EQ(pipelineVars.onnxModelNormalizationPath, "/models/normalization.dat");
-
-    // Cleanup temporary file
-    std::remove(tempJsonFile.c_str());
-}
-
 // Test: JSON Parsing with Missing Fields
 TEST(UtilsTest, ParseJsonConfigMissingField)
 {

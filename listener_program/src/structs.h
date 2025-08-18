@@ -27,6 +27,7 @@ struct PipelineVariables
 
     bool integrationTesting = false;
     bool enableTracking = false;
+    bool verbose = false;
 
     std::string firmware = "";
     std::string pipelineTemplate = "";

@@ -269,9 +269,9 @@ PipelineBuilder& PipelineBuilder::setOutputHandler(std::unique_ptr<IOutputHandle
     return *this;
 }
 
-PipelineBuilder& PipelineBuilder::setErrorHandler(const std::string& outputFile)
+PipelineBuilder& PipelineBuilder::setErrorHandler(const std::string& outputFile, SharedDataManager& SharedDataManager)
 {
-    auto errorHandler = std::make_unique<DefaultErrorHandler>(nullptr, outputFile);
+    auto errorHandler = std::make_unique<DefaultErrorHandler>(SharedDataManager, outputFile);
 
     mErrorHandler = std::move(errorHandler);
     std::cout << "Set custom error handler" << std::endl;
@@ -284,7 +284,7 @@ std::unique_ptr<Pipeline> PipelineBuilder::build(
 {
     validateConfiguration();
 
-    // Provide default output handler if none specified
+    /*
     if (!mOutputHandler)
     {
         std::cout << "No output handler specified, using default file output" << std::endl;
@@ -294,8 +294,9 @@ std::unique_ptr<Pipeline> PipelineBuilder::build(
     // Provide default error handler if none specified
     if (!mErrorHandler)
     {
-        mErrorHandler = std::make_unique<DefaultErrorHandler>(&sharedDataManager);
+        mErrorHandler = std::make_unique<DefaultErrorHandler>(sharedDataManager, );
     }
+    */
 
     std::cout << "Building pipeline with " << mOrchestrator->getStageCount() << " stages" << std::endl;
 

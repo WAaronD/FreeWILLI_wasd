@@ -1,5 +1,6 @@
 {
     "enableIntegrationTesting": false,
+    "verbose": true,
     "template": "MultiChannelTimeDomainClassification",
     "logDirectory": "deployment_files/",
     "networkIPAddress": "self",
