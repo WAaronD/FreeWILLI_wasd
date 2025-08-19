@@ -23,22 +23,6 @@ else()
 endif()
 
 # ===========================
-# Find FFTW3 (Double Precision)
-# ===========================
-find_library(FFTW_LIBRARIES NAMES fftw3 REQUIRED)
-find_path(FFTW_INCLUDE_DIRS NAMES fftw3.h PATH_SUFFIXES include REQUIRED)
-
-if(NOT FFTW_LIBRARIES OR NOT FFTW_INCLUDE_DIRS)
-    message(FATAL_ERROR "FFTW3 library not found!")
-endif()
-
-message(STATUS "FFTW3 Library: ${FFTW_LIBRARIES}")
-message(STATUS "FFTW3 Include Directory: ${FFTW_INCLUDE_DIRS}")
-
-list(APPEND THIRD_PARTY_LIBRARIES ${FFTW_LIBRARIES})
-list(APPEND THIRD_PARTY_INCLUDE_DIRS ${FFTW_INCLUDE_DIRS})
-
-# ===========================
 # Find FFTW3f (Single Precision)
 # ===========================
 find_library(FFTWF_LIBRARIES NAMES fftw3f REQUIRED)

@@ -32,7 +32,6 @@ PipelineBuilder& PipelineBuilder::addDataAcquisition(SharedDataManager& manager,
 PipelineBuilder& PipelineBuilder::addTimeDomainDetection(const std::string& detectorType, double threshold)
 {
     std::cout << "Adding TimeDomainDetection stage to pipeline" << std::endl;
-    std::cout << "    thresh: " << threshold << std::endl;
     auto detector = ITimeDomainDetectorFactory::create(detectorType, threshold);
     if (!detector)
     {
@@ -166,7 +165,6 @@ PipelineBuilder& PipelineBuilder::addCustomStage(std::unique_ptr<IProcessingStag
 PipelineBuilder& PipelineBuilder::setFileOutput(const std::string& loggingDir, bool integrationTesting)
 {
     std::cout << "Adding file output to directory: " << loggingDir << std::endl;
-    std::cout << "    Using integration testing: " << integrationTesting << std::endl;
     if (loggingDir.empty())
     {
         throw std::invalid_argument("Logging directory cannot be empty");
