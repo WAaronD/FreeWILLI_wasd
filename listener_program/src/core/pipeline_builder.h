@@ -35,12 +35,14 @@ class PipelineBuilder
 
     PipelineBuilder& addFrequencyDomainDetection(const std::string& detectorType, double threshold);
 
-    PipelineBuilder& addONNXClassification(const PipelineVariables& config);
+    PipelineBuilder& addONNXClassification(const std::string& modelPath, const std::string& scalerParamsPath);
 
     PipelineBuilder& addFrequencyDomainDoaEstimation(
         const std::string& receiverPositionsPath, const std::shared_ptr<ProcessingContext>& ctx, float speedOfSound);
 
-    PipelineBuilder& addTracking(const PipelineVariables& config);
+    PipelineBuilder& addTracking(
+        const std::string& outputDirectory, std::chrono::seconds clusteringFrequency,
+        std::chrono::seconds clusteringWindow);
 
     // Custom stage addition
     PipelineBuilder& addCustomStage(std::unique_ptr<IProcessingStage> stage);
@@ -73,7 +75,4 @@ class PipelineBuilder
     std::unique_ptr<IOutputHandler> mOutputHandler;
     std::unique_ptr<IErrorHandler> mErrorHandler;
     std::shared_ptr<const IFirmware> mFirmware;  // Store firmware for later stages
-
-    // int mPaddedLength;
-    // int mFrequencyRows;
 };

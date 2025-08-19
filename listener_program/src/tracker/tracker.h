@@ -88,14 +88,10 @@ class Tracker
 class ITracker
 {
    public:
-    static std::unique_ptr<Tracker> create(PipelineVariables pipelineVariables)
+    static std::unique_ptr<Tracker> create(
+        const std::string& outputDirectory, std::chrono::seconds clusteringFrequency,
+        std::chrono::seconds clusteringWindow)
     {
-        if (pipelineVariables.enableTracking)
-        {
-            return std::make_unique<Tracker>(
-                0.04f, 15, 4, "", pipelineVariables.loggingDirectory, pipelineVariables.clusterFrequencyInSeconds,
-                pipelineVariables.clusterWindowInSeconds);
-        }
-        return nullptr;
+        return std::make_unique<Tracker>(0.04f, 15, 4, "", outputDirectory, clusteringFrequency, clusteringWindow);
     }
 };

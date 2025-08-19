@@ -37,7 +37,6 @@ void NetworkOutputHandler::initialize(const TimePoint& timestamp, int numChannel
 void NetworkOutputHandler::handleOutput(const DetectionResult& /*result*/)
 {
     const char* msg = "Hello, UDP!";
-    std::cout << "sending mesage!!!!! \n";
     ssize_t sent =
         ::sendto(mSockfd, msg, std::strlen(msg), 0, reinterpret_cast<struct sockaddr*>(&mDest), sizeof(mDest));
     if (sent < 0)

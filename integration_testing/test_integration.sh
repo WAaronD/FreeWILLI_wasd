@@ -51,8 +51,8 @@ else
 fi
 
 # Clear the contents of ARTIFACT_DIR
-echo "Clearing artifact directory: $ARTIFACT_DIR"
-rm -rf "$ARTIFACT_DIR"/*
+#echo "Clearing artifact directory: $ARTIFACT_DIR"
+#rm -rf "$ARTIFACT_DIR"/*
 
 exit $TEST_RESULT
 

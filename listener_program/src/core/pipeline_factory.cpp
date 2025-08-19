@@ -1,42 +1,88 @@
 #include "pipeline_factory.h"
 
-std::unique_ptr<Pipeline> PipelineFactory::createPipeline(
-    SharedDataManager& sharedDataManager, const PipelineVariables& config, std::shared_ptr<ProcessingContext>& ctx,
+std::unique_ptr<Pipeline> FlexiblePipelineFactory::createPipeline(
+    SharedDataManager& sharedDataManager, const FlexibleConfig& config, std::shared_ptr<ProcessingContext>& ctx,
     int runtimeSeconds)
 {
-    std::cout << "Creating acoustic processing pipeline...\n";
+    std::cout << "Creating flexible acoustic processing pipeline...\n";
 
-    if (config.pipelineTemplate == "MultiChannelFrequencyDomainTracking")
+    PipelineBuilder builder;
+
+    // Execute each pipeline step
+    for (const auto& step : config.pipelineSteps)
     {
-        return PipelineBuilder()
-            .addDataAcquisition(sharedDataManager, config.firmware)
-            .addTimeDomainDetection(config.timeDomainDetector, config.timeDomainThreshold)
-            .addFrequencyDomainTransform(
-                config.frequencyDomainStrategy, config.filterWeightsPath, ctx, ctx->firmware->numChannels())
-            .addFrequencyDomainDetection(config.frequencyDomainDetector, config.energyDetectionThreshold)
-            .addONNXClassification(config)
-            .addFrequencyDomainDoaEstimation(config.receiverPositionsPath, ctx, config.speedOfSound)
-            .addTracking(config)
-            .setFileOutput(config.loggingDirectory, config.integrationTesting)
-            .setConsoleOutput(config.verbose)
-            .setErrorHandler(config.loggingDirectory + "error.log", sharedDataManager)
-            .build(sharedDataManager, std::chrono::seconds(runtimeSeconds), ctx);
+        executeStep(builder, step, sharedDataManager, ctx, config.global);
     }
-    else if (config.pipelineTemplate == "MultiChannelTimeDomainClassification")
+
+    return builder.build(sharedDataManager, std::chrono::seconds(runtimeSeconds), ctx);
+}
+
+void FlexiblePipelineFactory::executeStep(
+    PipelineBuilder& builder, const PipelineStep& step, SharedDataManager& sharedDataManager,
+    std::shared_ptr<ProcessingContext>& ctx, const nlohmann::json& globalConfig)
+{
+    const auto& params = step.params;
+
+    if (step.type == "addDataAcquisition")
     {
-        return PipelineBuilder()
-            .addDataAcquisition(sharedDataManager, config.firmware)
-            .addTimeDomainDetection(config.timeDomainDetector, config.timeDomainThreshold)
-            .addTimeDomainFilter(config.timeDomainFilter, config.filterWeightsPath, ctx, ctx->firmware->numChannels())
-            .addTimeDomainDetection("RuCCUS", 500)
-            .setFileOutput(config.loggingDirectory, config.integrationTesting)
-            .setConsoleOutput(false)
-            .setNetworkOutput("127.0.0.1", 55001)
-            .setErrorHandler(config.loggingDirectory + "error.log", sharedDataManager)
-            .build(sharedDataManager, std::chrono::seconds(runtimeSeconds), ctx);
+        builder.addDataAcquisition(sharedDataManager, params.at("firmware").get<std::string>());
+    }
+    else if (step.type == "addTimeDomainDetection")
+    {
+        builder.addTimeDomainDetection(params.at("detector").get<std::string>(), params.at("threshold").get<float>());
+    }
+    else if (step.type == "addFrequencyDomainTransform")
+    {
+        builder.addFrequencyDomainTransform(
+            params.at("strategy").get<std::string>(), params.at("filterWeightsFile").get<std::string>(), ctx,
+            ctx->firmware->numChannels());
+    }
+    else if (step.type == "addFrequencyDomainDetection")
+    {
+        builder.addFrequencyDomainDetection(
+            params.at("detector").get<std::string>(), params.at("threshold").get<float>());
+    }
+    else if (step.type == "addONNXClassification")
+    {
+        builder.addONNXClassification(
+            params.at("modelPath").get<std::string>(), params.at("normalizationParams").get<std::string>());
+    }
+    else if (step.type == "addFrequencyDomainDoaEstimation")
+    {
+        builder.addFrequencyDomainDoaEstimation(
+            params.at("receiverPositionsFile").get<std::string>(), ctx, params.at("speedOfSound").get<float>());
+    }
+    else if (step.type == "addTracking")
+    {
+        builder.addTracking(
+            params.at("directory").get<std::string>(),
+            std::chrono::seconds(params.at("clusteringIntervalSeconds").get<int>()),
+            std::chrono::seconds(params.at("clusteringWindowSeconds").get<int>()));
+    }
+    else if (step.type == "addTimeDomainFilter")
+    {
+        builder.addTimeDomainFilter(
+            params.at("filter").get<std::string>(), params.at("filterWeightsFile").get<std::string>(), ctx,
+            ctx->firmware->numChannels());
+    }
+    else if (step.type == "setFileOutput")
+    {
+        builder.setFileOutput(params.at("directory").get<std::string>(), params.at("integrationTesting").get<bool>());
+    }
+    else if (step.type == "setConsoleOutput")
+    {
+        builder.setConsoleOutput(params.at("enabled").get<bool>());
+    }
+    else if (step.type == "setNetworkOutput")
+    {
+        builder.setNetworkOutput(params.at("host").get<std::string>(), params.at("port").get<int>());
+    }
+    else if (step.type == "setErrorHandler")
+    {
+        builder.setErrorHandler(params.at("logFile").get<std::string>(), sharedDataManager);
     }
     else
     {
-        throw std::invalid_argument("PipelineFactory: unsupported pipeline type");
+        throw std::invalid_argument("Unknown pipeline step type: " + step.type);
     }
 }

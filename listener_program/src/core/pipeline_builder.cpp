@@ -32,6 +32,7 @@ PipelineBuilder& PipelineBuilder::addDataAcquisition(SharedDataManager& manager,
 PipelineBuilder& PipelineBuilder::addTimeDomainDetection(const std::string& detectorType, double threshold)
 {
     std::cout << "Adding TimeDomainDetection stage to pipeline" << std::endl;
+    std::cout << "    thresh: " << threshold << std::endl;
     auto detector = ITimeDomainDetectorFactory::create(detectorType, threshold);
     if (!detector)
     {
@@ -96,16 +97,17 @@ PipelineBuilder& PipelineBuilder::addFrequencyDomainDetection(const std::string&
     return *this;
 }
 
-PipelineBuilder& PipelineBuilder::addONNXClassification(const PipelineVariables& config)
+PipelineBuilder& PipelineBuilder::addONNXClassification(
+    const std::string& modelPath, const std::string& scalerParamsPath)
 {
+    std::cout << "Adding ONNXClassification stage to pipeline" << std::endl;
     std::unique_ptr<ONNXModel> model = nullptr;
 
-    model = IONNXModel::create(config);
+    model = IONNXModel::create(modelPath, scalerParamsPath);
 
     auto stage = std::make_unique<ONNXClassificationStage>(std::move(model), 500);
     mOrchestrator->addStage(std::move(stage));
 
-    std::cout << "Added ONNXClassification stage to pipeline" << std::endl;
     return *this;
 }
 
@@ -134,12 +136,13 @@ PipelineBuilder& PipelineBuilder::addFrequencyDomainDoaEstimation(
     return *this;
 }
 
-PipelineBuilder& PipelineBuilder::addTracking(const PipelineVariables& config)
+PipelineBuilder& PipelineBuilder::addTracking(
+    const std::string& outputDirectory, std::chrono::seconds clusteringFrequency, std::chrono::seconds clusteringWindow)
 {
     std::cout << "Adding Tracking stage to pipeline" << std::endl;
     std::unique_ptr<Tracker> tracker = nullptr;
 
-    tracker = ITracker::create(config);
+    tracker = ITracker::create(outputDirectory, clusteringFrequency, clusteringWindow);
 
     auto stage = std::make_unique<TrackingStage>(std::move(tracker));
     mOrchestrator->addStage(std::move(stage));
@@ -163,6 +166,7 @@ PipelineBuilder& PipelineBuilder::addCustomStage(std::unique_ptr<IProcessingStag
 PipelineBuilder& PipelineBuilder::setFileOutput(const std::string& loggingDir, bool integrationTesting)
 {
     std::cout << "Adding file output to directory: " << loggingDir << std::endl;
+    std::cout << "    Using integration testing: " << integrationTesting << std::endl;
     if (loggingDir.empty())
     {
         throw std::invalid_argument("Logging directory cannot be empty");
@@ -282,23 +286,8 @@ std::unique_ptr<Pipeline> PipelineBuilder::build(
     SharedDataManager& sharedDataManager, std::chrono::seconds programRuntime,
     const std::shared_ptr<ProcessingContext>& processingContext)
 {
-    validateConfiguration();
-
-    /*
-    if (!mOutputHandler)
-    {
-        std::cout << "No output handler specified, using default file output" << std::endl;
-        mOutputHandler = std::make_unique<FileOutputHandler>("./logs/");
-    }
-
-    // Provide default error handler if none specified
-    if (!mErrorHandler)
-    {
-        mErrorHandler = std::make_unique<DefaultErrorHandler>(sharedDataManager, );
-    }
-    */
-
     std::cout << "Building pipeline with " << mOrchestrator->getStageCount() << " stages" << std::endl;
+    validateConfiguration();
 
     return std::make_unique<Pipeline>(
         sharedDataManager, std::move(mOrchestrator), std::move(mOutputHandler), std::move(mErrorHandler),

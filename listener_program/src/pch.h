@@ -12,6 +12,7 @@
 #include <optional>
 #include <queue>
 #include <random>
+#include <regex>
 #include <set>
 #include <span>
 #include <sstream>

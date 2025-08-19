@@ -26,13 +26,8 @@ auto getExampleClick() -> std::vector<float>;
 class IONNXModel
 {
    public:
-    static std::unique_ptr<ONNXModel> create(PipelineVariables pipelineVariables)
+    static std::unique_ptr<ONNXModel> create(const std::string& modelPath, const std::string& scalerParamsPath)
     {
-        if (!pipelineVariables.onnxModelPath.empty())
-        {
-            return std::make_unique<ONNXModel>(
-                pipelineVariables.onnxModelPath, pipelineVariables.onnxModelNormalizationPath);
-        }
-        return nullptr;
+        return std::make_unique<ONNXModel>(modelPath, scalerParamsPath);
     }
 };

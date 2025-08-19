@@ -3,6 +3,6 @@
 
 struct SocketVariables
 {
-    std::string ipAddress = "";
-    int port = -1;
+    std::string ipAddress;
+    int port;
 };

@@ -1,7 +1,3 @@
-// main.cpp
-#include <iostream>
-#include <thread>
-
 #include "core/pipeline_factory.h"
 #include "firmware/firmware_factory.h"
 #include "io/udp_socket_manager.h"
@@ -18,28 +14,42 @@ int main(int argc, char* argv[])
     }
 
     printMode();
-    auto [socketVars, pipelineVars] = parseJsonConfig(argv[1]);
-
-    std::unique_ptr<ISocketManager> socketManager = std::make_unique<UdpSocketManager>(socketVars);
-
-    while (true)
+    try
     {
-        socketManager->restartListener();
-        SharedDataManager sharedDataManager;
+        FlexibleConfig config = FlexibleConfigParser::parse(argv[1]);
 
-        auto processingContext = std::make_shared<ProcessingContext>(FirmwareFactory::create(pipelineVars.firmware));
+        // Extract socket variables
+        SocketVariables socketVars;
+        socketVars.ipAddress = config.network.at("ipAddress").get<std::string>();
+        socketVars.port = config.network.at("port").get<int>();
 
-        auto pipeline =
-            PipelineFactory::createPipeline(sharedDataManager, pipelineVars, processingContext, std::stoi(argv[2]));
+        std::unique_ptr<ISocketManager> socketManager = std::make_unique<UdpSocketManager>(socketVars);
 
-        std::thread producerThread(
-            runListenerLoop, std::ref(sharedDataManager), std::ref(socketManager), pipelineVars.verbose);
-        std::thread consumerThread(&Pipeline::process, pipeline.get());
+        while (true)
+        {
+            socketManager->restartListener();
+            SharedDataManager sharedDataManager;
 
-        producerThread.join();
-        consumerThread.join();
-        std::cout << "Restarting threads...\n";
+            auto processingContext = std::make_shared<ProcessingContext>(
+                FirmwareFactory::create(config.global.at("firmware").get<std::string>()));
+
+            auto pipeline = FlexiblePipelineFactory::createPipeline(
+                sharedDataManager, config, processingContext, std::stoi(argv[2]));
+
+            std::thread producerThread(
+                runListenerLoop, std::ref(sharedDataManager), std::ref(socketManager),
+                config.global.at("verbose").get<bool>());
+            std::thread consumerThread(&Pipeline::process, pipeline.get());
+
+            producerThread.join();
+            consumerThread.join();
+            std::cout << "Restarting threads...\n";
+        }
     }
-
+    catch (const std::exception& e)
+    {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return EXIT_FAILURE;
+    }
     return 0;
 }

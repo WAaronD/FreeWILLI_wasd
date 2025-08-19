@@ -1,15 +1,17 @@
 #pragma once
+#include "../config_parser.h"
 #include "../shared_data_manager.h"
-#include "../utils.h"
-#include "pipeline.h"
 #include "pipeline_builder.h"
 
-class PipelineFactory
+class FlexiblePipelineFactory
 {
    public:
-    /// Create a pipeline of the requested type.
-    /// @throws std::invalid_argument if the type isn't supported.
     static std::unique_ptr<Pipeline> createPipeline(
-        SharedDataManager& sharedDataManager, const PipelineVariables& config, std::shared_ptr<ProcessingContext>& ctx,
+        SharedDataManager& sharedDataManager, const FlexibleConfig& config, std::shared_ptr<ProcessingContext>& ctx,
         int runtimeSeconds);
+
+   private:
+    static void executeStep(
+        PipelineBuilder& builder, const PipelineStep& step, SharedDataManager& sharedDataManager,
+        std::shared_ptr<ProcessingContext>& ctx, const nlohmann::json& globalConfig);
 };

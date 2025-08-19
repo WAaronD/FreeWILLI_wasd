@@ -12,36 +12,6 @@ class Tracker;
 
 using TimePoint = std::chrono::time_point<std::chrono::system_clock>;
 
-// ============================================================================
-// DATA STRUCTURES
-// ============================================================================
-
-struct PipelineVariables
-{
-    std::chrono::seconds clusterFrequencyInSeconds;
-    std::chrono::seconds clusterWindowInSeconds;
-
-    float timeDomainThreshold = 0;
-    float energyDetectionThreshold = 0;
-    float speedOfSound = 0;
-
-    bool integrationTesting = false;
-    bool enableTracking = false;
-    bool verbose = false;
-
-    std::string firmware = "";
-    std::string pipelineTemplate = "";
-    std::string loggingDirectory = "";
-    std::string timeDomainDetector = "";
-    std::string timeDomainFilter = "";
-    std::string frequencyDomainDetector = "";
-    std::string frequencyDomainStrategy = "";
-    std::string filterWeightsPath = "";
-    std::string receiverPositionsPath = "";
-    std::string onnxModelPath = "";
-    std::string onnxModelNormalizationPath = "";
-};
-
 struct DetectionResult
 {
     TimePoint timestamp;
@@ -74,12 +44,12 @@ struct ProcessingContext
     Eigen::MatrixXf channelData;
     std::vector<TimePoint> dataTimes;
     std::vector<std::vector<uint8_t>> dataBytes;
-    Eigen::MatrixXcf frequencyDomainData;
-    Eigen::MatrixXcf beforeFilterData;
-    DetectionResult currentResult;
     std::shared_ptr<const IFirmware> firmware;
 
     // Optional intermediate data
+    Eigen::MatrixXcf frequencyDomainData;
+    Eigen::MatrixXcf beforeFilterData;
+    DetectionResult currentResult;
     Eigen::VectorXf tdoaVector;
     Eigen::VectorXf directionOfArrival;
     Eigen::VectorXf crossCorrelationAmps;
