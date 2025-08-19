@@ -12,13 +12,6 @@ class IErrorHandler
 
 class DefaultErrorHandler : public IErrorHandler
 {
-   private:
-    SharedDataManager& mSharedDataManager;
-    std::string mLogFile;
-    bool mLogToFile;
-    std::ofstream mFileStream;
-    std::streambuf* mOldCerrBuffer = nullptr;
-
    public:
     explicit DefaultErrorHandler(SharedDataManager& sharedDataManager, const std::string& logFile);
     ~DefaultErrorHandler() override;
@@ -32,9 +25,14 @@ class DefaultErrorHandler : public IErrorHandler
     void handleGenericError(const ProcessingError& error);
     void writeDataToCerr(const ProcessingContext& context);
 
-    // prevent accidental copies/moves (put this on the concrete class)
     DefaultErrorHandler(const DefaultErrorHandler&) = delete;
     DefaultErrorHandler& operator=(const DefaultErrorHandler&) = delete;
     DefaultErrorHandler(DefaultErrorHandler&&) = delete;
     DefaultErrorHandler& operator=(DefaultErrorHandler&&) = delete;
+
+    SharedDataManager& mSharedDataManager;
+    std::string mLogFile;
+    bool mLogToFile;
+    std::ofstream mFileStream;
+    std::streambuf* mOldCerrBuffer = nullptr;
 };

@@ -67,9 +67,7 @@ void DefaultErrorHandler::handleError(const ProcessingError& error)
     writeDataToCerr(error.context);
 
     // Flag error in shared data manager
-    std::cout << "setting mSharedDataManager->errorOccurred = true " << std::endl;
     mSharedDataManager.errorOccurred = true;
-    std::cout << "FAILED: setting mSharedDataManager->errorOccurred = true " << std::endl;
 }
 
 void DefaultErrorHandler::logContextInformation(const ProcessingContext& context)
@@ -175,13 +173,6 @@ void DefaultErrorHandler::writeDataToCerr(const ProcessingContext& context)
         {
             errorMessage << std::setw(2) << std::setfill('0') << std::hex << static_cast<int>(byteArray[j]) << " ";
         }
-
-        /*
-        if (byteArray.size() > showBytes)
-        {
-            errorMessage << "... (" << (byteArray.size() - showBytes) << " more bytes)";
-        }
-        */
 
         errorMessage << std::endl;
     }
