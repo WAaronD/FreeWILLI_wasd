@@ -11,7 +11,7 @@ std::unique_ptr<Pipeline> FlexiblePipelineFactory::createPipeline(
     // Execute each pipeline step
     for (const auto& step : config.pipelineSteps)
     {
-        executeStep(builder, step, sharedDataManager, ctx, config.global);
+        executeStep(builder, step, sharedDataManager, ctx);
     }
 
     return builder.build(sharedDataManager, std::chrono::seconds(runtimeSeconds), ctx);
@@ -19,7 +19,7 @@ std::unique_ptr<Pipeline> FlexiblePipelineFactory::createPipeline(
 
 void FlexiblePipelineFactory::executeStep(
     PipelineBuilder& builder, const PipelineStep& step, SharedDataManager& sharedDataManager,
-    std::shared_ptr<ProcessingContext>& ctx, const nlohmann::json& globalConfig)
+    std::shared_ptr<ProcessingContext>& ctx)
 {
     const auto& params = step.params;
 

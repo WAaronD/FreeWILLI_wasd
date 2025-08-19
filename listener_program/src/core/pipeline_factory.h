@@ -13,5 +13,5 @@ class FlexiblePipelineFactory
    private:
     static void executeStep(
         PipelineBuilder& builder, const PipelineStep& step, SharedDataManager& sharedDataManager,
-        std::shared_ptr<ProcessingContext>& ctx, const nlohmann::json& globalConfig);
+        std::shared_ptr<ProcessingContext>& ctx);
 };
