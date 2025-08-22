@@ -98,13 +98,10 @@ void Pipeline::performInitialDataAcquisition()
 {
     std::cout << "    Performing initial data acquisition..." << std::endl;
 
-    // Execute stages until we get a successful data acquisition
-    // This is needed to initialize output files and get firmware info
-    // bool dataAcquired = false;
+    // This is needed to initialize output files using timestamp of first UDP packet
     if (!mSharedDataManager.errorOccurred)
     {
-        mOrchestrator->executeStages(mContext);
-        mContext->pipelineInitialized = true;
+        mOrchestrator->getStageIndex(0)->process(mContext);
     }
 }
 
@@ -126,7 +123,7 @@ void Pipeline::processLoop()
             if (mOrchestrator->executeStages(mContext))
             {
                 // Processing successful, handle output
-                mOutputHandler->handleOutput(mContext->currentResult);
+                mOutputHandler->handleOutput(*mContext);
                 mSharedDataManager.detectionCounter++;
             }
 

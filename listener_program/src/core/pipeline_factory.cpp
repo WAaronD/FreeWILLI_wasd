@@ -1,12 +1,15 @@
 #include "pipeline_factory.h"
 
 std::unique_ptr<Pipeline> FlexiblePipelineFactory::createPipeline(
-    SharedDataManager& sharedDataManager, const FlexibleConfig& config, std::shared_ptr<ProcessingContext>& ctx,
+    SharedDataManager& sharedDataManager, const FlexibleConfig& config, const std::shared_ptr<ProcessingContext>& ctx,
     int runtimeSeconds)
 {
     std::cout << "Creating flexible acoustic processing pipeline...\n";
 
     PipelineBuilder builder;
+
+    // builder always needs an initial Data Acquisition step
+    builder.addDataAcquisition(sharedDataManager);
 
     // Execute each pipeline step
     for (const auto& step : config.pipelineSteps)
@@ -19,15 +22,11 @@ std::unique_ptr<Pipeline> FlexiblePipelineFactory::createPipeline(
 
 void FlexiblePipelineFactory::executeStep(
     PipelineBuilder& builder, const PipelineStep& step, SharedDataManager& sharedDataManager,
-    std::shared_ptr<ProcessingContext>& ctx)
+    const std::shared_ptr<ProcessingContext>& ctx)
 {
     const auto& params = step.params;
 
-    if (step.type == "addDataAcquisition")
-    {
-        builder.addDataAcquisition(sharedDataManager, params.at("firmware").get<std::string>());
-    }
-    else if (step.type == "addTimeDomainDetection")
+    if (step.type == "addTimeDomainDetection")
     {
         builder.addTimeDomainDetection(params.at("detector").get<std::string>(), params.at("threshold").get<float>());
     }

@@ -6,7 +6,7 @@
 class FirmwareFactory
 {
    public:
-    static std::shared_ptr<const IFirmware> create(const std::string& firmwareToUse)
+    static const std::shared_ptr<const IFirmware> create(const std::string& firmwareToUse)
     {
         if (firmwareToUse == "1240_imu")
         {

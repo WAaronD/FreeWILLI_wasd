@@ -2,19 +2,16 @@
 
 #include "../algorithms/localization/hydrophone_position_processing.h"
 
-DataAcquisitionStage::DataAcquisitionStage(SharedDataManager& manager, std::shared_ptr<const IFirmware> firmware)
-    : mSharedDataManager(manager), mFirmware(std::move(firmware))
-{
-}
+DataAcquisitionStage::DataAcquisitionStage(SharedDataManager& manager) : mSharedDataManager(manager) {}
 
 bool DataAcquisitionStage::process(std::shared_ptr<ProcessingContext> context)
 {
-    mSharedDataManager.waitForData(context->dataBytes, mFirmware->numPacketsToDetect());
+    mSharedDataManager.waitForData(context->dataBytes, context->firmware->numPacketsToDetect());
 
-    context->dataTimes = mFirmware->generateTimestamp(context->dataBytes);
+    context->dataTimes = context->firmware->generateTimestamp(context->dataBytes);
 
     // Validate data integrity
-    mFirmware->throwIfDataErrors(context->dataBytes, mPreviousTimeSet, mPreviousTime, context->dataTimes);
+    context->firmware->throwIfDataErrors(context->dataBytes, mPreviousTimeSet, mPreviousTime, context->dataTimes);
 
     // Update previous time tracking
     if (!context->dataTimes.empty())
@@ -23,9 +20,9 @@ bool DataAcquisitionStage::process(std::shared_ptr<ProcessingContext> context)
         mPreviousTimeSet = true;
     }
 
-    mFirmware->insertDataIntoChannelMatrix(context->channelData, context->dataBytes);
+    context->firmware->insertDataIntoChannelMatrix(context->channelData, context->dataBytes);
 
-    return context->pipelineInitialized;
+    return true;
 }
 
 std::string DataAcquisitionStage::getName() const { return "Data Acquisition"; }
@@ -39,18 +36,12 @@ TimeDomainDetectionStage::TimeDomainDetectionStage(std::unique_ptr<ITimeDomainDe
 
 bool TimeDomainDetectionStage::process(std::shared_ptr<ProcessingContext> context)
 {
-    if (!mFunction)
-    {
-        return true;  // Skip if no detector configured
-    }
-
     // Perform time domain detection on first channel
     bool detected = mFunction->detect(context->channelData.row(0));
 
     if (detected)
     {
         // Store detection amplitude and timestamp
-        context->timeDomainDetectionValue = mFunction->getLastDetection();
         context->currentResult.peakAmplitude = mFunction->getLastDetection();
         if (!context->dataTimes.empty())
         {
@@ -203,13 +194,13 @@ bool DirectionEstimationStage::process(std::shared_ptr<ProcessingContext> contex
         std::cout << "GCC-PHAT processing time: " << duration.count() << " seconds\n";
 
         // Store intermediate results
-        context->tdoaVector = tdoaVector;
-        context->crossCorrelationAmps = xCorrAmps;
+        // context->tdoaVector = tdoaVector;
+        // context->crossCorrelationAmps = xCorrAmps;
 
         // Compute direction of arrival from TDOAs
         Eigen::VectorXf directionOfArrival = computeDoaFromTdoa(mCachedLeastSquares, tdoaVector, mHydrophoneMatrixRank);
 
-        context->directionOfArrival = directionOfArrival;
+        // context->directionOfArrival = directionOfArrival;
 
         // Convert to azimuth and elevation for display
         Eigen::VectorXf azimuthAndElevation = convertDoaToElAz(directionOfArrival);
@@ -244,13 +235,13 @@ bool TrackingStage::process(std::shared_ptr<ProcessingContext> context)
     try
     {
         // Update tracker buffer with new direction
-        mFunction->updateTrackerBuffer(context->directionOfArrival);
+        mFunction->updateTrackerBuffer(context->currentResult.directionOfArrival);
 
         // Update Kalman filters if tracker is initialized
         if (mFunction->mIsTrackerInitialized && !context->dataTimes.empty())
         {
-            int trackingLabel =
-                mFunction->updateKalmanFiltersContinuous(context->directionOfArrival, context->dataTimes[0]);
+            int trackingLabel = mFunction->updateKalmanFiltersContinuous(
+                context->currentResult.directionOfArrival, context->dataTimes[0]);
 
             // Store tracking label in result
             context->currentResult.trackingLabel = trackingLabel;

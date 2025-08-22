@@ -1,3 +1,4 @@
+#include "../processing_context_struct.h"
 #include "output_handlers.h"
 
 FileOutputHandler::FileOutputHandler(const std::string& loggingDir, bool integrationTesting)
@@ -67,20 +68,19 @@ std::vector<std::string> FileOutputHandler::generateChannelComboLabels(const std
     return labels;
 }
 
-void FileOutputHandler::handleOutput(const DetectionResult& result)
+void FileOutputHandler::handleOutput(const ProcessingContext& result)
 {
-    if (!result.isValid)
+    if (!result.currentResult.isValid)
     {
         return;
     }
-
-    mBuffer.mAmps.push_back(result.peakAmplitude);
-    mBuffer.mDoaX.push_back(result.directionOfArrival.x());
-    mBuffer.mDoaY.push_back(result.directionOfArrival.y());
-    mBuffer.mDoaZ.push_back(result.directionOfArrival.z());
-    mBuffer.mTdoaVector.push_back(result.tdoaVector);
-    mBuffer.mXCorrAmps.push_back(result.crossCorrelationAmps);
-    mBuffer.mPeakTimes.push_back(result.timestamp);
+    mBuffer.mAmps.push_back(result.currentResult.peakAmplitude);
+    mBuffer.mDoaX.push_back(result.currentResult.directionOfArrival.x());
+    mBuffer.mDoaY.push_back(result.currentResult.directionOfArrival.y());
+    mBuffer.mDoaZ.push_back(result.currentResult.directionOfArrival.z());
+    mBuffer.mTdoaVector.push_back(result.currentResult.tdoaVector);
+    mBuffer.mXCorrAmps.push_back(result.currentResult.crossCorrelationAmps);
+    mBuffer.mPeakTimes.push_back(result.currentResult.timestamp);
 }
 
 void FileOutputHandler::flush()

@@ -73,7 +73,7 @@ bool PipelineOrchestrator::executeStages(std::shared_ptr<ProcessingContext> cont
 
 size_t PipelineOrchestrator::getStageCount() const { return mStages.size(); }
 
-const IProcessingStage* PipelineOrchestrator::getStageIndex(size_t index) const
+IProcessingStage* PipelineOrchestrator::getStageIndex(size_t index) const
 {
     if (index >= mStages.size())
     {
@@ -82,7 +82,7 @@ const IProcessingStage* PipelineOrchestrator::getStageIndex(size_t index) const
     return mStages[index].get();
 }
 
-const IProcessingStage* PipelineOrchestrator::getStageName(const std::string& name) const
+IProcessingStage* PipelineOrchestrator::getStageName(const std::string& name) const
 {
     IProcessingStage* stagePointer = nullptr;
     for (auto& stage : mStages)

@@ -8,21 +8,32 @@
 #include "../algorithms/localization/gcc_phat.h"
 #include "../algorithms/time_domain_filters.h"
 #include "../firmware/firmware_interface.h"
+#include "../processing_context_struct.h"
 #include "../shared_data_manager.h"
 #include "../tracker/tracker.h"
-#include "core_interfaces.h"
+
+class IProcessingStage
+{
+   public:
+    virtual ~IProcessingStage() = default;
+    virtual bool process(std::shared_ptr<ProcessingContext> context) = 0;
+    virtual std::string getName() const = 0;
+    virtual void initialize(std::shared_ptr<ProcessingContext> context) {}
+    virtual bool requiresPeriodicTick() const { return false; }
+    virtual void tick() {};
+};
 
 class DataAcquisitionStage : public IProcessingStage
 {
    public:
-    DataAcquisitionStage(SharedDataManager& manager, std::shared_ptr<const IFirmware> firmware);
+    DataAcquisitionStage(SharedDataManager& manager);
     bool process(std::shared_ptr<ProcessingContext> context) override;
     std::string getName() const override;
     void initialize(std::shared_ptr<ProcessingContext> context) override;
 
    private:
     SharedDataManager& mSharedDataManager;
-    std::shared_ptr<const IFirmware> mFirmware;
+    // const std::shared_ptr<const IFirmware> mFirmware;
     bool mPreviousTimeSet = false;
     TimePoint mPreviousTime = TimePoint::min();
 };

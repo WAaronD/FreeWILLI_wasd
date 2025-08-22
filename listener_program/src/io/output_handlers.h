@@ -3,11 +3,39 @@
 #include "../pch.h"
 #include "../utils.h"
 
+class ProcessingContext;
+
+struct BufferStruct
+{
+    std::vector<float> mAmps;
+    std::vector<float> mDoaX;
+    std::vector<float> mDoaY;
+    std::vector<float> mDoaZ;
+    std::vector<Eigen::VectorXf> mTdoaVector;
+    std::vector<Eigen::VectorXf> mXCorrAmps;
+    std::vector<TimePoint> mPeakTimes;
+
+    void clear()
+    {
+        mAmps.clear();
+        mDoaX.clear();
+        mDoaY.clear();
+        mDoaZ.clear();
+        mTdoaVector.clear();
+        mXCorrAmps.clear();
+        mPeakTimes.clear();
+    }
+
+    size_t size() const { return mPeakTimes.size(); }
+
+    bool empty() const { return mPeakTimes.empty(); }
+};
+
 class IOutputHandler
 {
    public:
     virtual ~IOutputHandler() = default;
-    virtual void handleOutput(const DetectionResult& result) = 0;
+    virtual void handleOutput(const ProcessingContext& result) = 0;
     virtual void initialize(const TimePoint& timestamp, int numChannels) = 0;
     virtual void finalize() {}
     virtual void flush() {};
@@ -19,7 +47,7 @@ class FileOutputHandler : public IOutputHandler
     FileOutputHandler(const std::string& loggingDir, bool integrationTesting = false);
 
     void initialize(const TimePoint& timestamp, int numChannels) override;
-    void handleOutput(const DetectionResult& result) override;
+    void handleOutput(const ProcessingContext& result) override;
     void flush() override;
     void finalize() override;
 
@@ -43,7 +71,7 @@ class ConsoleOutputHandler : public IOutputHandler
     explicit ConsoleOutputHandler(bool verbose = false);
 
     void initialize(const TimePoint& timestamp, int numChannels) override;
-    void handleOutput(const DetectionResult& result) override;
+    void handleOutput(const ProcessingContext& result) override;
     void flush() override;
     void finalize() override;
 
@@ -58,7 +86,7 @@ class NetworkOutputHandler : public IOutputHandler
     NetworkOutputHandler(const std::string& ip, int port);
     ~NetworkOutputHandler() override;
 
-    void handleOutput(const DetectionResult& result) override;
+    void handleOutput(const ProcessingContext& result) override;
     void initialize(const TimePoint& timestamp, int numChannels) override;
     void finalize() override;
 
@@ -76,7 +104,7 @@ class CompositeOutputHandler : public IOutputHandler
    public:
     void addHandler(std::unique_ptr<IOutputHandler> handler);
     void initialize(const TimePoint& timestamp, int numChannels) override;
-    void handleOutput(const DetectionResult& result) override;
+    void handleOutput(const ProcessingContext& result) override;
     void flush() override;
     void finalize() override;
 

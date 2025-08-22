@@ -18,22 +18,18 @@ int main(int argc, char* argv[])
     {
         FlexibleConfig config = FlexibleConfigParser::parse(argv[1]);
 
-        // Extract socket variables
-        SocketVariables socketVars;
-        socketVars.ipAddress = config.network.at("ipAddress").get<std::string>();
-        socketVars.port = config.network.at("port").get<int>();
-
-        std::unique_ptr<ISocketManager> socketManager = std::make_unique<UdpSocketManager>(socketVars);
+        const std::unique_ptr<ISocketManager> socketManager = std::make_unique<UdpSocketManager>(
+            config.network.at("ipAddress").get<std::string>(), config.network.at("port").get<int>());
 
         while (true)
         {
             socketManager->restartListener();
             SharedDataManager sharedDataManager;
 
-            auto processingContext = std::make_shared<ProcessingContext>(
+            const std::shared_ptr<ProcessingContext> processingContext = std::make_shared<ProcessingContext>(
                 FirmwareFactory::create(config.global.at("firmware").get<std::string>()));
 
-            auto pipeline = FlexiblePipelineFactory::createPipeline(
+            const std::unique_ptr<Pipeline> pipeline = FlexiblePipelineFactory::createPipeline(
                 sharedDataManager, config, processingContext, std::stoi(argv[2]));
 
             std::thread producerThread(

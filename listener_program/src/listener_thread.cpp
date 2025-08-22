@@ -18,7 +18,8 @@ void logPacketStatistics(
     startPacketTime = std::chrono::steady_clock::now();
 }
 
-void runListenerLoop(SharedDataManager& sharedDataManager, std::unique_ptr<ISocketManager>& socketManager, bool verbose)
+void runListenerLoop(
+    SharedDataManager& sharedDataManager, const std::unique_ptr<ISocketManager>& socketManager, bool verbose)
 {
     try
     {

@@ -13,9 +13,10 @@
     "pipeline": {
         "steps": [
             {
-                "type": "addDataAcquisition",
+                "type": "addTimeDomainDetection",
                 "params": {
-                    "firmware": "${global.firmware}"
+                    "detector": "PeakAmplitude",
+                    "threshold": 0.0
                 }
             },
             {

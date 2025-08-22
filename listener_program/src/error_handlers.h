@@ -1,7 +1,23 @@
 #pragma once
 
+#include "processing_context_struct.h"
 #include "shared_data_manager.h"
-#include "structs.h"
+
+struct ProcessingError
+{
+    std::string stageName;
+    std::string errorMessage;
+    std::exception_ptr exception;
+    ProcessingContext context;
+
+    ProcessingError(const std::string& stage, const std::string& message) : stageName(stage), errorMessage(message) {}
+
+    ProcessingError(
+        const std::string& stage, const std::string& message, std::exception_ptr ex, const ProcessingContext& ctx)
+        : stageName(stage), errorMessage(message), exception(ex), context(ctx)
+    {
+    }
+};
 
 class IErrorHandler
 {

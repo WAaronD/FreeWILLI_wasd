@@ -11,19 +11,11 @@
 
 PipelineBuilder::PipelineBuilder() : mOrchestrator(std::make_unique<PipelineOrchestrator>()) {}
 
-PipelineBuilder& PipelineBuilder::addDataAcquisition(SharedDataManager& manager, const std::string& firmwareType)
+PipelineBuilder& PipelineBuilder::addDataAcquisition(SharedDataManager& manager)
 {
     std::cout << "Adding DataAcquisition stage to pipeline" << std::endl;
-    auto firmware = FirmwareFactory::create(firmwareType);
-    if (!firmware)
-    {
-        throw std::runtime_error("Failed to create firmware configuration: " + firmwareType);
-    }
 
-    // Store firmware for use by other stages
-    mFirmware = firmware;
-
-    auto stage = std::make_unique<DataAcquisitionStage>(manager, firmware);
+    auto stage = std::make_unique<DataAcquisitionStage>(manager);
     mOrchestrator->addStage(std::move(stage));
 
     return *this;

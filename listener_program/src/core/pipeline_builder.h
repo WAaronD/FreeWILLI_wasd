@@ -21,7 +21,7 @@ class PipelineBuilder
     PipelineBuilder();
 
     // Stage addition methods with object creation
-    PipelineBuilder& addDataAcquisition(SharedDataManager& manager, const std::string& firmwareType);
+    PipelineBuilder& addDataAcquisition(SharedDataManager& manager);
 
     PipelineBuilder& addTimeDomainDetection(const std::string& detectorType, double threshold);
 
@@ -74,5 +74,5 @@ class PipelineBuilder
     std::unique_ptr<PipelineOrchestrator> mOrchestrator;
     std::unique_ptr<IOutputHandler> mOutputHandler;
     std::unique_ptr<IErrorHandler> mErrorHandler;
-    std::shared_ptr<const IFirmware> mFirmware;  // Store firmware for later stages
+    // const std::shared_ptr<const IFirmware> mFirmware;  // Store firmware for later stages
 };
