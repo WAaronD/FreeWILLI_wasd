@@ -80,7 +80,7 @@ void FileOutputHandler::handleOutput(const ProcessingContext& result)
     mBuffer.mDoaZ.push_back(result.currentResult.directionOfArrival.z());
     mBuffer.mTdoaVector.push_back(result.currentResult.tdoaVector);
     mBuffer.mXCorrAmps.push_back(result.currentResult.crossCorrelationAmps);
-    mBuffer.mPeakTimes.push_back(result.currentResult.timestamp);
+    mBuffer.mPeakTimes.push_back(result.dataTimes[0]);
 }
 
 void FileOutputHandler::flush()

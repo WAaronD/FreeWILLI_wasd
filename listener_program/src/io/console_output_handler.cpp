@@ -25,7 +25,7 @@ void ConsoleOutputHandler::handleOutput(const ProcessingContext& result)
     {
         // Detailed output
         auto timeSinceEpoch =
-            std::chrono::duration_cast<std::chrono::microseconds>(result.currentResult.timestamp.time_since_epoch());
+            std::chrono::duration_cast<std::chrono::microseconds>(result.dataTimes[0].time_since_epoch());
 
         std::cout << "\n=== Detection #" << mDetectionCount << " ===" << std::endl;
         std::cout << "Timestamp: " << timeSinceEpoch.count() << " μs" << std::endl;
