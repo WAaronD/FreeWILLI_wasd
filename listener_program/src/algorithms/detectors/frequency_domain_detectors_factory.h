@@ -4,20 +4,20 @@
 class IFrequencyDomainDetectorFactory
 {
    public:
-    static std::unique_ptr<IFrequencyDomainDetector> create(
-        const std::string& frequencyDomainDetector, float energyDetectionThreshold)
+    static std::unique_ptr<IFrequencyDomainDetector> create(const nlohmann::json& params)
     {
-        if (frequencyDomainDetector == "AverageEnergy")
+        const std::string& detector = params.at("detector").get<std::string>();
+        if (detector == "AverageEnergy")
         {
-            return std::make_unique<AverageMagnitudeDetector>(energyDetectionThreshold);
+            return std::make_unique<AverageMagnitudeDetector>(params.at("threshold").get<float>());
         }
-        else if (frequencyDomainDetector == "None")
+        if (detector == "HampelBandEnergyDetector")
         {
-            return std::make_unique<NoFrequencyDomainDetector>();
+            return std::make_unique<HampelBandEnergyDetector>();
         }
         else
         {
-            throw std::invalid_argument("Unknown TimeDomainDetector type: " + frequencyDomainDetector);
+            throw std::invalid_argument("Unknown TimeDomainDetector type: " + detector);
         }
     }
 };

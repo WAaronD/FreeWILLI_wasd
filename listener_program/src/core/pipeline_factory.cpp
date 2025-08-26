@@ -28,18 +28,17 @@ void FlexiblePipelineFactory::executeStep(
 
     if (step.type == "addTimeDomainDetection")
     {
-        builder.addTimeDomainDetection(params.at("detector").get<std::string>(), params.at("threshold").get<float>());
+        builder.addTimeDomainDetection(params);
+    }
+    else if (step.type == "addFrequencyDomainDetection")
+    {
+        builder.addFrequencyDomainDetection(params);
     }
     else if (step.type == "addFrequencyDomainTransform")
     {
         builder.addFrequencyDomainTransform(
             params.at("strategy").get<std::string>(), params.at("filterWeightsFile").get<std::string>(), ctx,
             ctx->firmware->numChannels());
-    }
-    else if (step.type == "addFrequencyDomainDetection")
-    {
-        builder.addFrequencyDomainDetection(
-            params.at("detector").get<std::string>(), params.at("threshold").get<float>());
     }
     else if (step.type == "addONNXClassification")
     {
@@ -82,6 +81,6 @@ void FlexiblePipelineFactory::executeStep(
     }
     else
     {
-        throw std::invalid_argument("Unknown pipeline step type: " + step.type);
+        throw std::invalid_argument("unknown pipeline step type: " + step.type);
     }
 }

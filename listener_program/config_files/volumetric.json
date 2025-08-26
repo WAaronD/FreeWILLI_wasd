@@ -29,9 +29,8 @@
             {
                 "type": "addFrequencyDomainDetection",
                 "params": {
-                    "detector": "AverageEnergy",
-                    "threshold": 100.0
-                }
+                    "detector": "HampelBandEnergyDetector"
+                  }
             },
             {
                 "type": "addFrequencyDomainDoaEstimation",

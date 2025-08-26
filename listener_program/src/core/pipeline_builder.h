@@ -23,7 +23,7 @@ class PipelineBuilder
     // Stage addition methods with object creation
     PipelineBuilder& addDataAcquisition(SharedDataManager& manager);
 
-    PipelineBuilder& addTimeDomainDetection(const std::string& detectorType, double threshold);
+    PipelineBuilder& addTimeDomainDetection(const nlohmann::json& params);
 
     PipelineBuilder& addTimeDomainFilter(
         const std::string& filterType, const std::string& weightsPath, const std::shared_ptr<ProcessingContext>& ctx,
@@ -33,7 +33,7 @@ class PipelineBuilder
         const std::string& strategyType, const std::string& weightsPath, const std::shared_ptr<ProcessingContext>& ctx,
         int numChannels);
 
-    PipelineBuilder& addFrequencyDomainDetection(const std::string& detectorType, double threshold);
+    PipelineBuilder& addFrequencyDomainDetection(const nlohmann::json& params);
 
     PipelineBuilder& addONNXClassification(const std::string& modelPath, const std::string& scalerParamsPath);
 

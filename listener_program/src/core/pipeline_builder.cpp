@@ -21,15 +21,15 @@ PipelineBuilder& PipelineBuilder::addDataAcquisition(SharedDataManager& manager)
     return *this;
 }
 
-PipelineBuilder& PipelineBuilder::addTimeDomainDetection(const std::string& detectorType, double threshold)
+PipelineBuilder& PipelineBuilder::addTimeDomainDetection(const nlohmann::json& params)
 {
     std::cout << "Adding TimeDomainDetection stage to pipeline" << std::endl;
-    auto detector = ITimeDomainDetectorFactory::create(detectorType, threshold);
+    auto detector = ITimeDomainDetectorFactory::create(params);
+
     if (!detector)
     {
-        throw std::runtime_error("Failed to create time-domain detector: " + detectorType);
+        throw std::runtime_error("Failed to create time-domain detector");
     }
-
     auto stage = std::make_unique<TimeDomainDetectionStage>(std::move(detector));
     mOrchestrator->addStage(std::move(stage));
 
@@ -73,14 +73,10 @@ PipelineBuilder& PipelineBuilder::addFrequencyDomainTransform(
     return *this;
 }
 
-PipelineBuilder& PipelineBuilder::addFrequencyDomainDetection(const std::string& detectorType, double threshold)
+PipelineBuilder& PipelineBuilder::addFrequencyDomainDetection(const nlohmann::json& params)
 {
     std::cout << "Adding FrequencyDomainDetection stage to pipeline" << std::endl;
-    auto detector = IFrequencyDomainDetectorFactory::create(detectorType, threshold);
-    if (!detector)
-    {
-        throw std::runtime_error("Failed to create frequency-domain detector: " + detectorType);
-    }
+    auto detector = IFrequencyDomainDetectorFactory::create(params);
 
     auto stage = std::make_unique<FrequencyDomainDetectionStage>(std::move(detector));
     mOrchestrator->addStage(std::move(stage));
