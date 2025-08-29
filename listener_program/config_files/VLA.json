@@ -1,22 +1,71 @@
 {
-    "enableIntegrationTesting": false,
-    "template": "MultiChannelFrequencyDomainTracking",
-    "logDirectory": "deployment_files/",
-    "networkIPAddress": "self",
-    "networkPort": 1045,
-    "firmware": "1240",
-    "speedOfSound_mps": 1500,
-    "timeDomainDetector": "PeakAmplitude",
-    "timeDomainThreshold": 0,
-    "timeDomainFilter": "Multiply",
-    "frequencyDomainStrategy": "None",
-    "frequencyDomainDetector": "None",
-    "frequencyDomainThreshold": 100,
-    "filterWeightsFile": "filters/highpass_taps@101_cutoff@20k_window@hamming_fs@100k.txt",
-    "receiverPositionsFile": "receiver_pos/SOCAL_H_72_HS_harp4chPar_VLA.txt",
-    "enableTracking": false,
-    "clusteringIntervalSeconds": 60,
-    "clusteringWindowSeconds": 30,
-    "onnxModelPath": "",
-    "onnxNormalizationParams": "../../TestOnnx/scaler_params.json"
+    "network": {
+        "ipAddress": "self",
+        "port": 1045
+    },
+    "global": {
+        "enableIntegrationTesting": false,
+        "verbose": true,
+        "firmware": "1240",
+        "speedOfSound_mps": 1500.0,
+        "logDirectory": "deployment_files/"
+    },
+    "pipeline": {
+        "steps": [
+            {
+                "type": "addTimeDomainDetection",
+                "params": {
+                    "detector": "PeakAmplitude",
+                    "threshold": 0.0
+                }
+            },
+            {
+                "type": "addTimeDomainDetection",
+                "params": {
+                    "detector": "PeakAmplitude",
+                    "threshold": 0.0
+                }
+            },
+            {
+                "type": "addFrequencyDomainTransform",
+                "params": {
+                    "strategy": "None",
+                    "filterWeightsFile": "filters/highpass_taps@101_cutoff@20k_window@hamming_fs@100k.txt"
+                }
+            },
+            {
+                "type": "addFrequencyDomainDetection",
+                "params": {
+                    "detector": "AverageEnergy",
+                    "threshold": 100.0
+                }
+            },
+            {
+                "type": "addFrequencyDomainDoaEstimation",
+                "params": {
+                    "receiverPositionsFile": "receiver_pos/SOCAL_H_72_HS_harp4chPar_VLA.txt",
+                    "speedOfSound": "${global.speedOfSound_mps}"
+                }
+            },
+            {
+                "type": "setFileOutput",
+                "params": {
+                    "directory": "${global.logDirectory}",
+                    "integrationTesting": "${global.enableIntegrationTesting}"
+                }
+            },
+            {
+                "type": "setConsoleOutput",
+                "params": {
+                    "enabled": "${global.verbose}"
+                }
+            },
+            {
+                "type": "setErrorHandler",
+                "params": {
+                    "logFile": "${global.logDirectory}error.log"
+                }
+            }
+        ]
+    }
 }

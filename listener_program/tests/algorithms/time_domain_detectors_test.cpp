@@ -1,7 +1,9 @@
 #include <gtest/gtest.h>
 
-#include "../../src/algorithms/detectors/time_domain_detectors_factory.h"  // Adjust path accordingly
+#include <nlohmann/json.hpp>
 
+#include "../../src/algorithms/detectors/time_domain_detectors_factory.h"  // Adjust path accordingly
+using json = nlohmann::json;
 // #include <Eigen/Dense>
 
 // Test PeakAmplitudeDetector constructor and threshold setting
@@ -39,12 +41,14 @@ TEST(PeakAmplitudeDetectorTest, ReturnsCorrectLastDetection)
 // Test Factory: PeakAmplitudeDetector creation
 TEST(ITimeDomainDetectorFactoryTest, CreatesPeakAmplitudeDetector)
 {
-    auto detector = ITimeDomainDetectorFactory::create("PeakAmplitude", 0.5f);
+    json params = {{"detector", "PeakAmplitude"}, {"threshold", 0.5f}};
+    auto detector = ITimeDomainDetectorFactory::create(params);
     EXPECT_NE(dynamic_cast<PeakAmplitudeDetector*>(detector.get()), nullptr);
 }
 
 // Test Factory: Throws for unknown detector type
 TEST(ITimeDomainDetectorFactoryTest, ThrowsForUnknownDetectorType)
 {
-    EXPECT_THROW(ITimeDomainDetectorFactory::create("InvalidDetector", 0.5f), std::invalid_argument);
+    json params = {{"detector", "InvalidDetector"}, {"threshold", 0.5f}};
+    EXPECT_THROW(ITimeDomainDetectorFactory::create(params), std::invalid_argument);
 }

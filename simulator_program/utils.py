@@ -202,6 +202,7 @@ def InterleaveData(dataMatrix):
     #return np.hstack(np.hstack(dataMatrix))
 
 
+'''
 def ScaleData(dataFlattened, scale, toStretch):
     nSample = 30
     print("first ",nSample ," values of dataMatrixInterleaved before scaling: ",dataFlattened[:nSample])
@@ -213,7 +214,20 @@ def ScaleData(dataFlattened, scale, toStretch):
     
     print("dataFlattened min and max values: ", np.min(dataFlattened), np.max(dataFlattened))
     return dataFlattened
+'''
+def ScaleData(dataFlattened, scale, toStretch):
+    nSample = 30
+    print("first", nSample, "values of dataMatrixInterleaved before scaling:",
+          dataFlattened[:nSample])
 
+    dataFlattened = dataFlattened.astype(np.int32) + scale
+
+    if toStretch:
+        dataFlattened = Normalize(dataFlattened.astype(np.float64))
+        assert (dataFlattened.min() == 0) and (dataFlattened.max() == 65535)
+
+    print("dataFlattened min and max values:", np.min(dataFlattened), np.max(dataFlattened))
+    return dataFlattened
 
 def ConvertToBytes(dataFlattenedScaled):
     formatString = '>{}H'.format(len(dataFlattenedScaled))          # encode data as big-endian

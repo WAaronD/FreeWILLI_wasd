@@ -3,7 +3,7 @@
 #include "../error_handlers.h"
 #include "../io/output_handlers.h"
 #include "../shared_data_manager.h"
-#include "core_interfaces.h"
+#include "pipeline_orchestrator.h"
 
 class Pipeline
 {
@@ -27,10 +27,10 @@ class Pipeline
     void performInitialDataAcquisition();
 
     SharedDataManager& mSharedDataManager;
-    std::shared_ptr<ProcessingContext> mContext;
-    std::unique_ptr<IPipelineOrchestrator> mOrchestrator;
-    std::unique_ptr<IOutputHandler> mOutputHandler;
-    std::unique_ptr<IErrorHandler> mErrorHandler;
+    const std::shared_ptr<ProcessingContext> mContext;
+    const std::unique_ptr<IPipelineOrchestrator> mOrchestrator;
+    const std::unique_ptr<IOutputHandler> mOutputHandler;
+    const std::unique_ptr<IErrorHandler> mErrorHandler;
 
     std::chrono::seconds mProgramRuntime;
     TimePoint mProgramStartTime;

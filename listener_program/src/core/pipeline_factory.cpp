@@ -1,148 +1,86 @@
-// pipeline_factory.cpp
 #include "pipeline_factory.h"
 
-#include <iostream>
-#include <memory>
-#include <stdexcept>
-
-#include "../ML/onnx_model.h"
-#include "../algorithms/detectors/frequency_domain_detectors_factory.h"
-#include "../algorithms/detectors/time_domain_detectors_factory.h"
-#include "../algorithms/linear_algebra_utils.h"
-#include "../algorithms/localization/hydrophone_position_processing.h"
-#include "../algorithms/time_domain_filters_factory.h"
-#include "../firmware/firmware_factory.h"
-#include "../tracker/tracker.h"
-#include "pipeline_builder.h"
-
-std::unique_ptr<Pipeline> multiChannelFrequencyDomainTracking(
-    SharedDataManager& sharedDataManager, const PipelineVariables& config, int runtime)
+std::unique_ptr<Pipeline> FlexiblePipelineFactory::createPipeline(
+    SharedDataManager& sharedDataManager, const FlexibleConfig& config, const std::shared_ptr<ProcessingContext>& ctx,
+    int runtimeSeconds)
 {
-    std::cout << "Creating acoustic processing pipeline...\n";
+    std::cout << "Creating flexible acoustic processing pipeline...\n";
 
-    // --- firmware ---
-    auto firmware = FirmwareFactory::create(config.firmware);
-    if (!firmware) throw std::runtime_error("Failed to create firmware configuration");
-    std::cout << "Firmware: " << config.firmware << " (chs=" << firmware->numChannels()
-              << ", sr=" << firmware->sampleRate() << ")\n";
+    PipelineBuilder builder;
 
-    // --- hydrophone positions & least-squares ---
-    auto positions = getHydrophoneRelativePositions(config.receiverPositionsPath);
-    std::cout << "Hydrophone positions: " << positions.rows() << "×" << positions.cols() << "\n";
-    auto svd = computeSvd(positions);
-    auto [LS, rank] = precomputePseudoInverseAndRank(svd, config.speedOfSound);
-    std::cout << "Precomputed LS, rank=" << rank << "\n";
+    // builder always needs an initial Data Acquisition step
+    builder.addDataAcquisition(sharedDataManager);
 
-    // --- context & filter ---
-    auto ctx = std::make_shared<ProcessingContext>(firmware);
-    auto filter = IFrequencyDomainTransformFactory::create(
-        config.frequencyDomainStrategy, config.filterWeightsPath, ctx->channelData, firmware->numChannels());
-    if (!filter) throw std::runtime_error("Failed to create frequency‐domain filter");
-    std::cout << "Filter: " << config.frequencyDomainStrategy << "\n";
-
-    // --- GCC-PHAT ---
-    auto gcc = std::make_unique<GCC_PHAT>(
-        filter->getPaddedLength(), filter->getFrequencyDomainData().rows(), firmware->numChannels(),
-        firmware->sampleRate());
-    std::cout << "GCC-PHAT ready\n";
-
-    // --- detectors ---
-    auto tdet = ITimeDomainDetectorFactory::create(config.timeDomainDetector, config.timeDomainThreshold);
-    if (!tdet) throw std::runtime_error("Failed to create time-domain detector");
-    auto fdet =
-        IFrequencyDomainDetectorFactory::create(config.frequencyDomainDetector, config.energyDetectionThreshold);
-    if (!fdet) throw std::runtime_error("Failed to create frequency-domain detector");
-    std::cout << "Detectors: " << config.timeDomainDetector << ", " << config.frequencyDomainDetector << "\n";
-
-    // --- optional ONNX / tracking ---
-    auto onnx = IONNXModel::create(config);
-    std::cout << (onnx ? "ONNX model loaded\n" : "No ONNX model\n");
-    auto tracker = ITracker::create(config);
-    std::cout << (tracker ? "Tracker loaded\n" : "No tracker\n");
-
-    std::unique_ptr<IErrorHandler> errorHandler = std::make_unique<DefaultErrorHandler>(nullptr, "error.log");
-
-    // --- build pipeline ---
-    auto pipeline = PipelineBuilder()
-                        .addDataAcquisition(sharedDataManager, firmware)
-                        .addTimeDomainDetection(std::move(tdet))
-                        .addFrequencyDomainTransform(std::move(filter))
-                        .addFrequencyDomainDetection(std::move(fdet))
-                        .addONNXClassification(std::move(onnx))
-                        .addFrequencyDomainDoaEstimation(std::move(gcc), LS, rank)
-                        .addTracking(std::move(tracker))
-                        .setFileOutput(config.loggingDirectory, config.integrationTesting)
-                        .setConsoleOutput(false)
-                        .setErrorHandler(std::move(errorHandler))
-                        .build(sharedDataManager, std::chrono::seconds(runtime), ctx);
-
-    std::cout << "Pipeline created successfully!\n";
-    return pipeline;
-}
-
-std::unique_ptr<Pipeline> multiChannelTimeDomainClassification(
-    SharedDataManager& sharedDataManager, const PipelineVariables& config, int runtime)
-{
-    std::cout << "Creating acoustic processing pipeline...\n";
-
-    // --- firmware ---
-    auto firmware = FirmwareFactory::create(config.firmware);
-    if (!firmware) throw std::runtime_error("Failed to create firmware configuration");
-    std::cout << "Firmware: " << config.firmware << " (chs=" << firmware->numChannels()
-              << ", sr=" << firmware->sampleRate() << ")\n";
-
-    // --- hydrophone positions & least-squares ---
-    auto positions = getHydrophoneRelativePositions(config.receiverPositionsPath);
-    std::cout << "Hydrophone positions: " << positions.rows() << "×" << positions.cols() << "\n";
-    auto svd = computeSvd(positions);
-    auto [LS, rank] = precomputePseudoInverseAndRank(svd, config.speedOfSound);
-    std::cout << "Precomputed LS, rank=" << rank << "\n";
-
-    // --- context & filter ---
-    auto ctx = std::make_shared<ProcessingContext>(firmware);
-
-    // --- detectors ---
-    auto tdet = ITimeDomainDetectorFactory::create(config.timeDomainDetector, config.timeDomainThreshold);
-    if (!tdet) throw std::runtime_error("Failed to create time-domain detector");
-
-    auto filter = ITimeDomainFiltersFactory::create(
-        config.timeDomainFilter, config.filterWeightsPath, ctx->channelData, firmware->numChannels());
-    if (!filter) throw std::runtime_error("Failed to create frequency‐domain filter");
-
-    auto tclass = ITimeDomainDetectorFactory::create("RuCCUS", 500);
-    if (!tdet) throw std::runtime_error("Failed to create time-domain detector");
-
-    std::unique_ptr<IErrorHandler> errorHandler = std::make_unique<DefaultErrorHandler>(nullptr, "error.log");
-
-    // --- build pipeline ---
-    auto pipeline = PipelineBuilder()
-                        .addDataAcquisition(sharedDataManager, firmware)
-                        //.addTimeDomainDetection(std::move(tdet))
-                        .addTimeDomainFilter(std::move(filter))
-                        .addTimeDomainDetection(std::move(tclass))
-                        .setFileOutput(config.loggingDirectory, config.integrationTesting)
-                        .setConsoleOutput(false)
-                        .setNetworkOutput("127.0.0.1", 55001)
-                        .setErrorHandler(std::move(errorHandler))
-                        .build(sharedDataManager, std::chrono::seconds(runtime), ctx);
-
-    std::cout << "Pipeline created successfully!\n";
-    return pipeline;
-}
-
-std::unique_ptr<Pipeline> PipelineFactory::createPipeline(
-    SharedDataManager& sharedDataManager, const PipelineVariables& config, int runtimeSeconds)
-{
-    if (config.pipelineTemplate == "MultiChannelFrequencyDomainTracking")
+    // Execute each pipeline step
+    for (const auto& step : config.pipelineSteps)
     {
-        return multiChannelFrequencyDomainTracking(sharedDataManager, config, runtimeSeconds);
+        executeStep(builder, step, sharedDataManager, ctx);
     }
-    if (config.pipelineTemplate == "MultiChannelTimeDomainClassification")
+
+    return builder.build(sharedDataManager, std::chrono::seconds(runtimeSeconds), ctx);
+}
+
+void FlexiblePipelineFactory::executeStep(
+    PipelineBuilder& builder, const PipelineStep& step, SharedDataManager& sharedDataManager,
+    const std::shared_ptr<ProcessingContext>& ctx)
+{
+    const auto& params = step.params;
+
+    if (step.type == "addTimeDomainDetection")
     {
-        return multiChannelTimeDomainClassification(sharedDataManager, config, runtimeSeconds);
+        builder.addTimeDomainDetection(params);
+    }
+    else if (step.type == "addFrequencyDomainDetection")
+    {
+        builder.addFrequencyDomainDetection(params);
+    }
+    else if (step.type == "addFrequencyDomainTransform")
+    {
+        builder.addFrequencyDomainTransform(
+            params.at("strategy").get<std::string>(), params.at("filterWeightsFile").get<std::string>(), ctx,
+            ctx->firmware->numChannels());
+    }
+    else if (step.type == "addONNXClassification")
+    {
+        builder.addONNXClassification(
+            params.at("modelPath").get<std::string>(), params.at("normalizationParams").get<std::string>());
+    }
+    else if (step.type == "addFrequencyDomainDoaEstimation")
+    {
+        builder.addFrequencyDomainDoaEstimation(
+            params.at("receiverPositionsFile").get<std::string>(), ctx, params.at("speedOfSound").get<float>());
+    }
+    else if (step.type == "addTracking")
+    {
+        builder.addTracking(
+            params.at("directory").get<std::string>(),
+            std::chrono::seconds(params.at("clusteringIntervalSeconds").get<int>()),
+            std::chrono::seconds(params.at("clusteringWindowSeconds").get<int>()));
+    }
+    else if (step.type == "addTimeDomainFilter")
+    {
+        builder.addTimeDomainFilter(
+            params.at("filter").get<std::string>(), params.at("filterWeightsFile").get<std::string>(), ctx,
+            ctx->firmware->numChannels());
+    }
+    else if (step.type == "setFileOutput")
+    {
+        builder.setFileOutput(params.at("directory").get<std::string>(), params.at("integrationTesting").get<bool>());
+    }
+    else if (step.type == "setConsoleOutput")
+    {
+        builder.setConsoleOutput(params.at("enabled").get<bool>());
+    }
+    else if (step.type == "setNetworkOutput")
+    {
+        builder.setNetworkOutput(params.at("host").get<std::string>(), params.at("port").get<int>());
+    }
+    else if (step.type == "setErrorHandler")
+    {
+        builder.setErrorHandler(params.at("logFile").get<std::string>(), sharedDataManager);
     }
     else
     {
-        throw std::invalid_argument("PipelineFactory: unsupported pipeline type");
+        throw std::invalid_argument("unknown pipeline step type: " + step.type);
     }
 }

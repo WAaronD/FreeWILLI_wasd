@@ -1,3 +1,4 @@
+#include "../processing_context_struct.h"
 #include "output_handlers.h"
 
 NetworkOutputHandler::NetworkOutputHandler(const std::string& ip, int port) : mIp(ip), mPort(port), mSockfd(-1)
@@ -34,10 +35,9 @@ void NetworkOutputHandler::initialize(const TimePoint& timestamp, int numChannel
     mInitNumChannels = numChannels;
 }
 
-void NetworkOutputHandler::handleOutput(const DetectionResult& /*result*/)
+void NetworkOutputHandler::handleOutput(const ProcessingContext& /*result*/)
 {
     const char* msg = "Hello, UDP!";
-    std::cout << "sending mesage!!!!! \n";
     ssize_t sent =
         ::sendto(mSockfd, msg, std::strlen(msg), 0, reinterpret_cast<struct sockaddr*>(&mDest), sizeof(mDest));
     if (sent < 0)

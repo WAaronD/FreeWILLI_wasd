@@ -22,7 +22,7 @@ Eigen::MatrixXf loadHydrophonePositionsFromFile(const std::string& filename)
         throw std::ios_base::failure(msg.str());
     }
 
-    std::cout << "Reading hydrophone positions..." << std::endl;
+    std::cout << "    Reading hydrophone positions..." << std::endl;
 
     std::vector<std::vector<float>> tempPositions;
     std::string line;

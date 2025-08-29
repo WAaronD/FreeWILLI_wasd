@@ -2,9 +2,6 @@
 #include "pch.h"
 #include "shared_data_manager.h"
 
-int packetCounter = 0;  // this should only be used inside the UDPListener
-                        // function, as it is not protected by a mutex
-
 void logPacketStatistics(
     int packetCounter, int printInterval, std::chrono::steady_clock::time_point& startPacketTime, int queueSize,
     int processedPackets, int detectionCount)
@@ -21,13 +18,15 @@ void logPacketStatistics(
     startPacketTime = std::chrono::steady_clock::now();
 }
 
-void runListenerLoop(SharedDataManager& sharedDataManager, std::unique_ptr<ISocketManager>& socketManager)
+void runListenerLoop(
+    SharedDataManager& sharedDataManager, const std::unique_ptr<ISocketManager>& socketManager, bool verbose)
 {
     try
     {
         struct sockaddr_in addr;
         socklen_t addrLength = sizeof(addr);
         constexpr int printInterval = 500;
+        long long packetCounter = 0;
 
         auto startPacketTime = std::chrono::steady_clock::now();
 
@@ -39,7 +38,7 @@ void runListenerLoop(SharedDataManager& sharedDataManager, std::unique_ptr<ISock
             int queueSize = sharedDataManager.pushDataToBuffer(dataBytes);
 
             packetCounter += 1;
-            if (packetCounter % printInterval == 0)
+            if (verbose && packetCounter % printInterval == 0)
             {
                 logPacketStatistics(
                     packetCounter, printInterval, startPacketTime, queueSize, packetCounter - queueSize,

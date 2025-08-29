@@ -1,3 +1,4 @@
+#include "../processing_context_struct.h"
 #include "output_handlers.h"
 
 ConsoleOutputHandler::ConsoleOutputHandler(bool verbose) : mVerbose(verbose), mDetectionCount(0) {}
@@ -11,9 +12,9 @@ void ConsoleOutputHandler::initialize(const TimePoint& timestamp, int numChannel
     std::cout << "===========================================" << std::endl;
 }
 
-void ConsoleOutputHandler::handleOutput(const DetectionResult& result)
+void ConsoleOutputHandler::handleOutput(const ProcessingContext& result)
 {
-    if (!result.isValid)
+    if (!result.currentResult.isValid)
     {
         return;
     }
@@ -24,28 +25,30 @@ void ConsoleOutputHandler::handleOutput(const DetectionResult& result)
     {
         // Detailed output
         auto timeSinceEpoch =
-            std::chrono::duration_cast<std::chrono::microseconds>(result.timestamp.time_since_epoch());
+            std::chrono::duration_cast<std::chrono::microseconds>(result.dataTimes[0].time_since_epoch());
 
         std::cout << "\n=== Detection #" << mDetectionCount << " ===" << std::endl;
         std::cout << "Timestamp: " << timeSinceEpoch.count() << " μs" << std::endl;
-        std::cout << "Peak Amplitude: " << std::fixed << std::setprecision(6) << result.peakAmplitude << std::endl;
-        std::cout << "Direction of Arrival: [" << std::fixed << std::setprecision(4) << result.directionOfArrival.x()
-                  << ", " << result.directionOfArrival.y() << ", " << result.directionOfArrival.z() << "]" << std::endl;
+        std::cout << "Peak Amplitude: " << std::fixed << std::setprecision(6) << result.currentResult.peakAmplitude
+                  << std::endl;
+        std::cout << "Direction of Arrival: [" << std::fixed << std::setprecision(4)
+                  << result.currentResult.directionOfArrival.x() << ", " << result.currentResult.directionOfArrival.y()
+                  << ", " << result.currentResult.directionOfArrival.z() << "]" << std::endl;
 
-        if (result.tdoaVector.size() > 0)
+        if (result.currentResult.tdoaVector.size() > 0)
         {
             std::cout << "TDOA Vector: [";
-            for (int i = 0; i < result.tdoaVector.size(); ++i)
+            for (int i = 0; i < result.currentResult.tdoaVector.size(); ++i)
             {
-                std::cout << std::fixed << std::setprecision(6) << result.tdoaVector[i];
-                if (i < result.tdoaVector.size() - 1) std::cout << ", ";
+                std::cout << std::fixed << std::setprecision(6) << result.currentResult.tdoaVector[i];
+                if (i < result.currentResult.tdoaVector.size() - 1) std::cout << ", ";
             }
             std::cout << "]" << std::endl;
         }
 
-        if (result.trackingLabel >= 0)
+        if (result.currentResult.trackingLabel >= 0)
         {
-            std::cout << "Tracking Label: " << result.trackingLabel << std::endl;
+            std::cout << "Tracking Label: " << result.currentResult.trackingLabel << std::endl;
         }
 
         std::cout << "==============================" << std::endl;
@@ -54,13 +57,13 @@ void ConsoleOutputHandler::handleOutput(const DetectionResult& result)
     {
         // Compact output
         std::cout << "Detection #" << mDetectionCount << " | Amp: " << std::fixed << std::setprecision(3)
-                  << result.peakAmplitude << " | DOA: [" << std::fixed << std::setprecision(2)
-                  << result.directionOfArrival.x() << "," << result.directionOfArrival.y() << ","
-                  << result.directionOfArrival.z() << "]";
+                  << result.currentResult.peakAmplitude << " | DOA: [" << std::fixed << std::setprecision(2)
+                  << result.currentResult.directionOfArrival.x() << "," << result.currentResult.directionOfArrival.y()
+                  << "," << result.currentResult.directionOfArrival.z() << "]";
 
-        if (result.trackingLabel >= 0)
+        if (result.currentResult.trackingLabel >= 0)
         {
-            std::cout << " | Track: " << result.trackingLabel;
+            std::cout << " | Track: " << result.currentResult.trackingLabel;
         }
 
         std::cout << std::endl;

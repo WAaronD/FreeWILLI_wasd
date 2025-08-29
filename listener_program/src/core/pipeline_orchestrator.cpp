@@ -61,8 +61,6 @@ bool PipelineOrchestrator::executeStages(std::shared_ptr<ProcessingContext> cont
         }
         catch (const std::exception& e)
         {
-            std::cerr << "Error in stage " << stage->getName() << ": " << e.what() << std::endl;
-
             throw ProcessingError(
                 stage->getName(), "Stage processing failed: " + std::string(e.what()), std::current_exception(),
                 *context);
@@ -75,13 +73,27 @@ bool PipelineOrchestrator::executeStages(std::shared_ptr<ProcessingContext> cont
 
 size_t PipelineOrchestrator::getStageCount() const { return mStages.size(); }
 
-const IProcessingStage* PipelineOrchestrator::getStage(size_t index) const
+IProcessingStage* PipelineOrchestrator::getStageIndex(size_t index) const
 {
     if (index >= mStages.size())
     {
         return nullptr;
     }
     return mStages[index].get();
+}
+
+IProcessingStage* PipelineOrchestrator::getStageName(const std::string& name) const
+{
+    IProcessingStage* stagePointer = nullptr;
+    for (auto& stage : mStages)
+    {
+        if (stage->getName() == name)
+        {
+            stagePointer = stage.get();
+            break;
+        }
+    }
+    return stagePointer;
 }
 
 void PipelineOrchestrator::tickPeriodicStages()

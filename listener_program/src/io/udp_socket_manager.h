@@ -2,15 +2,13 @@
 #include "../pch.h"
 #include "socket_manager_interface.h"
 
-class SocketVariables;
-
 /**
  * @brief Manages UDP socket operations, including creating, restarting, and configuring the socket.
  */
 class UdpSocketManager : public ISocketManager
 {
    public:
-    explicit UdpSocketManager(const SocketVariables& socketVariables);
+    explicit UdpSocketManager(const std::string& ipAddress, int port);
 
     void restartListener() override;
 

@@ -6,8 +6,8 @@
  * @brief Constructs a new SocketManager and initializes the UDP socket.
  * @throws std::runtime_error If the socket cannot be created.
  */
-UdpSocketManager::UdpSocketManager(const SocketVariables& socketVariables)
-    : mDatagramSocket(socket(AF_INET, SOCK_DGRAM, 0)), mUdpPort(socketVariables.port), mUdpIp(socketVariables.ipAddress)
+UdpSocketManager::UdpSocketManager(const std::string& ipAddress, int port)
+    : mDatagramSocket(socket(AF_INET, SOCK_DGRAM, 0)), mUdpPort(port), mUdpIp(ipAddress)
 
 {
     if (mUdpIp == "self")

@@ -5,19 +5,25 @@
 class ITimeDomainDetectorFactory
 {
    public:
-    static std::unique_ptr<ITimeDomainDetector> create(const std::string& timeDomainDetector, float timeDomainThreshold)
+    static std::unique_ptr<ITimeDomainDetector> create(const nlohmann::json& params)
     {
-        if (timeDomainDetector == "PeakAmplitude")
+        const std::string& detector = params.at("detector").get<std::string>();
+        if (detector == "PeakAmplitude")
         {
-            return std::make_unique<PeakAmplitudeDetector>(timeDomainThreshold);
+            return std::make_unique<PeakAmplitudeDetector>(params.at("threshold").get<float>());
         }
-        else if (timeDomainDetector == "RuCCUS")
+        else if (detector == "RuCCUS")
         {
-            return std::make_unique<RuCCUSDetector>(timeDomainThreshold);
+            return std::make_unique<RuCCUSDetector>(params.at("threshold").get<float>());
+        }
+        else if (detector == "CFARDetector")
+        {
+            return std::make_unique<CFARPeakDetector>(
+                static_cast<int>(params.at("numGuard")), static_cast<int>(params.at("numTrain")), params.at("pfa"));
         }
         else
         {
-            throw std::invalid_argument("Unknown TimeDomainDetector type: " + timeDomainDetector);
+            throw std::invalid_argument("Unknown TimeDomainDetector type: " + detector);
         }
     }
 };

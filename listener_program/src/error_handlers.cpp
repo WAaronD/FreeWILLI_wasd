@@ -1,12 +1,35 @@
 #include "error_handlers.h"
 
-#include <iomanip>
-#include <iostream>
-#include <sstream>
-
-DefaultErrorHandler::DefaultErrorHandler(SharedDataManager* sharedDataManager, const std::string& logFile)
+DefaultErrorHandler::DefaultErrorHandler(SharedDataManager& sharedDataManager, const std::string& logFile)
     : mSharedDataManager(sharedDataManager), mLogFile(logFile), mLogToFile(!logFile.empty())
 {
+    if (mLogToFile)
+    {
+        mFileStream.open(mLogFile, std::ios::app);
+        if (mFileStream.is_open())
+        {
+            mOldCerrBuffer = std::cerr.rdbuf(mFileStream.rdbuf());
+        }
+        else
+        {
+            mLogToFile = false;  // failed to open; leave cerr as-is
+        }
+    }
+}
+
+DefaultErrorHandler::~DefaultErrorHandler()
+{
+    std::cerr.flush();
+    if (mOldCerrBuffer)
+    {  // only restore if we changed it
+        std::cerr.rdbuf(mOldCerrBuffer);
+        mOldCerrBuffer = nullptr;
+    }
+    if (mFileStream.is_open())
+    {
+        mFileStream.flush();
+        mFileStream.close();
+    }
 }
 
 void DefaultErrorHandler::handleError(const ProcessingError& error)
@@ -20,10 +43,11 @@ void DefaultErrorHandler::handleError(const ProcessingError& error)
     logContextInformation(error.context);
 
     // Log to file if configured
-    if (mLogToFile)
-    {
-        logErrorToFile(error);
-    }
+    auto now = std::chrono::system_clock::now();
+    auto timeT = std::chrono::system_clock::to_time_t(now);
+
+    std::cerr << std::put_time(std::localtime(&timeT), "%Y-%m-%d %H:%M:%S");
+    std::cerr << " [ERROR] Stage: " << error.stageName << " | Message: " << error.errorMessage << std::endl;
 
     // Stage-specific error handling
     if (error.stageName == "DataAcquisition")
@@ -43,10 +67,7 @@ void DefaultErrorHandler::handleError(const ProcessingError& error)
     writeDataToCerr(error.context);
 
     // Flag error in shared data manager
-    if (mSharedDataManager)
-    {
-        mSharedDataManager->errorOccurred = true;
-    }
+    mSharedDataManager.errorOccurred = true;
 }
 
 void DefaultErrorHandler::logContextInformation(const ProcessingContext& context)
@@ -67,43 +88,8 @@ void DefaultErrorHandler::logContextInformation(const ProcessingContext& context
     }
 
     std::cerr << "Current result valid: " << (context.currentResult.isValid ? "YES" : "NO") << std::endl;
-
-    /*
-    if (context.tdoaVector.has_value())
-    {
-        std::cerr << "TDOA vector size: " << context.tdoaVector->size() << std::endl;
-    }
-
-    if (context.directionOfArrival.has_value())
-    {
-        std::cerr << "DOA vector size: " << context.directionOfArrival->size() << std::endl;
-    }
-    */
-
     std::cerr << "Data bytes containers: " << context.dataBytes.size() << std::endl;
     std::cerr << "-----------------------------" << std::endl;
-}
-
-void DefaultErrorHandler::logErrorToFile(const ProcessingError& error)
-{
-    try
-    {
-        std::ofstream logFile(mLogFile, std::ios::app);
-        if (logFile.is_open())
-        {
-            auto now = std::chrono::system_clock::now();
-            auto timeT = std::chrono::system_clock::to_time_t(now);
-
-            logFile << std::put_time(std::localtime(&timeT), "%Y-%m-%d %H:%M:%S");
-            logFile << " [ERROR] Stage: " << error.stageName << " | Message: " << error.errorMessage << std::endl;
-
-            logFile.close();
-        }
-    }
-    catch (const std::exception& e)
-    {
-        std::cerr << "Failed to log error to file: " << e.what() << std::endl;
-    }
 }
 
 void DefaultErrorHandler::handleDataAcquisitionError(const ProcessingError& error)
@@ -176,21 +162,16 @@ void DefaultErrorHandler::writeDataToCerr(const ProcessingContext& context)
     // Add errored byte data to the error message
     errorMessage << "\nErrored bytes of last packets:" << std::endl;
 
-    for (size_t i = 0; i < context.dataBytes.size() && i < 3; ++i)
+    for (size_t i = 0; i < context.dataBytes.size(); ++i)
     {  // Limit to first 3 packets
         const auto& byteArray = context.dataBytes[i];
         errorMessage << "Packet " << i << " (" << byteArray.size() << " bytes): ";
 
         // Show first and last few bytes
-        size_t showBytes = std::min(byteArray.size(), size_t(16));
-        for (size_t j = 0; j < showBytes; ++j)
+        // size_t showBytes = std::min(byteArray.size(), size_t(16));
+        for (size_t j = 0; j < byteArray.size(); ++j)
         {
             errorMessage << std::setw(2) << std::setfill('0') << std::hex << static_cast<int>(byteArray[j]) << " ";
-        }
-
-        if (byteArray.size() > showBytes)
-        {
-            errorMessage << "... (" << (byteArray.size() - showBytes) << " more bytes)";
         }
 
         errorMessage << std::endl;

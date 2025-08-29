@@ -1,3 +1,4 @@
+#include "../processing_context_struct.h"
 #include "output_handlers.h"
 
 void CompositeOutputHandler::addHandler(std::unique_ptr<IOutputHandler> handler)
@@ -20,7 +21,7 @@ void CompositeOutputHandler::initialize(const TimePoint& timestamp, int numChann
     }
 }
 
-void CompositeOutputHandler::handleOutput(const DetectionResult& result)
+void CompositeOutputHandler::handleOutput(const ProcessingContext& result)
 {
     for (auto& handler : mHandlers)
     {

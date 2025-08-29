@@ -1,123 +1,150 @@
 #include "pipeline_builder.h"
 
-#include <iostream>
-#include <stdexcept>
-
-// ============================================================================
-// PIPELINE BUILDER IMPLEMENTATION
-// ============================================================================
+#include "../ML/onnx_model.h"
+#include "../algorithms/detectors/frequency_domain_detectors_factory.h"
+#include "../algorithms/detectors/time_domain_detectors_factory.h"
+#include "../algorithms/linear_algebra_utils.h"
+#include "../algorithms/localization/hydrophone_position_processing.h"
+#include "../algorithms/time_domain_filters_factory.h"
+#include "../firmware/firmware_factory.h"
+#include "../tracker/tracker.h"
 
 PipelineBuilder::PipelineBuilder() : mOrchestrator(std::make_unique<PipelineOrchestrator>()) {}
 
-PipelineBuilder& PipelineBuilder::addDataAcquisition(
-    SharedDataManager& manager, const std::shared_ptr<const IFirmware>& firmware)
+PipelineBuilder& PipelineBuilder::addDataAcquisition(SharedDataManager& manager)
 {
-    if (!firmware)
-    {
-        throw std::invalid_argument("Firmware cannot be null for data acquisition stage");
-    }
+    std::cout << "Adding DataAcquisition stage to pipeline" << std::endl;
 
-    auto stage = std::make_unique<DataAcquisitionStage>(manager, firmware);
+    auto stage = std::make_unique<DataAcquisitionStage>(manager);
     mOrchestrator->addStage(std::move(stage));
 
-    std::cout << "Added DataAcquisition stage to pipeline" << std::endl;
     return *this;
 }
 
-PipelineBuilder& PipelineBuilder::addTimeDomainDetection(std::unique_ptr<ITimeDomainDetector> detector)
+PipelineBuilder& PipelineBuilder::addTimeDomainDetection(const nlohmann::json& params)
 {
+    std::cout << "Adding TimeDomainDetection stage to pipeline" << std::endl;
+    auto detector = ITimeDomainDetectorFactory::create(params);
+
     if (!detector)
     {
-        throw std::invalid_argument("Time domain detector cannot be null");
+        throw std::runtime_error("Failed to create time-domain detector");
     }
-
     auto stage = std::make_unique<TimeDomainDetectionStage>(std::move(detector));
     mOrchestrator->addStage(std::move(stage));
 
-    std::cout << "Added TimeDomainDetection stage to pipeline" << std::endl;
     return *this;
 }
 
-PipelineBuilder& PipelineBuilder::addTimeDomainFilter(std::unique_ptr<ITimeDomainFilter> filter)
+PipelineBuilder& PipelineBuilder::addTimeDomainFilter(
+    const std::string& filterType, const std::string& weightsPath, const std::shared_ptr<ProcessingContext>& ctx,
+    int numChannels)
 {
+    std::cout << "Adding TimeDomainFiltering stage to pipeline" << std::endl;
+    auto filter = ITimeDomainFiltersFactory::create(filterType, weightsPath, ctx->channelData, numChannels);
     if (!filter)
     {
-        throw std::invalid_argument("Time domain filter cannot be null");
+        throw std::runtime_error("Failed to create time-domain filter: " + filterType);
     }
 
     auto stage = std::make_unique<TimeDomainFilteringStage>(std::move(filter));
     mOrchestrator->addStage(std::move(stage));
 
-    std::cout << "Added Filtering stage to pipeline" << std::endl;
     return *this;
 }
 
-PipelineBuilder& PipelineBuilder::addFrequencyDomainTransform(std::unique_ptr<IFrequencyDomainTransform> filter)
+PipelineBuilder& PipelineBuilder::addFrequencyDomainTransform(
+    const std::string& strategyType, const std::string& weightsPath, const std::shared_ptr<ProcessingContext>& ctx,
+    int numChannels)
 {
+    std::cout << "Adding FrequencyDomainTransform stage to pipeline" << std::endl;
+    auto filter = IFrequencyDomainTransformFactory::create(strategyType, weightsPath, ctx->channelData, numChannels);
+
+    ctx->frequencyDomainData = filter->getFrequencyDomainData();
+
     if (!filter)
     {
-        throw std::invalid_argument("Frequency domain filter cannot be null");
+        throw std::runtime_error("Failed to create frequency-domain filter: " + strategyType);
     }
 
     auto stage = std::make_unique<FrequencyDomainFilteringStage>(std::move(filter));
     mOrchestrator->addStage(std::move(stage));
 
-    std::cout << "Added Filtering stage to pipeline" << std::endl;
     return *this;
 }
 
-PipelineBuilder& PipelineBuilder::addFrequencyDomainDetection(std::unique_ptr<IFrequencyDomainDetector> detector)
+PipelineBuilder& PipelineBuilder::addFrequencyDomainDetection(const nlohmann::json& params)
 {
-    if (!detector)
-    {
-        throw std::invalid_argument("Frequency domain detector cannot be null");
-    }
+    std::cout << "Adding FrequencyDomainDetection stage to pipeline" << std::endl;
+    auto detector = IFrequencyDomainDetectorFactory::create(params);
 
     auto stage = std::make_unique<FrequencyDomainDetectionStage>(std::move(detector));
     mOrchestrator->addStage(std::move(stage));
 
-    std::cout << "Added FrequencyDomainDetection stage to pipeline" << std::endl;
     return *this;
 }
 
-PipelineBuilder& PipelineBuilder::addONNXClassification(std::unique_ptr<ONNXModel> model, size_t spectraSize)
+PipelineBuilder& PipelineBuilder::addONNXClassification(
+    const std::string& modelPath, const std::string& scalerParamsPath)
 {
-    // Classification is optional - null model is allowed
-    auto stage = std::make_unique<ONNXClassificationStage>(std::move(model), spectraSize);
+    std::cout << "Adding ONNXClassification stage to pipeline" << std::endl;
+    std::unique_ptr<ONNXModel> model = nullptr;
+
+    model = IONNXModel::create(modelPath, scalerParamsPath);
+
+    auto stage = std::make_unique<ONNXClassificationStage>(std::move(model), 500);
     mOrchestrator->addStage(std::move(stage));
 
-    std::cout << "Added Classification stage to pipeline" << std::endl;
     return *this;
 }
 
 PipelineBuilder& PipelineBuilder::addFrequencyDomainDoaEstimation(
-    std::unique_ptr<GCC_PHAT> gccPhat, const Eigen::MatrixXf& cachedLS, int rank)
+    const std::string& receiverPositionsPath, const std::shared_ptr<ProcessingContext>& ctx, float speedOfSound)
 {
-    auto stage = std::make_unique<DirectionEstimationStage>(std::move(gccPhat), cachedLS, rank);
+    std::cout << "Adding FrequencyDomainDoaEstimation stage to pipeline" << std::endl;
+    auto gccPhat = std::make_unique<GCC_PHAT>(
+        ctx->channelData.cols(), ctx->frequencyDomainData.rows(), ctx->firmware->numChannels(),
+        ctx->firmware->sampleRate());
+
+    if (!gccPhat)
+    {
+        throw std::runtime_error("Failed to create GCC_PHAT");
+    }
+
+    auto positions = getHydrophoneRelativePositions(receiverPositionsPath);
+    std::cout << "    Hydrophone positions: " << positions.rows() << "×" << positions.cols() << "\n";
+    auto svd = computeSvd(positions);
+    auto [LS, rank] = precomputePseudoInverseAndRank(svd, speedOfSound);
+    std::cout << "    Precomputed LS, rank=" << rank << "\n";
+
+    auto stage = std::make_unique<DirectionEstimationStage>(std::move(gccPhat), LS, rank);
     mOrchestrator->addStage(std::move(stage));
 
-    std::cout << "Added DirectionEstimation stage to pipeline" << std::endl;
     return *this;
 }
 
-PipelineBuilder& PipelineBuilder::addTracking(std::unique_ptr<Tracker> tracker)
+PipelineBuilder& PipelineBuilder::addTracking(
+    const std::string& outputDirectory, std::chrono::seconds clusteringFrequency, std::chrono::seconds clusteringWindow)
 {
-    // Tracking is optional - null tracker is allowed
+    std::cout << "Adding Tracking stage to pipeline" << std::endl;
+    std::unique_ptr<Tracker> tracker = nullptr;
+
+    tracker = ITracker::create(outputDirectory, clusteringFrequency, clusteringWindow);
+
     auto stage = std::make_unique<TrackingStage>(std::move(tracker));
     mOrchestrator->addStage(std::move(stage));
 
-    std::cout << "Added Tracking stage to pipeline" << std::endl;
     return *this;
 }
 
 PipelineBuilder& PipelineBuilder::addCustomStage(std::unique_ptr<IProcessingStage> stage)
 {
+    std::cout << "Adding custom stage '" << stage->getName() << "' to pipeline" << std::endl;
     if (!stage)
     {
         throw std::invalid_argument("Custom processing stage cannot be null");
     }
 
-    std::cout << "Added custom stage '" << stage->getName() << "' to pipeline" << std::endl;
     mOrchestrator->addStage(std::move(stage));
 
     return *this;
@@ -125,6 +152,7 @@ PipelineBuilder& PipelineBuilder::addCustomStage(std::unique_ptr<IProcessingStag
 
 PipelineBuilder& PipelineBuilder::setFileOutput(const std::string& loggingDir, bool integrationTesting)
 {
+    std::cout << "Adding file output to directory: " << loggingDir << std::endl;
     if (loggingDir.empty())
     {
         throw std::invalid_argument("Logging directory cannot be empty");
@@ -143,12 +171,12 @@ PipelineBuilder& PipelineBuilder::setFileOutput(const std::string& loggingDir, b
         mOutputHandler = std::move(fileHandler);
     }
 
-    std::cout << "Added file output to directory: " << loggingDir << std::endl;
     return *this;
 }
 
 PipelineBuilder& PipelineBuilder::setConsoleOutput(bool verbose)
 {
+    std::cout << "Adding console output (verbose: " << (verbose ? "ON" : "OFF") << ")" << std::endl;
     auto consoleHandler = std::make_unique<ConsoleOutputHandler>(verbose);
 
     if (mOutputHandler)
@@ -162,15 +190,15 @@ PipelineBuilder& PipelineBuilder::setConsoleOutput(bool verbose)
         mOutputHandler = std::move(consoleHandler);
     }
 
-    std::cout << "Added console output (verbose: " << (verbose ? "ON" : "OFF") << ")" << std::endl;
     return *this;
 }
 
 PipelineBuilder& PipelineBuilder::setNetworkOutput(const std::string& ip, int port)
 {
+    std::cout << "Adding network output at IP address: " << ip << " " << port << std::endl;
     if (ip.empty())
     {
-        throw std::invalid_argument("Ip address for network output cannot be empty");
+        throw std::invalid_argument("IP address for network output cannot be empty");
     }
 
     auto networkHandler = std::make_unique<NetworkOutputHandler>(ip, port);
@@ -186,7 +214,6 @@ PipelineBuilder& PipelineBuilder::setNetworkOutput(const std::string& ip, int po
         mOutputHandler = std::move(networkHandler);
     }
 
-    std::cout << "Added network output at ip address: " << ip << " " << port << std::endl;
     return *this;
 }
 
@@ -232,53 +259,21 @@ PipelineBuilder& PipelineBuilder::setOutputHandler(std::unique_ptr<IOutputHandle
     return *this;
 }
 
-PipelineBuilder& PipelineBuilder::setErrorHandler(std::unique_ptr<IErrorHandler> handler)
+PipelineBuilder& PipelineBuilder::setErrorHandler(const std::string& outputFile, SharedDataManager& SharedDataManager)
 {
-    if (!handler)
-    {
-        throw std::invalid_argument("Error handler cannot be null");
-    }
+    auto errorHandler = std::make_unique<DefaultErrorHandler>(SharedDataManager, outputFile);
 
-    mErrorHandler = std::move(handler);
+    mErrorHandler = std::move(errorHandler);
     std::cout << "Set custom error handler" << std::endl;
     return *this;
 }
-
-/*
-PipelineBuilder& PipelineBuilder::setErrorLogging(const std::string& logFile)
-{
-    if (logFile.empty())
-    {
-        throw std::invalid_argument("Log file path cannot be empty");
-    }
-
-    // Create error handler with logging
-    mErrorHandler = std::make_unique<DefaultErrorHandler>(nullptr, logFile);
-    std::cout << "Set error logging to file: " << logFile << std::endl;
-    return *this;
-}
-*/
 
 std::unique_ptr<Pipeline> PipelineBuilder::build(
     SharedDataManager& sharedDataManager, std::chrono::seconds programRuntime,
     const std::shared_ptr<ProcessingContext>& processingContext)
 {
-    validateConfiguration();
-
-    // Provide default output handler if none specified
-    if (!mOutputHandler)
-    {
-        std::cout << "No output handler specified, using default file output" << std::endl;
-        mOutputHandler = std::make_unique<FileOutputHandler>("./logs/");
-    }
-
-    // Provide default error handler if none specified
-    if (!mErrorHandler)
-    {
-        mErrorHandler = std::make_unique<DefaultErrorHandler>(&sharedDataManager);
-    }
-
     std::cout << "Building pipeline with " << mOrchestrator->getStageCount() << " stages" << std::endl;
+    validateConfiguration();
 
     return std::make_unique<Pipeline>(
         sharedDataManager, std::move(mOrchestrator), std::move(mOutputHandler), std::move(mErrorHandler),
@@ -308,7 +303,7 @@ void PipelineBuilder::validateConfiguration() const
     }
 
     // Check if we have data acquisition stage (should be first)
-    const IProcessingStage* firstStage = mOrchestrator->getStage(0);
+    const IProcessingStage* firstStage = mOrchestrator->getStageIndex(0);
     if (!firstStage || firstStage->getName() != "Data Acquisition")
     {
         throw std::runtime_error("Pipeline must start with a DataAcquisition stage");
