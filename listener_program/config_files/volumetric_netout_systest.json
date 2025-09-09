@@ -1,0 +1,78 @@
+{
+    "network": {
+        "ipAddress": "192.168.100.220",
+        "port": 50000
+    },
+    "global": {
+        "enableIntegrationTesting": false,
+        "verbose": false,
+        "firmware": "1240",
+        "speedOfSound_mps": 1482.965459,
+        "logDirectory": "deployment_files/"
+    },
+    "pipeline": {
+        "steps": [
+            {
+                "type": "addTimeDomainDetection",
+                "params": {
+                    "detector": "PeakAmplitude",
+                    "threshold": 1000
+                }
+            },
+            {
+                "type": "addFrequencyDomainTransform",
+                "params": {
+                    "strategy": "Filter",
+                    "filterWeightsFile": "filters/highpass_taps@101_cutoff@20k_window@hamming_fs@100k.txt"
+                }
+            },
+            {
+                "type": "addFrequencyDomainDetection",
+                "params": {
+                    "detector": "HampelBandEnergyDetector"
+                  }
+            },
+            {
+                "type": "addFrequencyDomainDoaEstimation",
+                "params": {
+                    "receiverPositionsFile": "receiver_pos/SOCAL_H_72_HS_harp4chPar_recPos.txt",
+                    "speedOfSound": "${global.speedOfSound_mps}"
+                }
+            },
+            {
+                "type": "addTracking",
+                "params": {
+                    "directory": "${global.logDirectory}",
+                    "clusteringIntervalSeconds": 60,
+                    "clusteringWindowSeconds": 30
+                }
+            },
+            {
+                "type": "setFileOutput",
+                "params": {
+                    "directory": "${global.logDirectory}",
+                    "integrationTesting": "${global.enableIntegrationTesting}"
+                }
+            },
+            {
+                "type": "setConsoleOutput",
+                "params": {
+                    "enabled": "${global.verbose}"
+                }
+            },
+            {
+                "type": "setNetworkOutput",
+                "params": {
+                    "host": "127.0.0.1",
+                    "port": 55001
+                }
+            },
+            {
+                "type": "setErrorHandler",
+                "params": {
+                    "logFile": "${global.logDirectory}error.log"
+                }
+            }
+        ]
+    }
+}
