@@ -32,7 +32,7 @@ bool RuCCUSDetector::detect(const Eigen::VectorXf& data)
     float maxVal = data.array().abs().maxCoeff(&idxMax);
 
     // 3) Skip if too close to edges
-    if (idxMax < 30 || idxMax > data.size() - 80)
+    if (idxMax < 31 || idxMax > data.size() - 80)
     {
         mLastDetection = 0.0f;
         return false;
