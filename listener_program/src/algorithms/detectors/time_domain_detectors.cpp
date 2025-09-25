@@ -57,7 +57,7 @@ bool RuCCUSDetector::detect(const Eigen::VectorXf& data)
     int excursions = excUp + excDown;
 
     // 7) Final decision
-    bool result = (excursions >= 12 && excursions <= 25);
+    bool result = (excursions >= 10 && excursions <= 25);
     mLastDetection = result ? 1.0f : 0.0f;
     return result;
 }
