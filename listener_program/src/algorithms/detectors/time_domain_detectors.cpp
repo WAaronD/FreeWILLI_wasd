@@ -15,7 +15,20 @@ bool PeakAmplitudeDetector::detect(const Eigen::VectorXf& timeDomainData)
 
 float PeakAmplitudeDetector::getLastDetection() const { return peakAmplitude; }
 
-RuCCUSDetector::RuCCUSDetector(float threshdet) : mThreshdet(threshdet), mLastDetection(0.0f) {}
+RuCCUSDetector::RuCCUSDetector(float threshdet) : RuCCUSDetector(Params{threshdet, 10, 25}) {}
+
+RuCCUSDetector:RuCCUSDetector(const Params& p)
+{
+    init_(p);
+}
+
+void RuCCUSDetector::init_(const Params& p)
+{
+    mThreshdet = p.threshdet;
+    mMinExcursions = p.minExcursions;
+    mMaxExcursions = p.maxExcursions;
+    mLastDetection = 0.0f;
+}
 
 bool RuCCUSDetector::detect(const Eigen::VectorXf& data)
 {
@@ -57,7 +70,7 @@ bool RuCCUSDetector::detect(const Eigen::VectorXf& data)
     int excursions = excUp + excDown;
 
     // 7) Final decision
-    bool result = (excursions >= 10 && excursions <= 25);
+    bool result = (excursions >= mMinExcursions && excursions <= mMaxExcursions);
     mLastDetection = result ? 1.0f : 0.0f;
     return result;
 }
