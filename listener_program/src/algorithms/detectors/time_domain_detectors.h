@@ -25,14 +25,26 @@ class PeakAmplitudeDetector : public ITimeDomainDetector
 class RuCCUSDetector : public ITimeDomainDetector
 {
    public:
+    struct Params // New!
+    {
+        float threshdet = 0.0f;         // threshold detection value // New!
+        int minExcursions = 10;         // minimum excursion count // New!
+        int maxExcursions = 25;         // maximum excursion count // New!
+    }
+
     explicit RuCCUSDetector(float threshdet);
+    explicit RuCCUSDetector(const Params& p); // New!
 
     bool detect(const Eigen::VectorXf& timeDomainData) override;
 
     float getLastDetection() const override;
 
    private:
+    void init_(const Params& p); // New!
+
     float mThreshdet;
+    int mMinExcursions; // New!
+    int mMaxExcursions; // New!
     float mLastDetection;  // 1.0f = click detected, 0.0f = no click
 };
 
