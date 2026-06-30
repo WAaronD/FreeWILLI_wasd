@@ -30,8 +30,8 @@
                 "params": {
                     "detector": "RuCCUS",
                     "threshold": 500,
-                    "ocMin": 10,
-                    "ocMax": 25
+                    "ocMin": 20,
+                    "ocMax": 27
                 }
             },
             {

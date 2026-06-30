@@ -105,3 +105,32 @@ float HampelBandEnergyDetector::medianInPlace(std::vector<float>& v)
     }
     return med;
 }
+
+RuCCUSFDetector::RuCCUSFDetector(float f1, float f2, float srMin, float srMax, float sampleRate) // Made with love by Claude
+    : mSrMin(srMin), mSrMax(srMax)
+{
+    const int N = 992;  // FFT size
+
+    auto toBin = [&](float freqHz) -> int {
+        int bin = static_cast<int>(std::round(freqHz * N / sampleRate));
+        if (bin < 0) bin = 0;
+        if (bin >= N) bin = N - 1;
+        return bin;
+    };
+
+    mBin1 = toBin(f1);
+    mBin2 = toBin(f2);
+}
+
+bool RuCCUSFDetector::detect(const Eigen::VectorXcf& X) // Made with love by Claude
+{
+    if (X.size() <= 0) return false;
+
+    const float amp1 = std::abs(X(mBin1));
+    const float amp2 = std::abs(X(mBin2));
+
+    if (amp1 <= 0.f) return false;
+
+    const float sr = std::log10(amp2 / amp1);
+    return (sr >= mSrMin) && (sr <= mSrMax);
+}

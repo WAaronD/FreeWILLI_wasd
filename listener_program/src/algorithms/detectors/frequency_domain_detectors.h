@@ -57,3 +57,16 @@ class HampelBandEnergyDetector : public IFrequencyDomainDetector
     float mLastScaledMAD = 0.f;
     float mLastThreshold = 0.f;
 };
+
+class RuCCUSFDetector : public IFrequencyDomainDetector // Made with love by Claude
+{
+   public:
+    RuCCUSFDetector(float f1, float f2, float srMin, float srMax, float sampleRate = 100000.f);
+    bool detect(const Eigen::VectorXcf& X) override;
+
+   private:
+    float mSrMin;
+    float mSrMax;
+    int mBin1;
+    int mBin2;
+};
