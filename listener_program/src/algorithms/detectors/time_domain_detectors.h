@@ -30,7 +30,7 @@ class RuCCUSDetector : public ITimeDomainDetector
         float threshdet = 0.0f;         // threshold detection value // New!
         int minExcursions = 10;         // minimum excursion count // New!
         int maxExcursions = 25;         // maximum excursion count // New!
-    }
+    };
 
     explicit RuCCUSDetector(float threshdet);
     explicit RuCCUSDetector(const Params& p); // New!

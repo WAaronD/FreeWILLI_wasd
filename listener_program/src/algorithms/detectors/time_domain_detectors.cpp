@@ -17,7 +17,7 @@ float PeakAmplitudeDetector::getLastDetection() const { return peakAmplitude; }
 
 RuCCUSDetector::RuCCUSDetector(float threshdet) : RuCCUSDetector(Params{threshdet, 10, 25}) {}
 
-RuCCUSDetector:RuCCUSDetector(const Params& p)
+RuCCUSDetector::RuCCUSDetector(const Params& p)
 {
     init_(p);
 }
