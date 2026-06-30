@@ -32,7 +32,7 @@ class RuCCUSDetector : public ITimeDomainDetector
         int maxExcursions = 25;         // maximum excursion count // New!
     };
 
-    explicit RuCCUSDetector(float threshdet);
+    explicit RuCCUSDetector(float threshdet, int minExcursions = 10, int maxExcursions = 25); // New constructor that takes individual parameters
     explicit RuCCUSDetector(const Params& p); // New!
 
     bool detect(const Eigen::VectorXf& timeDomainData) override;
