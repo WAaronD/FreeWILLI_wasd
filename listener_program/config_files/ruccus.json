@@ -29,7 +29,9 @@
                 "type": "addTimeDomainDetection",
                 "params": {
                     "detector": "RuCCUS",
-                    "threshold": 500
+                    "threshold": 500,
+                    "ocMin": 10,
+                    "ocMax": 25
                 }
             },
             {

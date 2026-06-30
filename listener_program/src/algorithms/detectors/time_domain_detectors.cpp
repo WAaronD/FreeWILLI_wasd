@@ -15,14 +15,22 @@ bool PeakAmplitudeDetector::detect(const Eigen::VectorXf& timeDomainData)
 
 float PeakAmplitudeDetector::getLastDetection() const { return peakAmplitude; }
 
-RuCCUSDetector::RuCCUSDetector(float threshdet) : RuCCUSDetector(Params{threshdet, 10, 25}) {}
+// RuCCUSDetector::RuCCUSDetector(float threshdet) : RuCCUSDetector(Params{threshdet, 10, 25}) {} // Old constructor, now replaced by the new one below
+RuCCUSDetector::RuCCUSDetector(float threshdet, int minExcursions, int maxExcursions) // New constructor that takes individual parameters
+{
+    Params p;
+    p.threshdet = threshdet;
+    p.minExcursions = minExcursions;
+    p.maxExcursions = maxExcursions;
+    init_(p);
+}
 
-RuCCUSDetector::RuCCUSDetector(const Params& p)
+RuCCUSDetector::RuCCUSDetector(const Params& p) // New constructor that takes a Params struct
 {
     init_(p);
 }
 
-void RuCCUSDetector::init_(const Params& p)
+void RuCCUSDetector::init_(const Params& p) // New initialization function that takes a Params struct
 {
     mThreshdet = p.threshdet;
     mMinExcursions = p.minExcursions;

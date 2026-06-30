@@ -14,7 +14,10 @@ class ITimeDomainDetectorFactory
         }
         else if (detector == "RuCCUS")
         {
-            return std::make_unique<RuCCUSDetector>(params.at("threshold").get<float>());
+            return std::make_unique<RuCCUSDetector>(
+                params.at("threshold").get<float>(),
+                static_cast<int>(params.at("ocMin")),
+                static_cast<int>(params.at("ocMax")));
         }
         else if (detector == "CFARDetector")
         {
