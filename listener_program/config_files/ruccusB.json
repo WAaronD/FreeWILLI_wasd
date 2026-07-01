@@ -1,0 +1,73 @@
+{
+    "network": {
+        "ipAddress": "127.0.0.1",
+        "port": 1045
+    },
+    "global": {
+        "enableIntegrationTesting": false,
+        "verbose": false,
+        "firmware": "1240",
+        "logDirectory": "deployment_files/"
+    },
+    "pipeline": {
+        "steps": [
+            {
+                "type": "addTimeDomainDetection",
+                "params": {
+                    "detector": "PeakAmplitude",
+                    "threshold": 200
+                }
+            },
+            {
+                "type": "addTimeDomainFilter",
+                "params": {
+                    "filter": "FIRFilter",
+                    "filterWeightsFile": "filters/highpass_taps@101_cutoff@15k_window@hamming_fs@100k.txt"
+                }
+            },
+            {
+	    	"type": "addTimeDomainDetection",
+    		"params": {
+        	    "detector": "PeakLocation",
+        	    "threshold": 200
+    		}
+	    },
+	    {
+        	"type": "addFrequencyDomainTransform",
+    		"params": {
+        	    "strategy": "None"
+    	    	}
+	    },
+	    {
+	    	"type": "addFrequencyDomainDetection",
+    		"params": {
+        	    "detector": "RuCCUSFDetector",
+        	    "f1": 10000.0,
+        	    "f2": 30000.0,
+        	    "srMin": -1.0,
+        	    "srMax": 1.0
+    		}
+	    },
+            {
+                "type": "setFileOutput",
+                "params": {
+                    "directory": "${global.logDirectory}",
+                    "integrationTesting": "${global.enableIntegrationTesting}"
+                }
+            },
+            {
+                "type": "setNetworkOutput",
+                "params": {
+                    "host": "127.0.0.1",
+                    "port": 55001
+                }
+            },
+            {
+                "type": "setErrorHandler",
+                "params": {
+                    "logFile": "${global.logDirectory}error.log"
+                }
+            }
+        ]
+    }
+}

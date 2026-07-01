@@ -48,6 +48,18 @@ class RuCCUSDetector : public ITimeDomainDetector
     float mLastDetection;  // 1.0f = click detected, 0.0f = no click
 };
 
+class PeakLocationDetector : public ITimeDomainDetector // Made with love by Claude
+{
+   public:
+    explicit PeakLocationDetector(float threshold);
+    bool detect(const Eigen::VectorXf& timeDomainData) override;
+    float getLastDetection() const override;
+
+   private:
+    float mThreshold;       // A
+    float mLastDetection;   // 1.0f = passed, 0.0f = failed
+};
+
 class CFARPeakDetector : public ITimeDomainDetector
 {
    public:

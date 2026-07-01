@@ -19,6 +19,10 @@ class ITimeDomainDetectorFactory
                 static_cast<int>(params.at("ocMin")),
                 static_cast<int>(params.at("ocMax")));
         }
+        else if (detector == "PeakLocation")
+        {
+            return std::make_unique<PeakLocationDetector>(params.at("threshold").get<float>());
+        }
         else if (detector == "CFARDetector")
         {
             return std::make_unique<CFARPeakDetector>(

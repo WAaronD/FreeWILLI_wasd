@@ -85,6 +85,34 @@ bool RuCCUSDetector::detect(const Eigen::VectorXf& data)
 
 float RuCCUSDetector::getLastDetection() const { return mLastDetection; }
 
+PeakLocationDetector::PeakLocationDetector(float threshold) : mThreshold(threshold), mLastDetection(0.0f) {} // Made with love by Claude
+
+bool PeakLocationDetector::detect(const Eigen::VectorXf& data) // Made with love by Claude
+{
+    // 1) Find index and value of peak (max absolute value)
+    Eigen::Index idxMax;
+    float peakVal = data.array().abs().maxCoeff(&idxMax);
+
+    // 2) Check peak amplitude against threshold A
+    if (peakVal <= mThreshold)
+    {
+        mLastDetection = 0.0f;
+        return false;
+    }
+
+    // 3) Check peak isn't too close to either edge
+    if (idxMax < 30 || idxMax > data.size() - 80)
+    {
+        mLastDetection = 0.0f;
+        return false;
+    }
+
+    mLastDetection = 1.0f;
+    return true;
+}
+
+float PeakLocationDetector::getLastDetection() const { return mLastDetection; } // Made with love by Claude
+
 CFARPeakDetector::CFARPeakDetector(int numGuard, int numTrain, float pfa, bool useAbs, bool requireLocalMax)
 {
     Params p;
