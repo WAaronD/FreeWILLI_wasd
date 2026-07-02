@@ -83,6 +83,7 @@ bool RuCCUSDetector::detect(const Eigen::VectorXf& data)
     return result;
 }
 
+// float RuCCUSDetector::getLastDetection() const { return mLastDetection; }
 float RuCCUSDetector::getLastDetection() const { return mLastDetection; }
 
 PeakLocationDetector::PeakLocationDetector(float threshold) : mThreshold(threshold), mLastDetection(0.0f) {} // Made with love by Claude

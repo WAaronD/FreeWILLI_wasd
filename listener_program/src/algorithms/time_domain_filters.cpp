@@ -47,7 +47,10 @@ bool FIRFilter::apply()
         }
     }
 
-    data = std::move(filtered);
+    // data = std::move(filtered); // OLD
+    //std::cout << "originaldata=" << data << std::endl; // for debug
+    data = filtered; // NEW - Fixed
+    //std::cout << "filtereddata=" << data << std::endl; // for debug
     return true;
 }
 

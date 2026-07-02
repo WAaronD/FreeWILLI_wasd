@@ -29,23 +29,24 @@
 	    	"type": "addTimeDomainDetection",
     		"params": {
         	    "detector": "PeakLocation",
-        	    "threshold": 200
+        	    "threshold": 500
     		}
 	    },
 	    {
         	"type": "addFrequencyDomainTransform",
     		"params": {
-        	    "strategy": "None"
+        	    "strategy": "None",
+		    "filterWeightsFile": "filters/highpass_taps@101_cutoff@15k_window@hamming_fs@100k.txt"
     	    	}
 	    },
 	    {
 	    	"type": "addFrequencyDomainDetection",
     		"params": {
         	    "detector": "RuCCUSFDetector",
-        	    "f1": 10000.0,
-        	    "f2": 30000.0,
-        	    "srMin": -1.0,
-        	    "srMax": 1.0
+        	    "f1": 23000.0,
+        	    "f2": 26000.0,
+        	    "srMin": -3.0,
+        	    "srMax": 3.0
     		}
 	    },
             {

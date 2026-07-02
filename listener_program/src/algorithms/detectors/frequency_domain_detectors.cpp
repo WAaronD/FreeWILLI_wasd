@@ -132,5 +132,9 @@ bool RuCCUSFDetector::detect(const Eigen::VectorXcf& X) // Made with love by Cla
     if (amp1 <= 0.f) return false;
 
     const float sr = std::log10(amp2 / amp1);
+    //std::cout << "amp1=" << amp1 << " amp2=" << amp2 << " sr=" << sr // for debug
+    //      << " range=[" << mSrMin << "," << mSrMax << "]" << std::endl;
+    // std::cout << "X=" << X.transpose() << std::endl; // for debug
+    std::cout << "result=" << ((sr >= mSrMin) && (sr <= mSrMax)) << std::endl; // for debug
     return (sr >= mSrMin) && (sr <= mSrMax);
 }

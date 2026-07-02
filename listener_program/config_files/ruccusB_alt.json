@@ -19,26 +19,10 @@
                 }
             },
             {
-                "type": "addTimeDomainFilter",
-                "params": {
-                    "filter": "FIRFilter",
-                    "filterWeightsFile": "filters/highpass_taps@101_cutoff@15k_window@hamming_fs@100k.txt"
-                }
-            },
-            {
-                "type": "addTimeDomainDetection",
-                "params": {
-                    "detector": "RuCCUS",
-                    "threshold": 250,
-                    "ocMin": 9,
-                    "ocMax": 18
-                }
-            },
-            {
 	    	"type": "addTimeDomainDetection",
     		"params": {
         	    "detector": "PeakLocation",
-        	    "threshold": 250
+        	    "threshold": 200
     		}
 	    },
 	    {
