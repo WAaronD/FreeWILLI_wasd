@@ -1,6 +1,13 @@
 #include "../processing_context_struct.h"
 #include "output_handlers.h"
 
+namespace {
+    std::string optionalToString(const std::optional<float>& val)
+    {
+        return val.has_value() ? std::to_string(*val) : "NaN";
+    }
+    }
+
 FileOutputHandler::FileOutputHandler(const std::string& loggingDir, bool integrationTesting)
     : mLoggingDirectory(loggingDir),
       mFlushInterval(std::chrono::seconds(30)),
@@ -28,7 +35,8 @@ void FileOutputHandler::initialize(const TimePoint& timestamp, int numChannels)
     }
 
     // Create column headers
-    std::vector<std::string> columnNames = {"PeakTime", "Amplitude", "DOA_x", "DOA_y", "DOA_z"};
+    // std::vector<std::string> columnNames = {"PeakTime", "Amplitude", "DOA_x", "DOA_y", "DOA_z"}; // Old!
+    std::vector<std::string> columnNames = {"PeakTime", "Amplitude", "DOA_x", "DOA_y", "DOA_z", "OC", "Log10SR"}; // New!
 
     // Generate TDOA and XCorr labels for channel combinations
     std::vector<std::string> tdoaLabels = generateChannelComboLabels("TDOA", numChannels);
@@ -80,6 +88,8 @@ void FileOutputHandler::handleOutput(const ProcessingContext& result)
     mBuffer.mDoaZ.push_back(result.currentResult.directionOfArrival.z());
     mBuffer.mTdoaVector.push_back(result.currentResult.tdoaVector);
     mBuffer.mXCorrAmps.push_back(result.currentResult.crossCorrelationAmps);
+    mBuffer.mOc.push_back(result.currentResult.oscillationCount);       // New!
+    mBuffer.mLog10Sr.push_back(result.currentResult.log10SpectrumRatio); // New!
     mBuffer.mPeakTimes.push_back(result.dataTimes[0]);
 }
 
@@ -103,7 +113,7 @@ void FileOutputHandler::flush()
         mLastFlushTime = std::chrono::steady_clock::now();
     }
 }
-
+ 
 void FileOutputHandler::writeBufferToFile()
 {
     std::ofstream file(mOutputFile, std::ofstream::out | std::ofstream::app);
@@ -117,7 +127,7 @@ void FileOutputHandler::writeBufferToFile()
     // Validate buffer consistency
     if (mBuffer.mDoaX.size() != dataSize || mBuffer.mDoaY.size() != dataSize || mBuffer.mDoaZ.size() != dataSize ||
         mBuffer.mTdoaVector.size() != dataSize || mBuffer.mXCorrAmps.size() != dataSize ||
-        mBuffer.mAmps.size() != dataSize)
+        mBuffer.mAmps.size() != dataSize || mBuffer.mOc.size() != dataSize || mBuffer.mLog10Sr.size() != dataSize)
     {
         throw std::runtime_error("Error: Mismatched buffer sizes in BufferStruct.");
     }
@@ -144,6 +154,10 @@ void FileOutputHandler::writeBufferToFile()
         rowData.push_back(std::to_string(mBuffer.mDoaX[i]));
         rowData.push_back(std::to_string(mBuffer.mDoaY[i]));
         rowData.push_back(std::to_string(mBuffer.mDoaZ[i]));
+
+        // Add optional fields
+        rowData.push_back(optionalToString(mBuffer.mOc[i]));       // New!
+        rowData.push_back(optionalToString(mBuffer.mLog10Sr[i]));  // New!
 
         // Add TDOA values
         const Eigen::VectorXf& tdoaVec = mBuffer.mTdoaVector[i];

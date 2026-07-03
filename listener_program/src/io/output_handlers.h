@@ -13,6 +13,8 @@ struct BufferStruct
     std::vector<float> mDoaZ;
     std::vector<Eigen::VectorXf> mTdoaVector;
     std::vector<Eigen::VectorXf> mXCorrAmps;
+    std::vector<std::optional<float>> mOc;       // New!
+    std::vector<std::optional<float>> mLog10Sr;  // New!
     std::vector<TimePoint> mPeakTimes;
 
     void clear()
@@ -23,6 +25,8 @@ struct BufferStruct
         mDoaZ.clear();
         mTdoaVector.clear();
         mXCorrAmps.clear();
+        mOc.clear();       // New!
+        mLog10Sr.clear();  // New!
         mPeakTimes.clear();
     }
 

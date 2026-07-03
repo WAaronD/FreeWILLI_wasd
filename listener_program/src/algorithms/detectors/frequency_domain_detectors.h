@@ -63,10 +63,11 @@ class RuCCUSFDetector : public IFrequencyDomainDetector // Made with love by Cla
    public:
     RuCCUSFDetector(float f1, float f2, float srMin, float srMax, float sampleRate = 100000.f);
     bool detect(const Eigen::VectorXcf& X) override;
-
+    float getLastSpectrumRatio() const { return mLastSr; }  // New!
    private:
     float mSrMin;
     float mSrMax;
     int mBin1;
     int mBin2;
+    float mLastSr = 0.0f; // New!
 };

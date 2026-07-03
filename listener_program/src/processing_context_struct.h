@@ -2,6 +2,7 @@
 
 #include "firmware/firmware_interface.h"
 #include "pch.h"
+#include <limits>
 // Forward declarations
 /*
 class IFirmware;
@@ -17,9 +18,12 @@ using TimePoint = std::chrono::time_point<std::chrono::system_clock>;
 struct DetectionResult
 {
     float peakAmplitude = 0.f;
-    Eigen::Vector3f directionOfArrival = Eigen::Vector3f::Zero();
+    // Eigen::Vector3f directionOfArrival = Eigen::Vector3f::Zero(); // Old!
+    Eigen::Vector3f directionOfArrival = Eigen::Vector3f::Constant(std::numeric_limits<float>::quiet_NaN()); // New!
     Eigen::VectorXf tdoaVector;
     Eigen::VectorXf crossCorrelationAmps;
+    std::optional<float> oscillationCount; // New! Optional oscillation count
+    std::optional<float> log10SpectrumRatio; // New! Optional log10 spectrum ratio
     int trackingLabel = -1;
     bool isValid = false;
 };

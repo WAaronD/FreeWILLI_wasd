@@ -35,7 +35,7 @@ void RuCCUSDetector::init_(const Params& p) // New initialization function that 
     mThreshdet = p.threshdet;
     mMinExcursions = p.minExcursions;
     mMaxExcursions = p.maxExcursions;
-    mLastDetection = 0.0f;
+    mLastAmplitude = 0.0f;
 }
 
 bool RuCCUSDetector::detect(const Eigen::VectorXf& data)
@@ -44,7 +44,7 @@ bool RuCCUSDetector::detect(const Eigen::VectorXf& data)
     int countAbove = (data.array().abs() > mThreshdet).template cast<int>().sum();
     if (countAbove == 0)
     {
-        mLastDetection = 0.0f;
+        mLastAmplitude = 0.0f;
         return false;
     }
 
@@ -55,7 +55,7 @@ bool RuCCUSDetector::detect(const Eigen::VectorXf& data)
     // 3) Skip if too close to edges
     if (idxMax < 31 || idxMax > data.size() - 80)
     {
-        mLastDetection = 0.0f;
+        mLastAmplitude = 0.0f;
         return false;
     }
 
@@ -76,17 +76,18 @@ bool RuCCUSDetector::detect(const Eigen::VectorXf& data)
         if (click(i) < -zxThresh && clickl(i) > -zxThresh) ++excDown;
     }
     int excursions = excUp + excDown;
+    mLastExcursions = static_cast<float>(excursions); // New!
 
     // 7) Final decision
     bool result = (excursions >= mMinExcursions && excursions <= mMaxExcursions);
-    mLastDetection = result ? 1.0f : 0.0f;
+    mLastAmplitude = result ? maxVal : 0.0f; // Changed: store real amplitude, not 1.0f/0.0f
     return result;
 }
 
 // float RuCCUSDetector::getLastDetection() const { return mLastDetection; }
-float RuCCUSDetector::getLastDetection() const { return mLastDetection; }
+float RuCCUSDetector::getLastDetection() const { return mLastAmplitude; } // Changed: return real amplitude, not 1.0f/0.0f
 
-PeakLocationDetector::PeakLocationDetector(float threshold) : mThreshold(threshold), mLastDetection(0.0f) {} // Made with love by Claude
+PeakLocationDetector::PeakLocationDetector(float threshold) : mThreshold(threshold), mLastAmplitude(0.0f) {}
 
 bool PeakLocationDetector::detect(const Eigen::VectorXf& data) // Made with love by Claude
 {
@@ -97,22 +98,22 @@ bool PeakLocationDetector::detect(const Eigen::VectorXf& data) // Made with love
     // 2) Check peak amplitude against threshold A
     if (peakVal <= mThreshold)
     {
-        mLastDetection = 0.0f;
+        mLastAmplitude = 0.0f;
         return false;
     }
 
     // 3) Check peak isn't too close to either edge
     if (idxMax < 30 || idxMax > data.size() - 80)
     {
-        mLastDetection = 0.0f;
+        mLastAmplitude = 0.0f;
         return false;
     }
 
-    mLastDetection = 1.0f;
+    mLastAmplitude = peakVal; // Store the actual peak value
     return true;
 }
 
-float PeakLocationDetector::getLastDetection() const { return mLastDetection; } // Made with love by Claude
+float PeakLocationDetector::getLastDetection() const { return mLastAmplitude; }
 
 CFARPeakDetector::CFARPeakDetector(int numGuard, int numTrain, float pfa, bool useAbs, bool requireLocalMax)
 {

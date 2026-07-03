@@ -36,16 +36,19 @@ TimeDomainDetectionStage::TimeDomainDetectionStage(std::unique_ptr<ITimeDomainDe
 
 bool TimeDomainDetectionStage::process(std::shared_ptr<ProcessingContext> context)
 {
-    // Perform time domain detection on first channel
     bool detected = mFunction->detect(context->channelData.row(0));
 
     if (detected)
     {
-        // Store detection amplitude and timestamp
         context->currentResult.peakAmplitude = mFunction->getLastDetection();
-        context->currentResult.isValid = true; // Mark detection as valid (New!)
+        context->currentResult.isValid = true;
 
-        // Print peak amplitude
+        // New! Populate oc if this is a RuCCUSDetector
+        if (auto* ruccus = dynamic_cast<RuCCUSDetector*>(mFunction.get()))
+        {
+            context->currentResult.oscillationCount = ruccus->getLastExcursionCount();
+        }
+
         std::cout << "Peak amplitude = " << context->currentResult.peakAmplitude << std::endl;
     }
 
@@ -108,11 +111,18 @@ bool FrequencyDomainDetectionStage::process(std::shared_ptr<ProcessingContext> c
 {
     if (!mFunction || context->frequencyDomainData.cols() == 0)
     {
-        return true;  // Skip if no detector or no frequency data
+        return true;
     }
 
-    // Perform frequency domain detection on first channel
-    return mFunction->detect(context->frequencyDomainData.col(0));
+    bool detected = mFunction->detect(context->frequencyDomainData.col(0));
+
+    // New! Populate log10sr if this is a RuCCUSFDetector
+    if (auto* ruccusF = dynamic_cast<RuCCUSFDetector*>(mFunction.get()))
+    {
+        context->currentResult.log10SpectrumRatio = ruccusF->getLastSpectrumRatio();
+    }
+
+    return detected;
 }
 
 std::string FrequencyDomainDetectionStage::getName() const { return "FrequencyDomainDetection"; }

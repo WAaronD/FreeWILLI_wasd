@@ -38,6 +38,7 @@ class RuCCUSDetector : public ITimeDomainDetector
     bool detect(const Eigen::VectorXf& timeDomainData) override;
 
     float getLastDetection() const override;
+    float getLastExcursionCount() const { return mLastExcursions; }  // New!
 
    private:
     void init_(const Params& p); // New!
@@ -45,7 +46,8 @@ class RuCCUSDetector : public ITimeDomainDetector
     float mThreshdet;
     int mMinExcursions; // New!
     int mMaxExcursions; // New!
-    float mLastDetection;  // 1.0f = click detected, 0.0f = no click
+    float mLastAmplitude; // Changed from mLastDetection — now stores actual peak value
+    float mLastExcursions = 0.0f; // New!
 };
 
 class PeakLocationDetector : public ITimeDomainDetector // Made with love by Claude
@@ -57,7 +59,7 @@ class PeakLocationDetector : public ITimeDomainDetector // Made with love by Cla
 
    private:
     float mThreshold;       // A
-    float mLastDetection;   // 1.0f = passed, 0.0f = failed
+    float mLastAmplitude;   // Changed from mLastDetection — now stores actual peak value
 };
 
 class CFARPeakDetector : public ITimeDomainDetector
