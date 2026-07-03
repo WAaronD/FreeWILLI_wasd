@@ -43,6 +43,7 @@ bool TimeDomainDetectionStage::process(std::shared_ptr<ProcessingContext> contex
     {
         // Store detection amplitude and timestamp
         context->currentResult.peakAmplitude = mFunction->getLastDetection();
+        context->currentResult.isValid = true; // Mark detection as valid (New!)
 
         // Print peak amplitude
         std::cout << "Peak amplitude = " << context->currentResult.peakAmplitude << std::endl;
