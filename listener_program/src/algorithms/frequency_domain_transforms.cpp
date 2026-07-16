@@ -40,6 +40,7 @@ void FrequencyDomainFIRFilter::apply()
     std::cout << "[FreqDomainFilter] mPaddedLength=" << mPaddedLength << std::endl; // for debug
 
     fftwf_execute(mForwardFftPlan);
+    // std::cout << "Frequency spectrum:\n" << mSavedFFTs << std::endl; // for debug
     mBeforeFilter = mSavedFFTs;
     for (int channelIndex = 0; channelIndex < mNumChannels; ++channelIndex)
     {

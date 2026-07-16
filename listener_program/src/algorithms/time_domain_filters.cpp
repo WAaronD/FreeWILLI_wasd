@@ -49,11 +49,11 @@ bool FIRFilter::apply()
             filtered(ch, n) = acc;
         }
 
-        if (ch == 0) { // for debug
-            std::cout << "[FIRFilter output] ";
-            for (int n = 0; n < channelLength; ++n) std::cout << filtered(0, n) << " ";
-            std::cout << std::endl;
-        }
+        // if (ch == 0) { // for debug
+        //     std::cout << "[FIRFilter output] ";
+        //     for (int n = 0; n < channelLength; ++n) std::cout << filtered(0, n) << " ";
+        //     std::cout << std::endl;
+        // }
     }
 
     // data = std::move(filtered); // OLD

@@ -95,6 +95,7 @@ bool FrequencyDomainFilteringStage::process(std::shared_ptr<ProcessingContext> c
 
     // Apply frequency domain filter
     mFunction->apply();
+    std::cout << "Frequency spectrum:\n" << mFunction->getFrequencyDomainData() << std::endl; // for debug
 
     auto& fd = context->frequencyDomainData; // for debug
     std::cout << "[FreqDomainFilter apply] bin0=" << fd(0,0) << " bin100=" << fd(100,0) << std::endl; // for debug
