@@ -21,8 +21,8 @@ bool DataAcquisitionStage::process(std::shared_ptr<ProcessingContext> context)
     }
 
     context->firmware->insertDataIntoChannelMatrix(context->channelData, context->dataBytes);
-    std::cout << "[DataAcquisition] channelData: " << context->channelData.rows() // for debug
-          << "x" << context->channelData.cols() << std::endl;
+    // std::cout << "[DataAcquisition] channelData: " << context->channelData.rows() // for debug
+    //       << "x" << context->channelData.cols() << std::endl;
 
     return true;
 }
