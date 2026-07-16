@@ -120,6 +120,11 @@ RuCCUSFDetector::RuCCUSFDetector(float f1, float f2, float srMin, float srMax, f
 
     mBin1 = toBin(f1);
     mBin2 = toBin(f2);
+
+    // // In constructor, after computing mBin1, mBin2: // for debug
+    // std::cout << "N=" << N << " sampleRate=" << sampleRate // for debug
+    // << " f1=" << f1 << " f2=" << f2 // for debug
+    // << " mBin1=" << mBin1 << " mBin2=" << mBin2 << std::endl; // for debug
 }
 
 bool RuCCUSFDetector::detect(const Eigen::VectorXcf& X) // Made with love by Claude
@@ -137,5 +142,13 @@ bool RuCCUSFDetector::detect(const Eigen::VectorXcf& X) // Made with love by Cla
     //      << " range=[" << mSrMin << "," << mSrMax << "]" << std::endl;
     // std::cout << "X=" << X.transpose() << std::endl; // for debug
     std::cout << "result=" << ((sr >= mSrMin) && (sr <= mSrMax)) << std::endl; // for debug
+
+
+    // // In detect(), before returning:
+    // std::cout << "X.size()=" << X.size() // for debug
+    // << " amp1=" << amp1 << " amp2=" << amp2
+    // << " sr=" << sr << std::endl;
+
+
     return (sr >= mSrMin) && (sr <= mSrMax);
 }

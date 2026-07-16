@@ -29,16 +29,16 @@
                 "type": "addTimeDomainDetection",
                 "params": {
                     "detector": "RuCCUS",
-                    "threshold": 250,
-                    "ocMin": 9,
-                    "ocMax": 18
+                    "threshold": 200,
+                    "ocMin": 0,
+                    "ocMax": 40
                 }
             },
             {
 	    	"type": "addTimeDomainDetection",
     		"params": {
         	    "detector": "PeakLocation",
-        	    "threshold": 250
+        	    "threshold": 200
     		}
 	    },
 	    {
@@ -54,8 +54,8 @@
         	    "detector": "RuCCUSFDetector",
         	    "f1": 23000.0,
         	    "f2": 26000.0,
-        	    "srMin": -3.0,
-        	    "srMax": 0.0
+        	    "srMin": -1.0,
+        	    "srMax": -0.3
     		}
 	    },
             {

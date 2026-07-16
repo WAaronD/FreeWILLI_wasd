@@ -58,7 +58,10 @@ PipelineBuilder& PipelineBuilder::addFrequencyDomainTransform(
     int numChannels)
 {
     std::cout << "Adding FrequencyDomainTransform stage to pipeline" << std::endl;
+    std::cout << "[builder] BEFORE construct: channelData=" // for debug
+          << ctx->channelData.rows() << "x" << ctx->channelData.cols() << std::endl;
     auto filter = IFrequencyDomainTransformFactory::create(strategyType, weightsPath, ctx->channelData, numChannels);
+    // std::cout << "[builder] ctx->channelData.data()=" << (void*)ctx->channelData.data() << std::endl; // for debug
 
     ctx->frequencyDomainData = filter->getFrequencyDomainData();
 

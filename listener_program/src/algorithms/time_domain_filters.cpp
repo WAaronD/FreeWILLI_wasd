@@ -24,6 +24,7 @@ bool FIRFilter::apply()
 
     const int numChannels = data.rows();
     const int channelLength = data.cols();
+    std::cout << "[FIRFilter] channelLength=" << channelLength << std::endl; // for debug
     const int numTaps = int(mFilterWeights.size());  // b[0..M-1]
 
     //  allocate same length as input

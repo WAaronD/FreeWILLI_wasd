@@ -21,6 +21,8 @@ bool DataAcquisitionStage::process(std::shared_ptr<ProcessingContext> context)
     }
 
     context->firmware->insertDataIntoChannelMatrix(context->channelData, context->dataBytes);
+    std::cout << "[DataAcquisition] channelData: " << context->channelData.rows() // for debug
+          << "x" << context->channelData.cols() << std::endl;
 
     return true;
 }
@@ -93,6 +95,9 @@ bool FrequencyDomainFilteringStage::process(std::shared_ptr<ProcessingContext> c
 
     // Apply frequency domain filter
     mFunction->apply();
+
+    auto& fd = context->frequencyDomainData; // for debug
+    std::cout << "[FreqDomainFilter apply] bin0=" << fd(0,0) << " bin100=" << fd(100,0) << std::endl; // for debug
 
     // Store filtered and unfiltered frequency domain data
     context->frequencyDomainData = mFunction->getFrequencyDomainData();

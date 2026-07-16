@@ -29,7 +29,7 @@
 	    	"type": "addTimeDomainDetection",
     		"params": {
         	    "detector": "PeakLocation",
-        	    "threshold": 500
+        	    "threshold": 200
     		}
 	    },
 	    {
@@ -45,8 +45,8 @@
         	    "detector": "RuCCUSFDetector",
         	    "f1": 23000.0,
         	    "f2": 26000.0,
-        	    "srMin": -3.0,
-        	    "srMax": 3.0
+        	    "srMin": -1.0,
+        	    "srMax": 0.3
     		}
 	    },
             {
