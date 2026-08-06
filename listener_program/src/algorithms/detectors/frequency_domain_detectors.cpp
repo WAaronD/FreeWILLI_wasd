@@ -152,3 +152,50 @@ bool RuCCUSFDetector::detect(const Eigen::VectorXcf& X) // Made with love by Cla
 
     return (sr >= mSrMin) && (sr <= mSrMax);
 }
+
+FPeakLocationDetector::FPeakLocationDetector(std::vector<FPeakLocationBand> bands, float sampleRate)
+    : mBands(std::move(bands)), mSampleRate(sampleRate) {}
+
+bool FPeakLocationDetector::detect(const Eigen::VectorXcf& X)
+{
+    const int N = static_cast<int>(X.size());
+    if (N <= 0) return false;
+
+    int peakBin = 0;
+    float peakMagSq = 0.f;
+    float magSqSum = 0.f;
+    float weightedBinSum = 0.f;
+
+    for (int k = 0; k < N; ++k)
+    {
+        const float magSq = std::norm(X(k));  // re*re + im*im, no sqrt
+        magSqSum += magSq;
+        weightedBinSum += k * magSq;
+        if (magSq > peakMagSq)
+        {
+            peakMagSq = magSq;
+            peakBin = k;
+        }
+    }
+
+    mLastPeakFreq = peakBin * mSampleRate / N;
+    mLastCenterFreq = (magSqSum > 0.f) ? (weightedBinSum / magSqSum) * mSampleRate / N : 0.f;
+
+    // Check bands in order; first match wins
+    mLastMatchIndex = -1;
+    mLastMatchLabel.clear();
+    for (size_t i = 0; i < mBands.size(); ++i)
+    {
+        const auto& b = mBands[i];
+        const bool peakOk = (mLastPeakFreq >= b.peakFreqMin) && (mLastPeakFreq <= b.peakFreqMax);
+        const bool centerOk = (mLastCenterFreq >= b.centerFreqMin) && (mLastCenterFreq <= b.centerFreqMax);
+        if (peakOk && centerOk)
+        {
+            mLastMatchIndex = static_cast<int>(i);
+            mLastMatchLabel = b.label;
+            break;
+        }
+    }
+
+    return mLastMatchIndex >= 0;
+}

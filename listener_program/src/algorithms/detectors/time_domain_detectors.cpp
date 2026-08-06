@@ -224,3 +224,57 @@ void CFARPeakDetector::init_(const Params& p)
     // alpha = N * (Pfa^(-1/N) - 1)
     mAlpha = static_cast<float>(nTrainTotal * (std::pow(mPfa, -1.0 / nTrainTotal) - 1.0));
 }
+
+SignalDurationDetector::SignalDurationDetector(std::vector<DurationBand> bands, float threshold, int edgeGuard)
+    : mBands(std::move(bands)), mThreshold(threshold), mEdgeGuard(edgeGuard) {}
+
+bool SignalDurationDetector::detect(const Eigen::VectorXf& data)
+{
+    mLastDuration = 0.0f;
+    mLastMatchIndex = -1;
+    mLastMatchLabel.clear();
+
+    // 1) Gate on peak amplitude
+    int peakIndex = 0;
+    float peakVal = data.array().abs().maxCoeff(&peakIndex);
+    if (peakVal <= mThreshold) return false;
+
+    // 2) Cumulative energy (integrated squared pressure)
+    Eigen::VectorXf energy = data.array().square();
+    float totalEnergy = energy.sum();
+    if (totalEnergy <= 0.0f) return false;
+
+    float cum = 0.0f;
+    int idx5 = -1, idx95 = -1;
+    for (int i = 0; i < energy.size(); ++i)
+    {
+        cum += energy(i);
+        if (idx5 < 0 && cum >= 0.05f * totalEnergy) idx5 = i;
+        if (idx95 < 0 && cum >= 0.95f * totalEnergy)
+        {
+            idx95 = i;
+            break;
+        }
+    }
+
+    // 3) Reject if either edge of the 5-95% window is too close to the segment boundary
+    if (idx5 < mEdgeGuard || idx95 > data.size() - 1 - mEdgeGuard) return false;
+
+    mLastDuration = static_cast<float>(idx95 - idx5 + 1);
+
+    // 4) Check bands in order; first match wins
+    for (size_t i = 0; i < mBands.size(); ++i)
+    {
+        const auto& b = mBands[i];
+        if (mLastDuration >= b.durationMin && mLastDuration <= b.durationMax)
+        {
+            mLastMatchIndex = static_cast<int>(i);
+            mLastMatchLabel = b.label;
+            break;
+        }
+    }
+
+    return mLastMatchIndex >= 0;
+}
+
+float SignalDurationDetector::getLastDetection() const { return mLastDuration; }

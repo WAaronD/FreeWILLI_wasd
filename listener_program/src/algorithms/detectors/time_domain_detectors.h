@@ -103,3 +103,31 @@ class CFARPeakDetector : public ITimeDomainDetector
     int mLastIndex = -1;
     float mLastThreshold = 0.0f;
 };
+
+struct DurationBand
+{
+    std::string label;
+    float durationMin;   // samples
+    float durationMax;   // samples
+};
+
+class SignalDurationDetector : public ITimeDomainDetector
+{
+   public:
+    SignalDurationDetector(std::vector<DurationBand> bands, float threshold, int edgeGuard = 30);
+
+    bool detect(const Eigen::VectorXf& timeDomainData) override;
+    float getLastDetection() const override;  // duration in samples
+
+    int getLastMatchIndex() const { return mLastMatchIndex; }        // -1 if no match
+    const std::string& getLastMatchLabel() const { return mLastMatchLabel; }
+
+   private:
+    std::vector<DurationBand> mBands;
+    float mThreshold;
+    int mEdgeGuard;
+
+    float mLastDuration = 0.0f;
+    int mLastMatchIndex = -1;
+    std::string mLastMatchLabel;
+};

@@ -28,6 +28,22 @@ class ITimeDomainDetectorFactory
             return std::make_unique<CFARPeakDetector>(
                 static_cast<int>(params.at("numGuard")), static_cast<int>(params.at("numTrain")), params.at("pfa"));
         }
+        else if (detector == "SignalDuration")
+        {
+            std::vector<DurationBand> bands;
+            for (const auto& b : params.at("bands"))
+            {
+                bands.push_back(DurationBand{
+                    b.value("label", std::string("")),
+                    b.at("durationMin").get<float>(),
+                    b.at("durationMax").get<float>()
+                });
+            }
+            return std::make_unique<SignalDurationDetector>(
+                std::move(bands),
+                params.at("threshold").get<float>(),
+                static_cast<int>(params.value("edgeGuard", 30)));
+        }
         else
         {
             throw std::invalid_argument("Unknown TimeDomainDetector type: " + detector);

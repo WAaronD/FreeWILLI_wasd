@@ -24,6 +24,24 @@ class IFrequencyDomainDetectorFactory
                 params.at("srMax").get<float>()
             );
         }
+        if (detector == "FPeakLocationDetector")
+        {
+            std::vector<FPeakLocationBand> bands;
+            for (const auto& b : params.at("bands"))
+            {
+                bands.push_back(FPeakLocationBand{
+                    b.value("label", std::string("")),
+                    b.at("peakFreqMin").get<float>(),
+                    b.at("peakFreqMax").get<float>(),
+                    b.at("centerFreqMin").get<float>(),
+                    b.at("centerFreqMax").get<float>()
+                });
+            }
+            return std::make_unique<FPeakLocationDetector>(
+                std::move(bands),
+                params.value("sampleRate", 100000.f)
+            );
+        }
         else
         {
             throw std::invalid_argument("Unknown TimeDomainDetector type: " + detector);

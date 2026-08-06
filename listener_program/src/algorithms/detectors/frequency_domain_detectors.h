@@ -71,3 +71,33 @@ class RuCCUSFDetector : public IFrequencyDomainDetector // Made with love by Cla
     int mBin2;
     float mLastSr = 0.0f; // New!
 };
+
+struct FPeakLocationBand
+{
+    std::string label;
+    float peakFreqMin;
+    float peakFreqMax;
+    float centerFreqMin;
+    float centerFreqMax;
+};
+
+class FPeakLocationDetector : public IFrequencyDomainDetector
+{
+   public:
+    FPeakLocationDetector(std::vector<FPeakLocationBand> bands, float sampleRate = 100000.f);
+    bool detect(const Eigen::VectorXcf& X) override;
+
+    float getLastPeakFrequency() const { return mLastPeakFreq; }
+    float getLastCenterFrequency() const { return mLastCenterFreq; }
+    int getLastMatchIndex() const { return mLastMatchIndex; }       // -1 if no match
+    const std::string& getLastMatchLabel() const { return mLastMatchLabel; }
+
+   private:
+    std::vector<FPeakLocationBand> mBands;
+    float mSampleRate;
+
+    float mLastPeakFreq = 0.f;
+    float mLastCenterFreq = 0.f;
+    int mLastMatchIndex = -1;
+    std::string mLastMatchLabel;
+};
