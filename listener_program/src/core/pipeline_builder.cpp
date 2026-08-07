@@ -53,6 +53,16 @@ PipelineBuilder& PipelineBuilder::addTimeDomainFilter(
     return *this;
 }
 
+PipelineBuilder& PipelineBuilder::addPeakExtraction(int numBefore, int numAfter)
+{
+    std::cout << "Adding PeakExtraction stage to pipeline" << std::endl;
+
+    auto stage = std::make_unique<PeakExtractionStage>(numBefore, numAfter);
+    mOrchestrator->addStage(std::move(stage));
+
+    return *this;
+}
+
 PipelineBuilder& PipelineBuilder::addFrequencyDomainTransform(
     const std::string& strategyType, const std::string& weightsPath, const std::shared_ptr<ProcessingContext>& ctx,
     int numChannels)

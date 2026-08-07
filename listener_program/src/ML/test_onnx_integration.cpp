@@ -53,11 +53,11 @@ std::vector<std::vector<float>> loadCsv(const std::string& path)
 int main()
 {
     // ---- 1. Load model + scaler (same paths used elsewhere in FreeWILLI) ----
-    ONNXModel model("click_classifier.onnx", "scaler_params.json");
+    ONNXModel model("/media/wasd/Aaron Data 1/training/click_classifier.onnx", "/media/wasd/Aaron Data 1/training/scaler_params.json");
 
     // ---- 2. Load raw test snippets (same files used in Python) ----
-    auto ziphiusRows = loadCsv("test_ziphius.csv");
-    auto wbatRows = loadCsv("test_wbat.csv");
+    auto ziphiusRows = loadCsv("/media/wasd/Aaron Data 1/training/test_ziphius.csv");
+    auto wbatRows = loadCsv("/media/wasd/Aaron Data 1/training/test_wbat.csv");
 
     // ---- 3. Concatenate: Ziphius first (label 0), then WBAT (label 1) ----
     // This matches the order used in generate_reference_predictions.py
@@ -69,7 +69,7 @@ int main()
     for (size_t i = 0; i < wbatRows.size(); ++i) trueLabels.push_back(1);
 
     // ---- 4. Run inference row by row ----
-    std::ofstream out("cpp_predictions.csv");
+    std::ofstream out("/media/wasd/Aaron Data 1/training/cpp_predictions.csv");
     out << "index,true_label,predicted_class,prob_ziphius,prob_wbat\n";
 
     int correct = 0;

@@ -29,6 +29,8 @@ class PipelineBuilder
         const std::string& filterType, const std::string& weightsPath, const std::shared_ptr<ProcessingContext>& ctx,
         int numChannels);
 
+    PipelineBuilder& addPeakExtraction(int numBefore, int numAfter);
+
     PipelineBuilder& addFrequencyDomainTransform(
         const std::string& strategyType, const std::string& weightsPath, const std::shared_ptr<ProcessingContext>& ctx,
         int numChannels);

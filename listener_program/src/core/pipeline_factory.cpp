@@ -63,6 +63,11 @@ void FlexiblePipelineFactory::executeStep(
             params.at("filter").get<std::string>(), params.at("filterWeightsFile").get<std::string>(), ctx,
             ctx->firmware->numChannels());
     }
+    else if (step.type == "addPeakExtraction")
+    {
+        builder.addPeakExtraction(
+            params.at("numBefore").get<int>(), params.at("numAfter").get<int>());
+    }
     else if (step.type == "setFileOutput")
     {
         builder.setFileOutput(params.at("directory").get<std::string>(), params.at("integrationTesting").get<bool>());

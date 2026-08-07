@@ -120,3 +120,15 @@ class TrackingStage : public IProcessingStage
    private:
     std::unique_ptr<Tracker> mFunction;
 };
+
+class PeakExtractionStage : public IProcessingStage
+{
+   public:
+    PeakExtractionStage(int numBefore = 87, int numAfter = 88);
+    bool process(std::shared_ptr<ProcessingContext> context) override;
+    std::string getName() const override;
+
+   private:
+    int mNumBefore;
+    int mNumAfter;
+};

@@ -24,6 +24,8 @@ struct DetectionResult
     Eigen::VectorXf crossCorrelationAmps;
     std::optional<float> oscillationCount; // New! Optional oscillation count
     std::optional<float> log10SpectrumRatio; // New! Optional log10 spectrum ratio
+    std::optional<std::string> classLabel;      // "Ziphius" or "WBAT"
+    std::optional<float> classProbability;      // probability of the winning class
     int trackingLabel = -1;
     bool isValid = false;
 };
@@ -35,6 +37,8 @@ struct ProcessingContext
     std::vector<std::vector<uint8_t>> dataBytes;
     Eigen::MatrixXf channelData;
     std::vector<TimePoint> dataTimes;
+
+    Eigen::VectorXf classificationSnippet;  // 176-sample peak-centered window for ONNX input
 
     // frequency domain filtering intermediate data
     Eigen::MatrixXcf frequencyDomainData;

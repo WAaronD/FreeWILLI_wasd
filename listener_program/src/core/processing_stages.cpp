@@ -140,45 +140,36 @@ ONNXClassificationStage::ONNXClassificationStage(std::unique_ptr<ONNXModel> mode
 
 bool ONNXClassificationStage::process(std::shared_ptr<ProcessingContext> context)
 {
-    if (!mFunction || context->beforeFilterData.rows() == 0)
+    if (!mFunction || context->classificationSnippet.size() == 0)
     {
-        return true;  // Skip if no model or no data
+        return true;  // Skip if no model or no snippet available
     }
 
     try
     {
-        // Extract magnitude spectra for inference
-        Eigen::VectorXf spectraToInference = context->beforeFilterData.array().abs();
+        std::vector<float> inputVector(
+            context->classificationSnippet.data(),
+            context->classificationSnippet.data() + context->classificationSnippet.size());
 
-        // Take the last mSpectraSize samples
-        if (spectraToInference.size() < static_cast<int>(mSpectraSize))
+        std::vector<float> output = mFunction->runInference(inputVector);
+
+        // output[0] = P(Ziphius), output[1] = P(WBAT) -- matches training label order
+        if (output.size() >= 2)
         {
-            std::cerr << "Warning: Insufficient spectra data for classification\n";
-            return true;  // Continue processing
+            bool isZiphius = output[0] >= output[1];
+            context->currentResult.classLabel = isZiphius ? "Ziphius" : "WBAT";
+            context->currentResult.classProbability = isZiphius ? output[0] : output[1];
+
+            std::cout << "Classified as: " << *context->currentResult.classLabel
+                       << " (p=" << *context->currentResult.classProbability << ")\n";
         }
 
-        Eigen::VectorXf spectraForInference = spectraToInference.tail(mSpectraSize);
-
-        // Convert to vector for ONNX model
-        std::vector<float> spectraVector(
-            spectraForInference.data(), spectraForInference.data() + spectraForInference.size());
-
-        // Run inference
-        std::vector<float> output = mFunction->runInference(spectraVector);
-
-        // Check classification result (assuming binary classification: [noise, signal])
-        if (output.size() >= 2 && output[1] < output[0])
-        {
-            std::cout << "Noise detected by classifier, skipping detection\n";
-            return false;  // Skip further processing for noise
-        }
-
-        return true;  // Continue processing for signal
+        return true;
     }
     catch (const std::exception& e)
     {
         std::cerr << "Classification error: " << e.what() << ", continuing without classification\n";
-        return true;  // Continue processing on classification error
+        return true;
     }
 }
 
@@ -292,3 +283,36 @@ void TrackingStage::tick()
         mFunction->scheduleCluster();
     }
 }
+
+PeakExtractionStage::PeakExtractionStage(int numBefore, int numAfter)
+    : mNumBefore(numBefore), mNumAfter(numAfter)
+{
+}
+
+bool PeakExtractionStage::process(std::shared_ptr<ProcessingContext> context)
+{
+    const Eigen::VectorXf& data = context->channelData.row(0);
+    const int N = static_cast<int>(data.size());
+    const int windowSize = mNumBefore + mNumAfter + 1;  // +1 for the peak sample itself
+
+    if (N <= 0) return false;
+
+    // Find peak (max absolute value)
+    Eigen::Index idxMax;
+    data.array().abs().maxCoeff(&idxMax);
+
+    // Edge guard: make sure the full window fits
+    const int start = static_cast<int>(idxMax) - mNumBefore;
+    const int end = static_cast<int>(idxMax) + mNumAfter + 1;  // exclusive
+    if (start < 0 || end > N)
+    {
+        std::cout << "PeakExtraction: peak too close to edge, skipping\n";
+        return false;
+    }
+
+    context->classificationSnippet = data.segment(start, windowSize);
+
+    return true;
+}
+
+std::string PeakExtractionStage::getName() const { return "Peak Extraction"; }

@@ -5,6 +5,9 @@ file(GLOB_RECURSE MAINLIB_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/*/*.cpp
 )
 
+# Exclude the integration test from MainLib — it has its own main()
+list(REMOVE_ITEM MAINLIB_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/ML/test_onnx_integration.cpp)
+
 # Create the MainLib target
 add_library(MainLib STATIC ${MAINLIB_SOURCES})
 
@@ -35,3 +38,9 @@ message(STATUS "Precompiled headers: ${PCH_SOURCES}")
 # Include directories and link libraries for Listener
 target_include_directories(Listener PRIVATE ${THIRD_PARTY_INCLUDE_DIRS})
 target_link_libraries(Listener PRIVATE MainLib ${THIRD_PARTY_LIBRARIES})
+
+# Integration test executable: compares FreeWILLI's ONNX pipeline against
+# reference Python predictions
+add_executable(IntegrationTest ${CMAKE_CURRENT_SOURCE_DIR}/ML/test_onnx_integration.cpp)
+target_include_directories(IntegrationTest PRIVATE ${THIRD_PARTY_INCLUDE_DIRS})
+target_link_libraries(IntegrationTest PRIVATE MainLib ${THIRD_PARTY_LIBRARIES})
