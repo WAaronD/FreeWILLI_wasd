@@ -85,12 +85,14 @@ class FrequencyDomainDetectionStage : public IProcessingStage
 class ONNXClassificationStage : public IProcessingStage
 {
    public:
-    ONNXClassificationStage(std::unique_ptr<ONNXModel> model, size_t spectraSize = 500);
+    ONNXClassificationStage(
+        std::unique_ptr<ONNXModel> model, std::vector<std::string> classLabels, size_t spectraSize = 500);
     bool process(std::shared_ptr<ProcessingContext> context) override;
     std::string getName() const override;
 
    private:
     std::unique_ptr<ONNXModel> mFunction;
+    std::vector<std::string> mClassLabels;
     size_t mSpectraSize;
 };
 

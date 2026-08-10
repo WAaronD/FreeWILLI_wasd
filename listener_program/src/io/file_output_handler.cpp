@@ -6,7 +6,11 @@ namespace {
     {
         return val.has_value() ? std::to_string(*val) : "NaN";
     }
+    std::string optionalToString(const std::optional<std::string>& val)  // New!
+    {
+        return val.has_value() ? *val : "";
     }
+}
 
 FileOutputHandler::FileOutputHandler(const std::string& loggingDir, bool integrationTesting)
     : mLoggingDirectory(loggingDir),
@@ -36,7 +40,11 @@ void FileOutputHandler::initialize(const TimePoint& timestamp, int numChannels)
 
     // Create column headers
     // std::vector<std::string> columnNames = {"PeakTime", "Amplitude", "DOA_x", "DOA_y", "DOA_z"}; // Old!
-    std::vector<std::string> columnNames = {"PeakTime", "Amplitude", "DOA_x", "DOA_y", "DOA_z", "OC", "Log10SR"}; // New!
+    // std::vector<std::string> columnNames = {"PeakTime", "Amplitude", "DOA_x", "DOA_y", "DOA_z", "OC", "Log10SR"}; // New!
+    std::vector<std::string> columnNames = {
+        "PeakTime", "Amplitude", "DOA_x", "DOA_y", "DOA_z", "OC", "Log10SR",
+        "SignalDuration", "PeakFreq", "CenterFreq", "ClassLabel", "ClassProb"  // New!
+    };
 
     // Generate TDOA and XCorr labels for channel combinations
     std::vector<std::string> tdoaLabels = generateChannelComboLabels("TDOA", numChannels);
@@ -82,14 +90,41 @@ void FileOutputHandler::handleOutput(const ProcessingContext& result)
     {
         return;
     }
+
+    // Reconcile detector-based class labels (only relevant if ONNX didn't already set one)
+    std::optional<std::string> reconciledLabel = result.currentResult.classLabel;  // ONNX takes priority
+    if (!reconciledLabel.has_value())
+    {
+        const auto& a = result.currentResult.signalDurationClassLabel;
+        const auto& b = result.currentResult.peakLocationClassLabel;
+        if (a.has_value() && b.has_value())
+        {
+            if (*a == *b) reconciledLabel = a;   // agree -> log it
+            // else: leave empty, uncertain
+        }
+        else if (a.has_value())
+        {
+            reconciledLabel = a;  // only one detector active in pipeline
+        }
+        else if (b.has_value())
+        {
+            reconciledLabel = b;
+        }
+    }
+
     mBuffer.mAmps.push_back(result.currentResult.peakAmplitude);
     mBuffer.mDoaX.push_back(result.currentResult.directionOfArrival.x());
     mBuffer.mDoaY.push_back(result.currentResult.directionOfArrival.y());
     mBuffer.mDoaZ.push_back(result.currentResult.directionOfArrival.z());
     mBuffer.mTdoaVector.push_back(result.currentResult.tdoaVector);
     mBuffer.mXCorrAmps.push_back(result.currentResult.crossCorrelationAmps);
-    mBuffer.mOc.push_back(result.currentResult.oscillationCount);       // New!
-    mBuffer.mLog10Sr.push_back(result.currentResult.log10SpectrumRatio); // New!
+    mBuffer.mOc.push_back(result.currentResult.oscillationCount);
+    mBuffer.mLog10Sr.push_back(result.currentResult.log10SpectrumRatio);
+    mBuffer.mSignalDuration.push_back(result.currentResult.signalDuration);   // New!
+    mBuffer.mPeakFreq.push_back(result.currentResult.peakFrequency);          // New!
+    mBuffer.mCenterFreq.push_back(result.currentResult.centerFrequency);      // New!
+    mBuffer.mClassLabel.push_back(reconciledLabel);   // changed: use reconciledLabel, not result.currentResult.classLabel
+    mBuffer.mClassProb.push_back(result.currentResult.classProbability);
     mBuffer.mPeakTimes.push_back(result.dataTimes[0]);
 }
 
@@ -127,7 +162,10 @@ void FileOutputHandler::writeBufferToFile()
     // Validate buffer consistency
     if (mBuffer.mDoaX.size() != dataSize || mBuffer.mDoaY.size() != dataSize || mBuffer.mDoaZ.size() != dataSize ||
         mBuffer.mTdoaVector.size() != dataSize || mBuffer.mXCorrAmps.size() != dataSize ||
-        mBuffer.mAmps.size() != dataSize || mBuffer.mOc.size() != dataSize || mBuffer.mLog10Sr.size() != dataSize)
+        mBuffer.mAmps.size() != dataSize || mBuffer.mOc.size() != dataSize || mBuffer.mLog10Sr.size() != dataSize ||
+        mBuffer.mSignalDuration.size() != dataSize || mBuffer.mPeakFreq.size() != dataSize ||
+        mBuffer.mCenterFreq.size() != dataSize || mBuffer.mClassLabel.size() != dataSize ||
+        mBuffer.mClassProb.size() != dataSize)  // New!
     {
         throw std::runtime_error("Error: Mismatched buffer sizes in BufferStruct.");
     }
@@ -156,8 +194,13 @@ void FileOutputHandler::writeBufferToFile()
         rowData.push_back(std::to_string(mBuffer.mDoaZ[i]));
 
         // Add optional fields
-        rowData.push_back(optionalToString(mBuffer.mOc[i]));       // New!
-        rowData.push_back(optionalToString(mBuffer.mLog10Sr[i]));  // New!
+        rowData.push_back(optionalToString(mBuffer.mOc[i]));
+        rowData.push_back(optionalToString(mBuffer.mLog10Sr[i]));
+        rowData.push_back(optionalToString(mBuffer.mSignalDuration[i]));  // New!
+        rowData.push_back(optionalToString(mBuffer.mPeakFreq[i]));        // New!
+        rowData.push_back(optionalToString(mBuffer.mCenterFreq[i]));      // New!
+        rowData.push_back(optionalToString(mBuffer.mClassLabel[i]));      // New!
+        rowData.push_back(optionalToString(mBuffer.mClassProb[i]));       // New!
 
         // Add TDOA values
         const Eigen::VectorXf& tdoaVec = mBuffer.mTdoaVector[i];

@@ -52,6 +52,16 @@ bool TimeDomainDetectionStage::process(std::shared_ptr<ProcessingContext> contex
         }
 
         std::cout << "Peak amplitude = " << context->currentResult.peakAmplitude << std::endl;
+
+        // Populate signal duration if SignalDurationDetector
+        if (auto* sigDur = dynamic_cast<SignalDurationDetector*>(mFunction.get()))
+        {
+            context->currentResult.signalDuration = sigDur->getLastDetection();
+            if (sigDur->getLastMatchIndex() >= 0)
+            {
+                context->currentResult.signalDurationClassLabel = sigDur->getLastMatchLabel();  // changed
+            }
+        }
     }
 
     return detected;
@@ -128,13 +138,25 @@ bool FrequencyDomainDetectionStage::process(std::shared_ptr<ProcessingContext> c
         context->currentResult.log10SpectrumRatio = ruccusF->getLastSpectrumRatio();
     }
 
+    // Populate peak frequency and center frequency if FPeakLocationDetector
+    if (auto* fpeak = dynamic_cast<FPeakLocationDetector*>(mFunction.get()))
+    {
+        context->currentResult.peakFrequency = fpeak->getLastPeakFrequency();
+        context->currentResult.centerFrequency = fpeak->getLastCenterFrequency();
+        if (fpeak->getLastMatchIndex() >= 0)
+        {
+            context->currentResult.peakLocationClassLabel = fpeak->getLastMatchLabel();  // changed
+        }
+    }
+
     return detected;
 }
 
 std::string FrequencyDomainDetectionStage::getName() const { return "FrequencyDomainDetection"; }
 
-ONNXClassificationStage::ONNXClassificationStage(std::unique_ptr<ONNXModel> model, size_t spectraSize)
-    : mFunction(std::move(model)), mSpectraSize(spectraSize)
+ONNXClassificationStage::ONNXClassificationStage(
+    std::unique_ptr<ONNXModel> model, std::vector<std::string> classLabels, size_t spectraSize)
+    : mFunction(std::move(model)), mClassLabels(std::move(classLabels)), mSpectraSize(spectraSize)
 {
 }
 
@@ -153,16 +175,22 @@ bool ONNXClassificationStage::process(std::shared_ptr<ProcessingContext> context
 
         std::vector<float> output = mFunction->runInference(inputVector);
 
-        // output[0] = P(Ziphius), output[1] = P(WBAT) -- matches training label order
-        if (output.size() >= 2)
+        if (output.size() != mClassLabels.size())
         {
-            bool isZiphius = output[0] >= output[1];
-            context->currentResult.classLabel = isZiphius ? "Ziphius" : "WBAT";
-            context->currentResult.classProbability = isZiphius ? output[0] : output[1];
-
-            std::cout << "Classified as: " << *context->currentResult.classLabel
-                       << " (p=" << *context->currentResult.classProbability << ")\n";
+            std::cerr << "Classification error: model produced " << output.size() << " outputs but "
+                       << mClassLabels.size() << " class labels configured, skipping\n";
+            return true;
         }
+
+        // Generic argmax over N classes
+        size_t bestIdx = std::distance(output.begin(), std::max_element(output.begin(), output.end()));
+
+        context->currentResult.classLabel = mClassLabels[bestIdx];
+        context->currentResult.classProbability = output[bestIdx];
+        context->currentResult.allClassProbabilities = std::move(output);
+
+        std::cout << "Classified as: " << *context->currentResult.classLabel
+                   << " (p=" << *context->currentResult.classProbability << ")\n";
 
         return true;
     }

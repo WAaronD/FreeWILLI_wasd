@@ -43,7 +43,8 @@ void FlexiblePipelineFactory::executeStep(
     else if (step.type == "addONNXClassification")
     {
         builder.addONNXClassification(
-            params.at("modelPath").get<std::string>(), params.at("normalizationParams").get<std::string>());
+            params.at("modelPath").get<std::string>(), params.at("normalizationParams").get<std::string>(),
+            params.at("classLabels").get<std::vector<std::string>>());
     }
     else if (step.type == "addFrequencyDomainDoaEstimation")
     {

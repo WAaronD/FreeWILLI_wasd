@@ -36,7 +36,8 @@
     		"type": "addONNXClassification",
     		"params": {
         	    "modelPath": "ML_models/click_classifier.onnx",
-        	    "normalizationParams": "ML_models/scaler_params.json"
+        	    "normalizationParams": "ML_models/scaler_params.json",
+        	    "classLabels": ["Ziphius", "WBAT"]
     		}
 	    },
             {

@@ -24,8 +24,14 @@ struct DetectionResult
     Eigen::VectorXf crossCorrelationAmps;
     std::optional<float> oscillationCount; // New! Optional oscillation count
     std::optional<float> log10SpectrumRatio; // New! Optional log10 spectrum ratio
-    std::optional<std::string> classLabel;      // "Ziphius" or "WBAT"
-    std::optional<float> classProbability;      // probability of the winning class
+    std::optional<float> signalDuration;      // New!
+    std::optional<float> peakFrequency;       // New!
+    std::optional<float> centerFrequency;     // New!
+    std::optional<std::string> signalDurationClassLabel;   // New! from SignalDurationDetector
+    std::optional<std::string> peakLocationClassLabel;     // New! from FPeakLocationDetector
+    std::optional<std::string> classLabel;                 // final reconciled label (or ONNX's direct label)
+    std::optional<float> classProbability;
+    std::optional<std::vector<float>> allClassProbabilities;  // New! full probability vector, N-class
     int trackingLabel = -1;
     bool isValid = false;
 };

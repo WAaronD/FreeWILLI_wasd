@@ -98,14 +98,14 @@ PipelineBuilder& PipelineBuilder::addFrequencyDomainDetection(const nlohmann::js
 }
 
 PipelineBuilder& PipelineBuilder::addONNXClassification(
-    const std::string& modelPath, const std::string& scalerParamsPath)
+    const std::string& modelPath, const std::string& scalerParamsPath, const std::vector<std::string>& classLabels)
 {
-    std::cout << "Adding ONNXClassification stage to pipeline" << std::endl;
+    std::cout << "Adding ONNXClassification stage to pipeline (" << classLabels.size() << " classes)" << std::endl;
     std::unique_ptr<ONNXModel> model = nullptr;
 
     model = IONNXModel::create(modelPath, scalerParamsPath);
 
-    auto stage = std::make_unique<ONNXClassificationStage>(std::move(model), 500);
+    auto stage = std::make_unique<ONNXClassificationStage>(std::move(model), classLabels, 500);
     mOrchestrator->addStage(std::move(stage));
 
     return *this;

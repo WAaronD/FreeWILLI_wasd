@@ -37,8 +37,9 @@ class PipelineBuilder
 
     PipelineBuilder& addFrequencyDomainDetection(const nlohmann::json& params);
 
-    PipelineBuilder& addONNXClassification(const std::string& modelPath, const std::string& scalerParamsPath);
-
+    PipelineBuilder& addONNXClassification(
+        const std::string& modelPath, const std::string& scalerParamsPath, const std::vector<std::string>& classLabels);
+        
     PipelineBuilder& addFrequencyDomainDoaEstimation(
         const std::string& receiverPositionsPath, const std::shared_ptr<ProcessingContext>& ctx, float speedOfSound);
 

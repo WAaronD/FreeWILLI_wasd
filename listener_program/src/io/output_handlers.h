@@ -13,8 +13,13 @@ struct BufferStruct
     std::vector<float> mDoaZ;
     std::vector<Eigen::VectorXf> mTdoaVector;
     std::vector<Eigen::VectorXf> mXCorrAmps;
-    std::vector<std::optional<float>> mOc;       // New!
-    std::vector<std::optional<float>> mLog10Sr;  // New!
+    std::vector<std::optional<float>> mOc;
+    std::vector<std::optional<float>> mLog10Sr;
+    std::vector<std::optional<float>> mSignalDuration;      // New!
+    std::vector<std::optional<float>> mPeakFreq;             // New!
+    std::vector<std::optional<float>> mCenterFreq;           // New!
+    std::vector<std::optional<std::string>> mClassLabel;     // New!
+    std::vector<std::optional<float>> mClassProb;            // New!
     std::vector<TimePoint> mPeakTimes;
 
     void clear()
@@ -25,13 +30,17 @@ struct BufferStruct
         mDoaZ.clear();
         mTdoaVector.clear();
         mXCorrAmps.clear();
-        mOc.clear();       // New!
-        mLog10Sr.clear();  // New!
+        mOc.clear();
+        mLog10Sr.clear();
+        mSignalDuration.clear();   // New!
+        mPeakFreq.clear();        // New!
+        mCenterFreq.clear();      // New!
+        mClassLabel.clear();      // New!
+        mClassProb.clear();       // New!
         mPeakTimes.clear();
     }
 
     size_t size() const { return mPeakTimes.size(); }
-
     bool empty() const { return mPeakTimes.empty(); }
 };
 
