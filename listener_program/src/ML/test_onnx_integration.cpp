@@ -30,7 +30,7 @@
 #include "onnx_model.h"
 
 const std::string kDataDir = "/media/wasd/Aaron Data 1/training/";
-const std::vector<std::string> kClassNames = {"ziphius", "wbat", "noise"};
+const std::vector<std::string> kClassNames = {"zc", "wbat", "delphinid", "gg", "noise"};
 
 // Reads a CSV file of raw snippets (one row per snippet, 176 comma-separated values)
 std::vector<std::vector<float>> loadCsv(const std::string& path)
