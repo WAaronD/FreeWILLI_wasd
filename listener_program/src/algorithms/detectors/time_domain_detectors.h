@@ -118,6 +118,7 @@ class SignalDurationDetector : public ITimeDomainDetector
 
     bool detect(const Eigen::VectorXf& timeDomainData) override;
     float getLastDetection() const override;  // duration in samples
+    float getLastPeakAmplitude() const { return mLastPeakAmplitude; } // peak amplitude getter
 
     int getLastMatchIndex() const { return mLastMatchIndex; }        // -1 if no match
     const std::string& getLastMatchLabel() const { return mLastMatchLabel; }
@@ -128,6 +129,7 @@ class SignalDurationDetector : public ITimeDomainDetector
     int mEdgeGuard;
 
     float mLastDuration = 0.0f;
+    float mLastPeakAmplitude = 0.0f;
     int mLastMatchIndex = -1;
     std::string mLastMatchLabel;
 };

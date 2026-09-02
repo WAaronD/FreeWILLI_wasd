@@ -237,6 +237,7 @@ bool SignalDurationDetector::detect(const Eigen::VectorXf& data)
     // 1) Gate on peak amplitude
     int peakIndex = 0;
     float peakVal = data.array().abs().maxCoeff(&peakIndex);
+    mLastPeakAmplitude = peakVal;
     if (peakVal <= mThreshold) return false;
 
     // 2) Cumulative energy (integrated squared pressure)

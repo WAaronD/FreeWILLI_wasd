@@ -56,10 +56,11 @@ bool TimeDomainDetectionStage::process(std::shared_ptr<ProcessingContext> contex
         // Populate signal duration if SignalDurationDetector
         if (auto* sigDur = dynamic_cast<SignalDurationDetector*>(mFunction.get()))
         {
+            context->currentResult.peakAmplitude = sigDur->getLastPeakAmplitude();  // fix
             context->currentResult.signalDuration = sigDur->getLastDetection();
             if (sigDur->getLastMatchIndex() >= 0)
             {
-                context->currentResult.signalDurationClassLabel = sigDur->getLastMatchLabel();  // changed
+                context->currentResult.signalDurationClassLabel = sigDur->getLastMatchLabel();
             }
         }
     }

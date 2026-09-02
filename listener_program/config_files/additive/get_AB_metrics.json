@@ -1,0 +1,71 @@
+{
+    "network": {
+        "ipAddress": "127.0.0.1",
+        "port": 1045
+    },
+    "global": {
+        "enableIntegrationTesting": false,
+        "verbose": false,
+        "firmware": "1240",
+        "logDirectory": "deployment_files/"
+    },
+    "pipeline": {
+        "steps": [
+            {
+                "type": "addTimeDomainDetection",
+                "params": {
+                    "detector": "PeakAmplitude",
+                    "threshold": 200
+                }
+            },
+            {
+                "type": "addTimeDomainFilter",
+                "params": {
+                    "filter": "FIRFilter",
+                    "filterWeightsFile": "filters/highpass_taps@101_cutoff@15k_window@hamming_fs@100k.txt"
+                }
+            },
+                {
+	      	"type": "addTimeDomainDetection",
+	      	"params": {
+		    "detector": "SignalDuration",
+		    "threshold": 200.0,
+		    "edgeGuard": 30,
+		    "bands": [
+		  	{ "label": "null", "durationMin": 0, "durationMax": 10000 }
+		    ]
+	      }
+	    },
+	    {
+	      	"type": "addFrequencyDomainTransform",
+	      	"params": {
+		    "strategy": "None",
+		    "filterWeightsFile": "filters/highpass_taps@101_cutoff@15k_window@hamming_fs@100k.txt"
+	      	}
+	    },
+	    {
+	      	"type": "addFrequencyDomainDetection",
+	      	"params": {
+		    "detector": "FPeakLocationDetector",
+		    "sampleRate": 100000.0,
+		    "bands": [
+		  	{ "label": "null", "peakFreqMin": 0, "peakFreqMax": 100000, "centerFreqMin": 0, "centerFreqMax": 100000 }
+		    ]
+	      	}
+	    },
+            {
+                "type": "setFileOutput",
+                "params": {
+                    "directory": "${global.logDirectory}",
+                    "integrationTesting": "${global.enableIntegrationTesting}"
+                }
+            },
+            {
+                "type": "setErrorHandler",
+                "params": {
+                    "logFile": "${global.logDirectory}error.log"
+                }
+            }
+        ]
+    }
+}

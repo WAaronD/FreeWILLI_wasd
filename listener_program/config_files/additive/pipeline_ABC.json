@@ -1,0 +1,76 @@
+{
+    "network": {
+        "ipAddress": "127.0.0.1",
+        "port": 1045
+    },
+    "global": {
+        "enableIntegrationTesting": false,
+        "verbose": false,
+        "firmware": "1240",
+        "logDirectory": "deployment_files/"
+    },
+    "pipeline": {
+        "steps": [
+            {
+                "type": "addTimeDomainDetection",
+                "params": {
+                    "detector": "PeakAmplitude",
+                    "threshold": 200
+                }
+            },
+            {
+                "type": "addTimeDomainFilter",
+                "params": {
+                    "filter": "FIRFilter",
+                    "filterWeightsFile": "filters/highpass_taps@101_cutoff@15k_window@hamming_fs@100k.txt"
+                }
+            },
+            {
+            	"type": "addTimeDomainDetection",
+            	"params": {
+            	    "
+            },
+            {
+    		"type": "addPeakExtraction",
+    		"params": {
+        	    "numBefore": 87,
+        	    "numAfter": 88
+    		}
+	    },
+            {
+    		"type": "addONNXClassification",
+    		"params": {
+        	    "modelPath": "ML_models/click_classifier.onnx",
+        	    "normalizationParams": "ML_models/scaler_params.json",
+        	    "classLabels": ["zc", "wbat", "delphinid", "gg", "noise"]
+    		}
+	    },
+            {
+                "type": "setFileOutput",
+                "params": {
+                    "directory": "${global.logDirectory}",
+                    "integrationTesting": "${global.enableIntegrationTesting}"
+                }
+            },
+            {
+                "type": "setNetworkOutput",
+                "params": {
+                    "host": "127.0.0.1",
+                    "port": 55001
+                }
+            },
+            {
+            	"type": "setConsoleOutput",
+            	"params": {
+                    "enabled": true
+            	}
+            },
+            {
+                "type": "setErrorHandler",
+                "params": {
+                    "logFile": "${global.logDirectory}error.log"
+                }
+            }
+        ]
+    }
+}
