@@ -180,13 +180,13 @@ bool FPeakLocationDetector::detect(const Eigen::VectorXcf& X)
     }
 
     // debug
-    std::cout << "Spectrum (bins 0.." << N-1 << ", freq resolution=" << mSampleRate/N << " Hz/bin):\n";
+    // std::cout << "Spectrum (bins 0.." << N-1 << ", freq resolution=" << mSampleRate/N << " Hz/bin):\n";
     //for (int k = 0; k < N_full; ++k)
     //{
     //    std::cout << "  bin " << k << " (" << k * mSampleRate / N_full << " Hz): " << std::sqrt(std::norm(X(k))) << "\n";
     //}
-    std::cout << "peakBin=" << peakBin << " peakFreq=" << mLastPeakFreq << " centerFreq=" << mLastCenterFreq << "\n";
-    std::cout << "X.size()=" << X.size() << " N=" << N << "\n";
+    // std::cout << "peakBin=" << peakBin << " peakFreq=" << mLastPeakFreq << " centerFreq=" << mLastCenterFreq << "\n";
+    // std::cout << "X.size()=" << X.size() << " N=" << N << "\n";
 
     mLastPeakFreq = peakBin * mSampleRate / N_full;
     mLastCenterFreq = (magSqSum > 0.f) ? (weightedBinSum / magSqSum) * mSampleRate / N_full : 0.f;
