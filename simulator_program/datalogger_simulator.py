@@ -114,7 +114,7 @@ class DataSimulator:
         self.DATA_SCALE = 2**15
 
         # Set stream to RAPID if specified
-        self.RAPID_SPEED_FACTOR = 50
+        self.RAPID_SPEED_FACTOR = 10
         self.speedFactor = self.RAPID_SPEED_FACTOR if self.arguments.rapid else 1
 
         # Print initial settings
