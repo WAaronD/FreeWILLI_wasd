@@ -51,7 +51,7 @@ bool TimeDomainDetectionStage::process(std::shared_ptr<ProcessingContext> contex
             context->currentResult.oscillationCount = ruccus->getLastExcursionCount();
         }
 
-        std::cout << "Peak amplitude = " << context->currentResult.peakAmplitude << std::endl;
+        // std::cout << "Peak amplitude = " << context->currentResult.peakAmplitude << std::endl;
 
         // Populate signal duration if SignalDurationDetector
         if (auto* sigDur = dynamic_cast<SignalDurationDetector*>(mFunction.get()))
