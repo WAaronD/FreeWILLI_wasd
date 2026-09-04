@@ -1,6 +1,6 @@
 {
     "network": {
-        "ipAddress": "127.0.0.1",
+        "ipAddress": "192.168.100.251",
         "port": 1045
     },
     "global": {
@@ -25,7 +25,7 @@
                     "filterWeightsFile": "filters/highpass_taps@101_cutoff@15k_window@hamming_fs@100k.txt"
                 }
             },
-            {
+                {
 	      	"type": "addTimeDomainDetection",
 	      	"params": {
 		    "detector": "SignalDuration",
@@ -41,16 +41,6 @@
 	      	"params": {
 		    "strategy": "None",
 		    "filterWeightsFile": "filters/highpass_taps@101_cutoff@15k_window@hamming_fs@100k.txt"
-	      	}
-	    },
-	    {
-	      	"type": "addFrequencyDomainDetection",
-	      	"params": {
-		    "detector": "FPeakLocationDetector",
-		    "sampleRate": 100000.0,
-		    "bands": [
-		  	{ "label": "null", "peakFreqMin": 0, "peakFreqMax": 100000, "centerFreqMin": 0, "centerFreqMax": 100000 }
-		    ]
 	      	}
 	    },
             {

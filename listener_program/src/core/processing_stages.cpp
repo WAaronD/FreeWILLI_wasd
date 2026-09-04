@@ -190,8 +190,8 @@ bool ONNXClassificationStage::process(std::shared_ptr<ProcessingContext> context
         context->currentResult.classProbability = output[bestIdx];
         context->currentResult.allClassProbabilities = std::move(output);
 
-        std::cout << "Classified as: " << *context->currentResult.classLabel
-                   << " (p=" << *context->currentResult.classProbability << ")\n";
+        // std::cout << "Classified as: " << *context->currentResult.classLabel
+        //            << " (p=" << *context->currentResult.classProbability << ")\n";
 
         return true;
     }
