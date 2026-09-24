@@ -225,8 +225,8 @@ void CFARPeakDetector::init_(const Params& p)
     mAlpha = static_cast<float>(nTrainTotal * (std::pow(mPfa, -1.0 / nTrainTotal) - 1.0));
 }
 
-SignalDurationDetector::SignalDurationDetector(std::vector<DurationBand> bands, float threshold, int edgeGuard)
-    : mBands(std::move(bands)), mThreshold(threshold), mEdgeGuard(edgeGuard) {}
+SignalDurationDetector::SignalDurationDetector(std::vector<DurationBand> bands, float threshold, int edgeGuard, float sampleRate)
+    : mBands(std::move(bands)), mThreshold(threshold), mEdgeGuard(edgeGuard), mSampleRate(sampleRate) {}
 
 bool SignalDurationDetector::detect(const Eigen::VectorXf& data)
 {
@@ -261,13 +261,14 @@ bool SignalDurationDetector::detect(const Eigen::VectorXf& data)
     if (idx5 < mEdgeGuard || idx95 > data.size() - 1 - mEdgeGuard) return false;
 
     mLastDuration = static_cast<float>(idx95 - idx5 + 1);
+    const float durationMicroseconds = mLastDuration * 1e6f / mSampleRate;  // New!
 
     // 4) Check ALL bands, mark each as matched or not
     bool anyMatch = false;
     for (size_t i = 0; i < mBands.size(); ++i)
     {
         const auto& b = mBands[i];
-        if (mLastDuration >= b.durationMin && mLastDuration <= b.durationMax)
+        if (durationMicroseconds >= b.durationMin && durationMicroseconds <= b.durationMax)  // changed
         {
             mLastMatches[i] = true;
             anyMatch = true;

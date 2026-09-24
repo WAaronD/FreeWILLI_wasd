@@ -114,21 +114,20 @@ struct DurationBand
 class SignalDurationDetector : public ITimeDomainDetector
 {
    public:
-    SignalDurationDetector(std::vector<DurationBand> bands, float threshold, int edgeGuard = 30);
+    SignalDurationDetector(std::vector<DurationBand> bands, float threshold, int edgeGuard = 30, float sampleRate = 100000.f);
 
     bool detect(const Eigen::VectorXf& timeDomainData) override;
-    float getLastDetection() const override;  // duration in samples
+    float getLastDetection() const override;  // duration in samples (unchanged)
     float getLastPeakAmplitude() const { return mLastPeakAmplitude; }
 
-    // New: one bool per band, true if that band matched
     const std::vector<bool>& getLastMatches() const { return mLastMatches; }
-    // Convenience: labels of every band that matched
     std::vector<std::string> getLastMatchLabels() const;
 
    private:
     std::vector<DurationBand> mBands;
     float mThreshold;
     int mEdgeGuard;
+    float mSampleRate;  // New!
 
     float mLastDuration = 0.0f;
     float mLastPeakAmplitude = 0.0f;

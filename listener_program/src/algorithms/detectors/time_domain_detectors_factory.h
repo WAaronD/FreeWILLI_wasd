@@ -42,7 +42,8 @@ class ITimeDomainDetectorFactory
             return std::make_unique<SignalDurationDetector>(
                 std::move(bands),
                 params.at("threshold").get<float>(),
-                static_cast<int>(params.value("edgeGuard", 30)));
+                static_cast<int>(params.value("edgeGuard", 30)),
+                params.value("sampleRate", 100000.f));  // New!
         }
         else
         {

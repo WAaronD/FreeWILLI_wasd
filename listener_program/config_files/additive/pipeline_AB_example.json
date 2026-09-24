@@ -1,0 +1,92 @@
+{
+    "network": {
+        "ipAddress": "127.0.0.1",
+        "port": 1045
+    },
+    "global": {
+        "enableIntegrationTesting": false,
+        "verbose": false,
+        "firmware": "1240",
+        "logDirectory": "deployment_files/"
+    },
+    "pipeline": {
+        "steps": [
+            {
+                "type": "addTimeDomainDetection",
+                "params": {
+                    "detector": "PeakAmplitude",
+                    "threshold": 20
+                }
+            },
+            {
+                "type": "addTimeDomainFilter",
+                "params": {
+                    "filter": "FIRFilter",
+                    "filterWeightsFile": "filters/highpass_taps@101_cutoff@15k_window@hamming_fs@100k.txt"
+                }
+            },
+            {
+	      	"type": "addTimeDomainDetection",
+	      	"params": {
+		    "detector": "SignalDuration",
+		    "threshold": 200.0,
+		    "edgeGuard": 30,
+		    "bands": [
+		  	{ "label": "Zc", "durationMin": 100, "durationMax": 400 },
+		  	{ "label": "WBAT", "durationMin": 100, "durationMax": 800 }
+		    ]
+	      }
+	    },
+	    {
+	      	"type": "addFrequencyDomainTransform",
+	      	"params": {
+		    "strategy": "None",
+		    "filterWeightsFile": "filters/highpass_taps@101_cutoff@15k_window@hamming_fs@100k.txt"
+	      	}
+	    },
+	    {
+	      	"type": "addFrequencyDomainDetection",
+	      	"params": {
+		    "detector": "FPeakLocationDetector",
+		    "sampleRate": 100000.0,
+		    "bands": [
+		  	{ "label": "Zc", "peakFreqMin": 30000, "peakFreqMax": 45000, "centerFreqMin": 30000, "centerFreqMax": 40000 },
+		  	{ "label": "WBAT", "peakFreqMin": 32000, "peakFreqMax": 34000, "centerFreqMin": 31000, "centerFreqMax": 34000 }
+		    ]
+	      	}
+	    },
+	    {
+	    	"type": "addAssignment",
+	    	"params": {
+	    	    "classLabels": ["Zc", "WBAT"]
+	    	}
+	    },
+            {
+                "type": "setFileOutput",
+                "params": {
+                    "directory": "${global.logDirectory}",
+                    "integrationTesting": "${global.enableIntegrationTesting}"
+                }
+            },
+            {
+                "type": "setConsoleOutput",
+                "params": {
+                    "enabled": "${global.verbose}"
+                }
+            },
+            {
+                "type": "setNetworkOutput",
+                "params": {
+                    "host": "127.0.0.1",
+                    "port": 55001
+                }
+            },
+            {
+                "type": "setErrorHandler",
+                "params": {
+                    "logFile": "${global.logDirectory}error.log"
+                }
+            }
+        ]
+    }
+}

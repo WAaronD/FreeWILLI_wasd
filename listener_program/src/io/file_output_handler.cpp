@@ -195,7 +195,6 @@ void FileOutputHandler::writeBufferToFile()
         rowData.push_back(optionalToString(mBuffer.mCenterFreq[i]));      // New!
         rowData.push_back(optionalToString(mBuffer.mClassLabel[i]));      // New!
         rowData.push_back(optionalToString(mBuffer.mClassProb[i]));       // New!
-        rowData.push_back(optionalToString(mBuffer.mClassProb[i]));
         rowData.push_back(mBuffer.mSignalDurationMatches[i]);
         rowData.push_back(mBuffer.mPeakFreqMatches[i]);
         rowData.push_back(mBuffer.mCenterFreqMatches[i]);
