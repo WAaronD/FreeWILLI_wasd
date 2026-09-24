@@ -134,3 +134,14 @@ class PeakExtractionStage : public IProcessingStage
     int mNumBefore;
     int mNumAfter;
 };
+
+class AssignmentStage : public IProcessingStage
+{
+   public:
+    explicit AssignmentStage(std::vector<std::string> classLabels);
+    bool process(std::shared_ptr<ProcessingContext> context) override;
+    std::string getName() const override;
+
+   private:
+    std::vector<std::string> mClassLabels;
+};

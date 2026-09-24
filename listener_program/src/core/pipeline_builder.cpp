@@ -63,6 +63,14 @@ PipelineBuilder& PipelineBuilder::addPeakExtraction(int numBefore, int numAfter)
     return *this;
 }
 
+PipelineBuilder& PipelineBuilder::addAssignment(const std::vector<std::string>& classLabels)
+{
+    std::cout << "Adding Assignment stage to pipeline (" << classLabels.size() << " classes)" << std::endl;
+    auto stage = std::make_unique<AssignmentStage>(classLabels);
+    mOrchestrator->addStage(std::move(stage));
+    return *this;
+}
+
 PipelineBuilder& PipelineBuilder::addFrequencyDomainTransform(
     const std::string& strategyType, const std::string& weightsPath, const std::shared_ptr<ProcessingContext>& ctx,
     int numChannels)

@@ -118,10 +118,12 @@ class SignalDurationDetector : public ITimeDomainDetector
 
     bool detect(const Eigen::VectorXf& timeDomainData) override;
     float getLastDetection() const override;  // duration in samples
-    float getLastPeakAmplitude() const { return mLastPeakAmplitude; } // peak amplitude getter
+    float getLastPeakAmplitude() const { return mLastPeakAmplitude; }
 
-    int getLastMatchIndex() const { return mLastMatchIndex; }        // -1 if no match
-    const std::string& getLastMatchLabel() const { return mLastMatchLabel; }
+    // New: one bool per band, true if that band matched
+    const std::vector<bool>& getLastMatches() const { return mLastMatches; }
+    // Convenience: labels of every band that matched
+    std::vector<std::string> getLastMatchLabels() const;
 
    private:
     std::vector<DurationBand> mBands;
@@ -130,6 +132,5 @@ class SignalDurationDetector : public ITimeDomainDetector
 
     float mLastDuration = 0.0f;
     float mLastPeakAmplitude = 0.0f;
-    int mLastMatchIndex = -1;
-    std::string mLastMatchLabel;
+    std::vector<bool> mLastMatches;
 };

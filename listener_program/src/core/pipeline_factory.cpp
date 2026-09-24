@@ -69,6 +69,10 @@ void FlexiblePipelineFactory::executeStep(
         builder.addPeakExtraction(
             params.at("numBefore").get<int>(), params.at("numAfter").get<int>());
     }
+    else if (step.type == "addAssignment")
+    {
+        builder.addAssignment(params.at("classLabels").get<std::vector<std::string>>());
+    }
     else if (step.type == "setFileOutput")
     {
         builder.setFileOutput(params.at("directory").get<std::string>(), params.at("integrationTesting").get<bool>());

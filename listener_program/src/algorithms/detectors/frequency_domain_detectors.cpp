@@ -167,7 +167,7 @@ bool FPeakLocationDetector::detect(const Eigen::VectorXcf& X)
     float weightedBinSum = 0.f;
 
     const int N_full = (N - 1) * 2;  // reconstruct full FFT size = 992
-    for (int k = 0; k < N; ++k)  // Original: k < N
+    for (int k = 0; k < N; ++k)
     {
         const float magSq = std::norm(X(k));  // re*re + im*im, no sqrt
         magSqSum += magSq;
@@ -191,21 +191,25 @@ bool FPeakLocationDetector::detect(const Eigen::VectorXcf& X)
     mLastPeakFreq = peakBin * mSampleRate / N_full;
     mLastCenterFreq = (magSqSum > 0.f) ? (weightedBinSum / magSqSum) * mSampleRate / N_full : 0.f;
 
-    // Check bands in order; first match wins
-    mLastMatchIndex = -1;
-    mLastMatchLabel.clear();
+    // Check ALL bands, mark each as matched or not, independently for each metric
+    mLastPeakMatches.assign(mBands.size(), false);
+    mLastCenterMatches.assign(mBands.size(), false);
+
+    bool peakAnyMatch = false;
+    bool centerAnyMatch = false;
     for (size_t i = 0; i < mBands.size(); ++i)
     {
         const auto& b = mBands[i];
         const bool peakOk = (mLastPeakFreq >= b.peakFreqMin) && (mLastPeakFreq <= b.peakFreqMax);
         const bool centerOk = (mLastCenterFreq >= b.centerFreqMin) && (mLastCenterFreq <= b.centerFreqMax);
-        if (peakOk && centerOk)
-        {
-            mLastMatchIndex = static_cast<int>(i);
-            mLastMatchLabel = b.label;
-            break;
-        }
+
+        mLastPeakMatches[i] = peakOk;
+        mLastCenterMatches[i] = centerOk;
+
+        if (peakOk) peakAnyMatch = true;
+        if (centerOk) centerAnyMatch = true;
     }
 
-    return mLastMatchIndex >= 0;
+    // Toss the signal if EITHER vector is all-zero
+    return peakAnyMatch && centerAnyMatch;
 }

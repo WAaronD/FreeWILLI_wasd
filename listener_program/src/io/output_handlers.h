@@ -21,6 +21,10 @@ struct BufferStruct
     std::vector<std::optional<std::string>> mClassLabel;     // New!
     std::vector<std::optional<float>> mClassProb;            // New!
     std::vector<TimePoint> mPeakTimes;
+    std::vector<std::string> mSignalDurationMatches;  // New!
+    std::vector<std::string> mPeakFreqMatches;         // New!
+    std::vector<std::string> mCenterFreqMatches;       // New!
+    std::vector<std::string> mFinalAssignment;         // New!
 
     void clear()
     {
@@ -38,6 +42,10 @@ struct BufferStruct
         mClassLabel.clear();      // New!
         mClassProb.clear();       // New!
         mPeakTimes.clear();
+        mSignalDurationMatches.clear();
+        mPeakFreqMatches.clear();
+        mCenterFreqMatches.clear();
+        mFinalAssignment.clear();
     }
 
     size_t size() const { return mPeakTimes.size(); }

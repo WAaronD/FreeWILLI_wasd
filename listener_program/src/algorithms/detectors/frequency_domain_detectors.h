@@ -89,8 +89,10 @@ class FPeakLocationDetector : public IFrequencyDomainDetector
 
     float getLastPeakFrequency() const { return mLastPeakFreq; }
     float getLastCenterFrequency() const { return mLastCenterFreq; }
-    int getLastMatchIndex() const { return mLastMatchIndex; }       // -1 if no match
-    const std::string& getLastMatchLabel() const { return mLastMatchLabel; }
+
+    // New: one bool per band, for each metric independently
+    const std::vector<bool>& getLastPeakMatches() const { return mLastPeakMatches; }
+    const std::vector<bool>& getLastCenterMatches() const { return mLastCenterMatches; }
 
    private:
     std::vector<FPeakLocationBand> mBands;
@@ -98,6 +100,6 @@ class FPeakLocationDetector : public IFrequencyDomainDetector
 
     float mLastPeakFreq = 0.f;
     float mLastCenterFreq = 0.f;
-    int mLastMatchIndex = -1;
-    std::string mLastMatchLabel;
+    std::vector<bool> mLastPeakMatches;
+    std::vector<bool> mLastCenterMatches;
 };

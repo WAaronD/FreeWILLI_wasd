@@ -56,12 +56,9 @@ bool TimeDomainDetectionStage::process(std::shared_ptr<ProcessingContext> contex
         // Populate signal duration if SignalDurationDetector
         if (auto* sigDur = dynamic_cast<SignalDurationDetector*>(mFunction.get()))
         {
-            context->currentResult.peakAmplitude = sigDur->getLastPeakAmplitude();  // fix
+            context->currentResult.peakAmplitude = sigDur->getLastPeakAmplitude();
             context->currentResult.signalDuration = sigDur->getLastDetection();
-            if (sigDur->getLastMatchIndex() >= 0)
-            {
-                context->currentResult.signalDurationClassLabel = sigDur->getLastMatchLabel();
-            }
+            context->currentResult.signalDurationMatches = sigDur->getLastMatches();
         }
     }
 
@@ -144,10 +141,8 @@ bool FrequencyDomainDetectionStage::process(std::shared_ptr<ProcessingContext> c
     {
         context->currentResult.peakFrequency = fpeak->getLastPeakFrequency();
         context->currentResult.centerFrequency = fpeak->getLastCenterFrequency();
-        if (fpeak->getLastMatchIndex() >= 0)
-        {
-            context->currentResult.peakLocationClassLabel = fpeak->getLastMatchLabel();  // changed
-        }
+        context->currentResult.peakFreqMatches = fpeak->getLastPeakMatches();
+        context->currentResult.centerFreqMatches = fpeak->getLastCenterMatches();
     }
 
     return detected;
@@ -345,3 +340,69 @@ bool PeakExtractionStage::process(std::shared_ptr<ProcessingContext> context)
 }
 
 std::string PeakExtractionStage::getName() const { return "Peak Extraction"; }
+
+AssignmentStage::AssignmentStage(std::vector<std::string> classLabels)
+    : mClassLabels(std::move(classLabels))
+{
+}
+
+bool AssignmentStage::process(std::shared_ptr<ProcessingContext> context)
+{
+    auto& result = context->currentResult;
+
+    std::vector<const std::vector<bool>*> present;
+    if (result.signalDurationMatches.has_value()) present.push_back(&*result.signalDurationMatches);
+    if (result.peakFreqMatches.has_value())       present.push_back(&*result.peakFreqMatches);
+    if (result.centerFreqMatches.has_value())     present.push_back(&*result.centerFreqMatches);
+
+    if (present.empty())
+    {
+        return true;  // no classification-style detector ran this cycle
+    }
+
+    const size_t numClasses = present[0]->size();
+    std::vector<bool> agreed(numClasses, true);
+
+    for (const auto* vec : present)
+    {
+        if (vec->size() != numClasses)
+        {
+            throw std::runtime_error("AssignmentStage: mismatched match-vector sizes");
+        }
+        for (size_t i = 0; i < numClasses; ++i)
+        {
+            agreed[i] = agreed[i] && (*vec)[i];
+        }
+    }
+
+    result.agreedMatches = agreed;
+
+    if (numClasses != mClassLabels.size())
+    {
+        throw std::runtime_error("AssignmentStage: classLabels size does not match number of bands");
+    }
+
+    // Translate agreement into ClassLabel: unset if no agreement (00000 -> no detection),
+    // single name if exactly one class matched, pipe-joined if ambiguous.
+    std::string joined;
+    int matchCount = 0;
+    for (size_t i = 0; i < numClasses; ++i)
+    {
+        if (agreed[i])
+        {
+            if (matchCount > 0) joined += "|";
+            joined += mClassLabels[i];
+            ++matchCount;
+        }
+    }
+
+    if (matchCount > 0)
+    {
+        result.classLabel = joined;
+    }
+    // else: leave classLabel unset -> downstream treats this as no detection
+
+    return true;
+}
+
+std::string AssignmentStage::getName() const { return "Assignment"; }

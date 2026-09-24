@@ -231,8 +231,7 @@ SignalDurationDetector::SignalDurationDetector(std::vector<DurationBand> bands, 
 bool SignalDurationDetector::detect(const Eigen::VectorXf& data)
 {
     mLastDuration = 0.0f;
-    mLastMatchIndex = -1;
-    mLastMatchLabel.clear();
+    mLastMatches.assign(mBands.size(), false);
 
     // 1) Gate on peak amplitude
     int peakIndex = 0;
@@ -263,19 +262,29 @@ bool SignalDurationDetector::detect(const Eigen::VectorXf& data)
 
     mLastDuration = static_cast<float>(idx95 - idx5 + 1);
 
-    // 4) Check bands in order; first match wins
+    // 4) Check ALL bands, mark each as matched or not
+    bool anyMatch = false;
     for (size_t i = 0; i < mBands.size(); ++i)
     {
         const auto& b = mBands[i];
         if (mLastDuration >= b.durationMin && mLastDuration <= b.durationMax)
         {
-            mLastMatchIndex = static_cast<int>(i);
-            mLastMatchLabel = b.label;
-            break;
+            mLastMatches[i] = true;
+            anyMatch = true;
         }
     }
 
-    return mLastMatchIndex >= 0;
+    return anyMatch;
 }
 
 float SignalDurationDetector::getLastDetection() const { return mLastDuration; }
+
+std::vector<std::string> SignalDurationDetector::getLastMatchLabels() const
+{
+    std::vector<std::string> labels;
+    for (size_t i = 0; i < mBands.size(); ++i)
+    {
+        if (mLastMatches[i]) labels.push_back(mBands[i].label);
+    }
+    return labels;
+}

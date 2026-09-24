@@ -31,6 +31,8 @@ class PipelineBuilder
 
     PipelineBuilder& addPeakExtraction(int numBefore, int numAfter);
 
+    PipelineBuilder& addAssignment(const std::vector<std::string>& classLabels);
+    
     PipelineBuilder& addFrequencyDomainTransform(
         const std::string& strategyType, const std::string& weightsPath, const std::shared_ptr<ProcessingContext>& ctx,
         int numChannels);

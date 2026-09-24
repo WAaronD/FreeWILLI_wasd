@@ -27,8 +27,10 @@ struct DetectionResult
     std::optional<float> signalDuration;      // New!
     std::optional<float> peakFrequency;       // New!
     std::optional<float> centerFrequency;     // New!
-    std::optional<std::string> signalDurationClassLabel;   // New! from SignalDurationDetector
-    std::optional<std::string> peakLocationClassLabel;     // New! from FPeakLocationDetector
+    std::optional<std::vector<bool>> signalDurationMatches;   // from SignalDurationDetector
+    std::optional<std::vector<bool>> peakFreqMatches;         // from FPeakLocationDetector (peak freq)
+    std::optional<std::vector<bool>> centerFreqMatches;       // from FPeakLocationDetector (center freq)
+    std::optional<std::vector<bool>> agreedMatches;           // from AssignmentStage: final assignment
     std::optional<std::string> classLabel;                 // final reconciled label (or ONNX's direct label)
     std::optional<float> classProbability;
     std::optional<std::vector<float>> allClassProbabilities;  // New! full probability vector, N-class

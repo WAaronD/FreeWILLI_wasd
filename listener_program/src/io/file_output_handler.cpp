@@ -6,9 +6,17 @@ namespace {
     {
         return val.has_value() ? std::to_string(*val) : "NaN";
     }
-    std::string optionalToString(const std::optional<std::string>& val)  // New!
+    std::string optionalToString(const std::optional<std::string>& val)
     {
         return val.has_value() ? *val : "";
+    }
+    std::string matchesToString(const std::optional<std::vector<bool>>& matches)
+    {
+        if (!matches.has_value()) return "";
+        std::string s;
+        s.reserve(matches->size());
+        for (bool b : *matches) s += (b ? '1' : '0');
+        return s;
     }
 }
 
@@ -43,7 +51,8 @@ void FileOutputHandler::initialize(const TimePoint& timestamp, int numChannels)
     // std::vector<std::string> columnNames = {"PeakTime", "Amplitude", "DOA_x", "DOA_y", "DOA_z", "OC", "Log10SR"}; // New!
     std::vector<std::string> columnNames = {
         "PeakTime", "Amplitude", "DOA_x", "DOA_y", "DOA_z", "OC", "Log10SR",
-        "SignalDuration", "PeakFreq", "CenterFreq", "ClassLabel", "ClassProb"  // New!
+        "SignalDuration", "PeakFreq", "CenterFreq", "ClassLabel", "ClassProb",
+        "DurationMatches", "PeakMatches", "CenterMatches", "FinalAssignment"  // New!
     };
 
     // Generate TDOA and XCorr labels for channel combinations
@@ -91,27 +100,6 @@ void FileOutputHandler::handleOutput(const ProcessingContext& result)
         return;
     }
 
-    // Reconcile detector-based class labels (only relevant if ONNX didn't already set one)
-    std::optional<std::string> reconciledLabel = result.currentResult.classLabel;  // ONNX takes priority
-    if (!reconciledLabel.has_value())
-    {
-        const auto& a = result.currentResult.signalDurationClassLabel;
-        const auto& b = result.currentResult.peakLocationClassLabel;
-        if (a.has_value() && b.has_value())
-        {
-            if (*a == *b) reconciledLabel = a;   // agree -> log it
-            // else: leave empty, uncertain
-        }
-        else if (a.has_value())
-        {
-            reconciledLabel = a;  // only one detector active in pipeline
-        }
-        else if (b.has_value())
-        {
-            reconciledLabel = b;
-        }
-    }
-
     mBuffer.mAmps.push_back(result.currentResult.peakAmplitude);
     mBuffer.mDoaX.push_back(result.currentResult.directionOfArrival.x());
     mBuffer.mDoaY.push_back(result.currentResult.directionOfArrival.y());
@@ -120,11 +108,15 @@ void FileOutputHandler::handleOutput(const ProcessingContext& result)
     mBuffer.mXCorrAmps.push_back(result.currentResult.crossCorrelationAmps);
     mBuffer.mOc.push_back(result.currentResult.oscillationCount);
     mBuffer.mLog10Sr.push_back(result.currentResult.log10SpectrumRatio);
-    mBuffer.mSignalDuration.push_back(result.currentResult.signalDuration);   // New!
-    mBuffer.mPeakFreq.push_back(result.currentResult.peakFrequency);          // New!
-    mBuffer.mCenterFreq.push_back(result.currentResult.centerFrequency);      // New!
-    mBuffer.mClassLabel.push_back(reconciledLabel);   // changed: use reconciledLabel, not result.currentResult.classLabel
+    mBuffer.mSignalDuration.push_back(result.currentResult.signalDuration);
+    mBuffer.mPeakFreq.push_back(result.currentResult.peakFrequency);
+    mBuffer.mCenterFreq.push_back(result.currentResult.centerFrequency);
+    mBuffer.mClassLabel.push_back(result.currentResult.classLabel);       // ONNX label only, unchanged
     mBuffer.mClassProb.push_back(result.currentResult.classProbability);
+    mBuffer.mSignalDurationMatches.push_back(matchesToString(result.currentResult.signalDurationMatches));
+    mBuffer.mPeakFreqMatches.push_back(matchesToString(result.currentResult.peakFreqMatches));
+    mBuffer.mCenterFreqMatches.push_back(matchesToString(result.currentResult.centerFreqMatches));
+    mBuffer.mFinalAssignment.push_back(matchesToString(result.currentResult.agreedMatches));
     mBuffer.mPeakTimes.push_back(result.dataTimes[0]);
 }
 
@@ -165,7 +157,9 @@ void FileOutputHandler::writeBufferToFile()
         mBuffer.mAmps.size() != dataSize || mBuffer.mOc.size() != dataSize || mBuffer.mLog10Sr.size() != dataSize ||
         mBuffer.mSignalDuration.size() != dataSize || mBuffer.mPeakFreq.size() != dataSize ||
         mBuffer.mCenterFreq.size() != dataSize || mBuffer.mClassLabel.size() != dataSize ||
-        mBuffer.mClassProb.size() != dataSize)  // New!
+        mBuffer.mClassProb.size() != dataSize || mBuffer.mSignalDurationMatches.size() != dataSize ||
+        mBuffer.mPeakFreqMatches.size() != dataSize || mBuffer.mCenterFreqMatches.size() != dataSize ||
+        mBuffer.mFinalAssignment.size() != dataSize)
     {
         throw std::runtime_error("Error: Mismatched buffer sizes in BufferStruct.");
     }
@@ -201,6 +195,11 @@ void FileOutputHandler::writeBufferToFile()
         rowData.push_back(optionalToString(mBuffer.mCenterFreq[i]));      // New!
         rowData.push_back(optionalToString(mBuffer.mClassLabel[i]));      // New!
         rowData.push_back(optionalToString(mBuffer.mClassProb[i]));       // New!
+        rowData.push_back(optionalToString(mBuffer.mClassProb[i]));
+        rowData.push_back(mBuffer.mSignalDurationMatches[i]);
+        rowData.push_back(mBuffer.mPeakFreqMatches[i]);
+        rowData.push_back(mBuffer.mCenterFreqMatches[i]);
+        rowData.push_back(mBuffer.mFinalAssignment[i]);
 
         // Add TDOA values
         const Eigen::VectorXf& tdoaVec = mBuffer.mTdoaVector[i];
