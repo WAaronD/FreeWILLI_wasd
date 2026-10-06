@@ -46,6 +46,12 @@ void ConsoleOutputHandler::handleOutput(const ProcessingContext& result)
             std::cout << "]" << std::endl;
         }
 
+        if (result.currentResult.bw3dB.has_value() && result.currentResult.bw10dB.has_value())
+        {
+            std::cout << "BW -3dB / -10dB (Hz): " << std::fixed << std::setprecision(0)
+                      << *result.currentResult.bw3dB << " / " << *result.currentResult.bw10dB << std::endl;
+        }
+
         if (result.currentResult.trackingLabel >= 0)
         {
             std::cout << "Tracking Label: " << result.currentResult.trackingLabel << std::endl;

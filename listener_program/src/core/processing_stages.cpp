@@ -145,6 +145,15 @@ bool FrequencyDomainDetectionStage::process(std::shared_ptr<ProcessingContext> c
         context->currentResult.centerFreqMatches = fpeak->getLastCenterMatches();
     }
 
+    // Populate bandwidth (-3dB and -10-dB) if BandwidthDetector
+    if (auto* bw = dynamic_cast<BandwidthDetector*>(mFunction.get()))
+    {
+        context->currentResult.bw3dB = bw->getLastBw3dB();
+        context->currentResult.bw10dB = bw->getLastBw10dB();
+        context->currentResult.bw3dBMatches = bw->getLastBw3dBMatches();
+        context->currentResult.bw10dBMatches = bw->getLastBw10dBMatches();
+    }
+
     return detected;
 }
 
@@ -354,6 +363,8 @@ bool AssignmentStage::process(std::shared_ptr<ProcessingContext> context)
     if (result.signalDurationMatches.has_value()) present.push_back(&*result.signalDurationMatches);
     if (result.peakFreqMatches.has_value())       present.push_back(&*result.peakFreqMatches);
     if (result.centerFreqMatches.has_value())     present.push_back(&*result.centerFreqMatches);
+    if (result.bw3dBMatches.has_value())          present.push_back(&*result.bw3dBMatches);
+    if (result.bw10dBMatches.has_value())         present.push_back(&*result.bw10dBMatches);
 
     if (present.empty())
     {

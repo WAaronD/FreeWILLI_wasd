@@ -61,10 +61,10 @@ bool HampelBandEnergyDetector::detect(const Eigen::VectorXcf& X)
     mLastMedian = m;
     mLastScaledMAD = scaledMad;
     mLastThreshold = thr;
-    if (En > thr)
-    {
-        std::cout << "Freq Thresh: " << thr << std::endl;
-    }
+    // if (En > thr)
+    // {
+    //     std::cout << "Freq Thresh: " << thr << std::endl;
+    // }
 
     return (En > thr);
     // return (En > 100);
@@ -141,7 +141,7 @@ bool RuCCUSFDetector::detect(const Eigen::VectorXcf& X) // Made with love by Cla
     //std::cout << "amp1=" << amp1 << " amp2=" << amp2 << " sr=" << sr // for debug
     //      << " range=[" << mSrMin << "," << mSrMax << "]" << std::endl;
     // std::cout << "X=" << X.transpose() << std::endl; // for debug
-    std::cout << "result=" << ((sr >= mSrMin) && (sr <= mSrMax)) << std::endl; // for debug
+    // std::cout << "result=" << ((sr >= mSrMin) && (sr <= mSrMax)) << std::endl; // for debug
 
 
     // // In detect(), before returning:
@@ -212,4 +212,75 @@ bool FPeakLocationDetector::detect(const Eigen::VectorXcf& X)
 
     // Toss the signal if EITHER vector is all-zero
     return peakAnyMatch && centerAnyMatch;
+}
+
+BandwidthDetector::BandwidthDetector(std::vector<BandwidthBand> bands, float sampleRate)
+    : mBands(std::move(bands)), mSampleRate(sampleRate)
+{
+}
+
+namespace {
+    constexpr float kThreshRatio3dB = 0.5011872f;  // 10^(-3/10), linear power ratio
+    constexpr float kThreshRatio10dB = 0.1f;       // 10^(-10/10)
+}
+
+float BandwidthDetector::computeBandwidthHz(
+    const Eigen::VectorXcf& X, int peakBin, float thresh, int nFull) const
+{
+    const int N = static_cast<int>(X.size());
+
+    int lo = peakBin;
+    while (lo > 0 && std::norm(X(lo)) >= thresh) --lo;  // first bin below threshold (or bin 0)
+
+    int hi = peakBin;
+    while (hi < N - 1 && std::norm(X(hi)) >= thresh) ++hi;  // first bin below threshold (or last bin)
+
+    return static_cast<float>(hi - lo) * mSampleRate / nFull;
+}
+
+bool BandwidthDetector::detect(const Eigen::VectorXcf& X)
+{
+    mLastBw3dB = 0.f;
+    mLastBw10dB = 0.f;
+    mLastBw3dBMatches.assign(mBands.size(), false);
+    mLastBw10dBMatches.assign(mBands.size(), false);
+
+    const int N = static_cast<int>(X.size());
+    if (N <= 0) return false;
+
+    const int nFull = (N - 1) * 2;  // full FFT length from one-sided size
+
+    // Peak search (first maximum, same as MATLAB's max)
+    int peakBin = 0;
+    float peakMagSq = 0.f;
+    for (int k = 0; k < N; ++k)
+    {
+        const float m = std::norm(X(k));
+        if (m > peakMagSq)
+        {
+            peakMagSq = m;
+            peakBin = k;
+        }
+    }
+    if (peakMagSq <= 0.f) return false;
+
+    mLastBw3dB = computeBandwidthHz(X, peakBin, peakMagSq * kThreshRatio3dB, nFull);
+    mLastBw10dB = computeBandwidthHz(X, peakBin, peakMagSq * kThreshRatio10dB, nFull);
+
+    bool bw3AnyMatch = false;
+    bool bw10AnyMatch = false;
+    for (size_t i = 0; i < mBands.size(); ++i)
+    {
+        const auto& b = mBands[i];
+        const bool bw3Ok = (mLastBw3dB >= b.bw3dBMin) && (mLastBw3dB <= b.bw3dBMax);
+        const bool bw10Ok = (mLastBw10dB >= b.bw10dBMin) && (mLastBw10dB <= b.bw10dBMax);
+
+        mLastBw3dBMatches[i] = bw3Ok;
+        mLastBw10dBMatches[i] = bw10Ok;
+
+        if (bw3Ok) bw3AnyMatch = true;
+        if (bw10Ok) bw10AnyMatch = true;
+    }
+
+    return bw3AnyMatch && bw10AnyMatch;
 }

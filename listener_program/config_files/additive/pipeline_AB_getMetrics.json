@@ -15,7 +15,7 @@
                 "type": "addTimeDomainDetection",
                 "params": {
                     "detector": "PeakAmplitude",
-                    "threshold": 200
+                    "threshold": 20
                 }
             },
             {
@@ -32,8 +32,7 @@
 		    "threshold": 200.0,
 		    "edgeGuard": 30,
 		    "bands": [
-		  	{ "label": "Zc", "durationMin": 100, "durationMax": 400 },
-		  	{ "label": "WBAT", "durationMin": 100, "durationMax": 800 }
+		  	{ "label": "null", "durationMin": 0, "durationMax": 10000 }
 		    ]
 	      }
 	    },
@@ -50,15 +49,14 @@
 		    "detector": "FPeakLocationDetector",
 		    "sampleRate": 100000.0,
 		    "bands": [
-		  	{ "label": "Zc", "peakFreqMin": 30000, "peakFreqMax": 45000, "centerFreqMin": 30000, "centerFreqMax": 40000 },
-		  	{ "label": "WBAT", "peakFreqMin": 32000, "peakFreqMax": 34000, "centerFreqMin": 31000, "centerFreqMax": 34000 }
+		  	{ "label": "null", "peakFreqMin": 0, "peakFreqMax": 100000, "centerFreqMin": 0, "centerFreqMax": 100000 }
 		    ]
 	      	}
 	    },
 	    {
 	    	"type": "addAssignment",
 	    	"params": {
-	    	    "classLabels": ["Zc", "WBAT"]
+	    	    "classLabels": ["null"]
 	    	}
 	    },
             {
@@ -66,12 +64,6 @@
                 "params": {
                     "directory": "${global.logDirectory}",
                     "integrationTesting": "${global.enableIntegrationTesting}"
-                }
-            },
-            {
-                "type": "setConsoleOutput",
-                "params": {
-                    "enabled": "${global.verbose}"
                 }
             },
             {

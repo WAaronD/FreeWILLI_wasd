@@ -103,3 +103,37 @@ class FPeakLocationDetector : public IFrequencyDomainDetector
     std::vector<bool> mLastPeakMatches;
     std::vector<bool> mLastCenterMatches;
 };
+
+struct BandwidthBand
+{
+    std::string label;
+    float bw3dBMin;   // Hz
+    float bw3dBMax;   // Hz
+    float bw10dBMin;  // Hz
+    float bw10dBMax;  // Hz
+};
+
+class BandwidthDetector : public IFrequencyDomainDetector
+{
+   public:
+    BandwidthDetector(std::vector<BandwidthBand> bands, float sampleRate = 100000.f);
+    bool detect(const Eigen::VectorXcf& X) override;
+
+    float getLastBw3dB() const { return mLastBw3dB; }
+    float getLastBw10dB() const { return mLastBw10dB; }
+    const std::vector<bool>& getLastBw3dBMatches() const { return mLastBw3dBMatches; }
+    const std::vector<bool>& getLastBw10dBMatches() const { return mLastBw10dBMatches; }
+
+   private:
+    // Walks outward from the peak bin until the first bin BELOW the threshold (or the spectrum edge)
+    // and returns the bandwidth in Hz between those two edge bins.
+    float computeBandwidthHz(const Eigen::VectorXcf& X, int peakBin, float thresh, int nFull) const;
+
+    std::vector<BandwidthBand> mBands;
+    float mSampleRate;
+
+    float mLastBw3dB = 0.f;
+    float mLastBw10dB = 0.f;
+    std::vector<bool> mLastBw3dBMatches;
+    std::vector<bool> mLastBw10dBMatches;
+};

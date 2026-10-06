@@ -18,12 +18,16 @@ struct BufferStruct
     std::vector<std::optional<float>> mSignalDuration;      // New!
     std::vector<std::optional<float>> mPeakFreq;             // New!
     std::vector<std::optional<float>> mCenterFreq;           // New!
+    std::vector<std::optional<float>> mBw3dB;
+    std::vector<std::optional<float>> mBw10dB;
     std::vector<std::optional<std::string>> mClassLabel;     // New!
     std::vector<std::optional<float>> mClassProb;            // New!
     std::vector<TimePoint> mPeakTimes;
     std::vector<std::string> mSignalDurationMatches;  // New!
     std::vector<std::string> mPeakFreqMatches;         // New!
     std::vector<std::string> mCenterFreqMatches;       // New!
+    std::vector<std::string> mBw3dBMatches;
+    std::vector<std::string> mBw10dBMatches;
     std::vector<std::string> mFinalAssignment;         // New!
 
     void clear()
@@ -39,12 +43,16 @@ struct BufferStruct
         mSignalDuration.clear();   // New!
         mPeakFreq.clear();        // New!
         mCenterFreq.clear();      // New!
+        mBw3dB.clear();
+        mBw10dB.clear();
         mClassLabel.clear();      // New!
         mClassProb.clear();       // New!
         mPeakTimes.clear();
         mSignalDurationMatches.clear();
         mPeakFreqMatches.clear();
         mCenterFreqMatches.clear();
+        mBw3dBMatches.clear();
+        mBw10dBMatches.clear();
         mFinalAssignment.clear();
     }
 

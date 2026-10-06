@@ -15,7 +15,7 @@
                 "type": "addTimeDomainDetection",
                 "params": {
                     "detector": "PeakAmplitude",
-                    "threshold": 200
+                    "threshold": 20
                 }
             },
             {
@@ -53,11 +53,34 @@
 		    ]
 	      	}
 	    },
+	    {
+	    	"type": "addFrequencyDomainDetection",
+		"params": {
+    		    "detector": "BandwidthDetector",
+    		    "sampleRate": 100000,
+    		    "bands": [
+      			{"label": "null", "bw3dBMin": 0, "bw3dBMax": 100000, "bw10dBMin": 0, "bw10dBMax": 100000}
+    		    ]
+  		}
+	    },
+	    {
+	    	"type": "addAssignment",
+	    	"params": {
+	    	    "classLabels": ["null"]
+	    	}
+	    },
             {
                 "type": "setFileOutput",
                 "params": {
                     "directory": "${global.logDirectory}",
                     "integrationTesting": "${global.enableIntegrationTesting}"
+                }
+            },
+            {
+                "type": "setNetworkOutput",
+                "params": {
+                    "host": "127.0.0.1",
+                    "port": 55001
                 }
             },
             {

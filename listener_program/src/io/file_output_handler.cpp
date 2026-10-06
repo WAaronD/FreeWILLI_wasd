@@ -51,8 +51,8 @@ void FileOutputHandler::initialize(const TimePoint& timestamp, int numChannels)
     // std::vector<std::string> columnNames = {"PeakTime", "Amplitude", "DOA_x", "DOA_y", "DOA_z", "OC", "Log10SR"}; // New!
     std::vector<std::string> columnNames = {
         "PeakTime", "Amplitude", "DOA_x", "DOA_y", "DOA_z", "OC", "Log10SR",
-        "SignalDuration", "PeakFreq", "CenterFreq", "ClassLabel", "ClassProb",
-        "DurationMatches", "PeakMatches", "CenterMatches", "FinalAssignment"  // New!
+        "SignalDuration", "PeakFreq", "CenterFreq", "BW3dB", "BW10dB", "ClassLabel", "ClassProb",
+        "DurationMatches", "PeakMatches", "CenterMatches", "BW3Matches", "BW10Matches", "FinalAssignment"
     };
 
     // Generate TDOA and XCorr labels for channel combinations
@@ -111,11 +111,15 @@ void FileOutputHandler::handleOutput(const ProcessingContext& result)
     mBuffer.mSignalDuration.push_back(result.currentResult.signalDuration);
     mBuffer.mPeakFreq.push_back(result.currentResult.peakFrequency);
     mBuffer.mCenterFreq.push_back(result.currentResult.centerFrequency);
+    mBuffer.mBw3dB.push_back(result.currentResult.bw3dB);
+    mBuffer.mBw10dB.push_back(result.currentResult.bw10dB);
     mBuffer.mClassLabel.push_back(result.currentResult.classLabel);       // ONNX label only, unchanged
     mBuffer.mClassProb.push_back(result.currentResult.classProbability);
     mBuffer.mSignalDurationMatches.push_back(matchesToString(result.currentResult.signalDurationMatches));
     mBuffer.mPeakFreqMatches.push_back(matchesToString(result.currentResult.peakFreqMatches));
     mBuffer.mCenterFreqMatches.push_back(matchesToString(result.currentResult.centerFreqMatches));
+    mBuffer.mBw3dBMatches.push_back(matchesToString(result.currentResult.bw3dBMatches));
+    mBuffer.mBw10dBMatches.push_back(matchesToString(result.currentResult.bw10dBMatches));
     mBuffer.mFinalAssignment.push_back(matchesToString(result.currentResult.agreedMatches));
     mBuffer.mPeakTimes.push_back(result.dataTimes[0]);
 }
@@ -156,9 +160,11 @@ void FileOutputHandler::writeBufferToFile()
         mBuffer.mTdoaVector.size() != dataSize || mBuffer.mXCorrAmps.size() != dataSize ||
         mBuffer.mAmps.size() != dataSize || mBuffer.mOc.size() != dataSize || mBuffer.mLog10Sr.size() != dataSize ||
         mBuffer.mSignalDuration.size() != dataSize || mBuffer.mPeakFreq.size() != dataSize ||
-        mBuffer.mCenterFreq.size() != dataSize || mBuffer.mClassLabel.size() != dataSize ||
+        mBuffer.mCenterFreq.size() != dataSize || mBuffer.mBw3dB.size() != dataSize ||
+        mBuffer.mBw10dB.size() != dataSize || mBuffer.mClassLabel.size() != dataSize ||
         mBuffer.mClassProb.size() != dataSize || mBuffer.mSignalDurationMatches.size() != dataSize ||
         mBuffer.mPeakFreqMatches.size() != dataSize || mBuffer.mCenterFreqMatches.size() != dataSize ||
+        mBuffer.mBw3dBMatches.size() != dataSize || mBuffer.mBw10dBMatches.size() != dataSize ||
         mBuffer.mFinalAssignment.size() != dataSize)
     {
         throw std::runtime_error("Error: Mismatched buffer sizes in BufferStruct.");
@@ -193,11 +199,15 @@ void FileOutputHandler::writeBufferToFile()
         rowData.push_back(optionalToString(mBuffer.mSignalDuration[i]));  // New!
         rowData.push_back(optionalToString(mBuffer.mPeakFreq[i]));        // New!
         rowData.push_back(optionalToString(mBuffer.mCenterFreq[i]));      // New!
+        rowData.push_back(optionalToString(mBuffer.mBw3dB[i]));
+        rowData.push_back(optionalToString(mBuffer.mBw10dB[i]));
         rowData.push_back(optionalToString(mBuffer.mClassLabel[i]));      // New!
         rowData.push_back(optionalToString(mBuffer.mClassProb[i]));       // New!
         rowData.push_back(mBuffer.mSignalDurationMatches[i]);
         rowData.push_back(mBuffer.mPeakFreqMatches[i]);
         rowData.push_back(mBuffer.mCenterFreqMatches[i]);
+        rowData.push_back(mBuffer.mBw3dBMatches[i]);
+        rowData.push_back(mBuffer.mBw10dBMatches[i]);
         rowData.push_back(mBuffer.mFinalAssignment[i]);
 
         // Add TDOA values

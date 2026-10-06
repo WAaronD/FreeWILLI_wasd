@@ -42,6 +42,24 @@ class IFrequencyDomainDetectorFactory
                 params.value("sampleRate", 100000.f)
             );
         }
+        if (detector == "BandwidthDetector")
+        {
+            std::vector<BandwidthBand> bands;
+            for (const auto& b : params.at("bands"))
+            {
+                bands.push_back(BandwidthBand{
+                    b.value("label", std::string("")),
+                    b.at("bw3dBMin").get<float>(),
+                    b.at("bw3dBMax").get<float>(),
+                    b.at("bw10dBMin").get<float>(),
+                    b.at("bw10dBMax").get<float>()
+                });
+            }
+            return std::make_unique<BandwidthDetector>(
+                std::move(bands),
+                params.value("sampleRate", 100000.f)
+            );
+        }
         else
         {
             throw std::invalid_argument("Unknown TimeDomainDetector type: " + detector);
