@@ -1,0 +1,36 @@
+{
+    "network": {
+        "ipAddress": "192.168.100.251",
+        "port": 1045
+    },
+    "global": {
+        "enableIntegrationTesting": false,
+        "verbose": false,
+        "firmware": "1240",
+        "logDirectory": "deployment_files/"
+    },
+    "pipeline": {
+        "steps": [
+            {
+                "type": "addTimeDomainDetection",
+                "params": {
+                    "detector": "AbsPeakAmplitude",
+                    "threshold": 20
+                }
+            },
+            {
+                "type": "setNetworkOutput",
+                "params": {
+                    "host": "127.0.0.1",
+                    "port": 55001
+                }
+            },
+            {
+                "type": "setErrorHandler",
+                "params": {
+                    "logFile": "${global.logDirectory}error.log"
+                }
+            }
+        ]
+    }
+}

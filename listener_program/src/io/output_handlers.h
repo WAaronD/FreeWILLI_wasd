@@ -128,6 +128,13 @@ class NetworkOutputHandler : public IOutputHandler
     int mInitNumChannels;
 };
 
+class NullOutputHandler : public IOutputHandler
+{
+   public:
+    void handleOutput(const ProcessingContext&) override {}
+    void initialize(const TimePoint&, int) override {}
+};
+
 class CompositeOutputHandler : public IOutputHandler
 {
    public:

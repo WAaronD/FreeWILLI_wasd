@@ -15,6 +15,20 @@ bool PeakAmplitudeDetector::detect(const Eigen::VectorXf& timeDomainData)
 
 float PeakAmplitudeDetector::getLastDetection() const { return peakAmplitude; }
 
+AbsPeakAmplitudeDetector::AbsPeakAmplitudeDetector(float threshold) : detectionThreshold(threshold), peakAmplitude(0) {}
+
+bool AbsPeakAmplitudeDetector::detect(const Eigen::VectorXf& timeDomainData)
+{
+    int peakIndex = 0;
+
+    // abs() first, then max: finds the largest magnitude, positive or negative
+    peakAmplitude = timeDomainData.array().abs().maxCoeff(&peakIndex);
+
+    return peakAmplitude >= detectionThreshold;
+}
+
+float AbsPeakAmplitudeDetector::getLastDetection() const { return peakAmplitude; }
+
 // RuCCUSDetector::RuCCUSDetector(float threshdet) : RuCCUSDetector(Params{threshdet, 10, 25}) {} // Old constructor, now replaced by the new one below
 RuCCUSDetector::RuCCUSDetector(float threshdet, int minExcursions, int maxExcursions) // New constructor that takes individual parameters
 {

@@ -1,0 +1,43 @@
+{
+    "network": {
+        "ipAddress": "192.168.100.251",
+        "port": 1045
+    },
+    "global": {
+        "enableIntegrationTesting": false,
+        "verbose": false,
+        "firmware": "1240",
+        "logDirectory": "deployment_files/"
+    },
+    "pipeline": {
+        "steps": [
+            {
+                "type": "addTimeDomainDetection",
+                "params": {
+                    "detector": "PeakAmplitude",
+                    "threshold": 20
+                }
+            },
+            {
+                "type": "addTimeDomainFilter",
+                "params": {
+                    "filter": "FIRFilter",
+                    "filterWeightsFile": "filters/highpass_taps@101_cutoff@15k_window@hamming_fs@100k.txt"
+                }
+            },
+            {
+                "type": "setNetworkOutput",
+                "params": {
+                    "host": "127.0.0.1",
+                    "port": 55001
+                }
+            },
+            {
+                "type": "setErrorHandler",
+                "params": {
+                    "logFile": "${global.logDirectory}error.log"
+                }
+            }
+        ]
+    }
+}

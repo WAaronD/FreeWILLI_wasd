@@ -22,6 +22,19 @@ class PeakAmplitudeDetector : public ITimeDomainDetector
     float getLastDetection() const override;
 };
 
+class AbsPeakAmplitudeDetector : public ITimeDomainDetector
+{
+   private:
+    float detectionThreshold;
+    float peakAmplitude;
+
+   public:
+    explicit AbsPeakAmplitudeDetector(float threshold);
+
+    bool detect(const Eigen::VectorXf& timeDomainData) override;
+    float getLastDetection() const override;
+};
+
 class RuCCUSDetector : public ITimeDomainDetector
 {
    public:

@@ -12,6 +12,10 @@ class ITimeDomainDetectorFactory
         {
             return std::make_unique<PeakAmplitudeDetector>(params.at("threshold").get<float>());
         }
+        else if (detector == "AbsPeakAmplitude")
+        {
+            return std::make_unique<AbsPeakAmplitudeDetector>(params.at("threshold").get<float>());
+        }
         else if (detector == "RuCCUS")
         {
             return std::make_unique<RuCCUSDetector>(

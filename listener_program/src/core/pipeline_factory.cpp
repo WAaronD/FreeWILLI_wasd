@@ -85,6 +85,10 @@ void FlexiblePipelineFactory::executeStep(
     {
         builder.setNetworkOutput(params.at("host").get<std::string>(), params.at("port").get<int>());
     }
+    else if (step.type == "setNullOutput")
+    {
+        builder.setOutputHandler(std::make_unique<NullOutputHandler>());
+    }
     else if (step.type == "setErrorHandler")
     {
         builder.setErrorHandler(params.at("logFile").get<std::string>(), sharedDataManager);
