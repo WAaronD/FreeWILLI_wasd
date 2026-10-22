@@ -1,0 +1,112 @@
+{
+    "network": {
+        "ipAddress": "127.0.0.1",
+        "port": 1045
+    },
+    "global": {
+        "enableIntegrationTesting": false,
+        "verbose": false,
+        "firmware": "1240",
+        "logDirectory": "deployment_files/"
+    },
+    "pipeline": {
+        "steps": [
+            {
+                "type": "addTimeDomainDetection",
+                "params": {
+                    "detector": "AbsPeakAmplitude",
+                    "threshold": 200
+                }
+            },
+            {
+                "type": "addTimeDomainFilter",
+                "params": {
+                    "filter": "FIRFilter",
+                    "filterWeightsFile": "filters/highpass_taps@101_cutoff@15k_window@hamming_fs@100k.txt"
+                }
+            },
+            {
+                "type": "addTimeDomainDetection",
+                "params": {
+                    "detector": "SignalDuration",
+                    "threshold": 200.0,
+                    "edgeGuard": 30,
+                    "bands": [
+                        { "label": "Zc", "durationMin": 130.00, "durationMax": 590.00 },
+                        { "label": "Gg", "durationMin": 130.00, "durationMax": 2357.50 },
+                        { "label": "Delphinid", "durationMin": 2040.00, "durationMax": 7830.00 },
+                        { "label": "WBAT", "durationMin": 160.00, "durationMax": 870.00 },
+                        { "label": "Noise", "durationMin": 193.00, "durationMax": 8572.50 }
+                    ]
+                }
+            },
+            {
+                "type": "addFrequencyDomainTransform",
+                "params": {
+                    "strategy": "None",
+                    "filterWeightsFile": "filters/highpass_taps@101_cutoff@15k_window@hamming_fs@100k.txt"
+                }
+            },
+            {
+                "type": "addFrequencyDomainDetection",
+                "params": {
+                    "detector": "FPeakLocationDetector",
+                    "sampleRate": 100000.0,
+                    "bands": [
+                        { "label": "Zc", "peakFreqMin": 31550, "peakFreqMax": 41530, "centerFreqMin": 31510, "centerFreqMax": 39010 },
+                        { "label": "Gg", "peakFreqMin": 22780, "peakFreqMax": 39010, "centerFreqMin": 26250, "centerFreqMax": 35500 },
+                        { "label": "Delphinid", "peakFreqMin": 23290, "peakFreqMax": 27420, "centerFreqMin": 27280, "centerFreqMax": 33950 },
+                        { "label": "WBAT", "peakFreqMin": 31960, "peakFreqMax": 36490, "centerFreqMin": 31210, "centerFreqMax": 32960 },
+                        { "label": "Noise", "peakFreqMin": 15830, "peakFreqMax": 21490, "centerFreqMin": 17470, "centerFreqMax": 22430 }
+                    ]
+                }
+            },
+            {
+                "type": "addFrequencyDomainDetection",
+                "params": {
+                    "detector": "BandwidthDetector",
+                    "sampleRate": 100000,
+                    "bands": [
+                        { "label": "Zc", "bw3dBMin": 300, "bw3dBMax": 7460, "bw10dBMin": 3230, "bw10dBMax": 21170 },
+                        { "label": "Gg", "bw3dBMin": 200, "bw3dBMax": 3330, "bw10dBMin": 1510, "bw10dBMax": 17030 },
+                        { "label": "Delphinid", "bw3dBMin": 200, "bw3dBMax": 400, "bw10dBMin": 200, "bw10dBMax": 3630 },
+                        { "label": "WBAT", "bw3dBMin": 910, "bw3dBMax": 6350, "bw10dBMin": 5040, "bw10dBMax": 17320 },
+                        { "label": "Noise", "bw3dBMin": 200, "bw3dBMax": 910, "bw10dBMin": 300, "bw10dBMax": 5030 }
+                    ]
+                }
+            },
+            {
+                "type": "addAssignment",
+                "params": {
+                    "classLabels": ["Zc", "Gg", "Delphinid", "WBAT", "Noise"]
+                }
+            },
+            {
+                "type": "setFileOutput",
+                "params": {
+                    "directory": "${global.logDirectory}",
+                    "integrationTesting": "${global.enableIntegrationTesting}"
+                }
+            },
+            {
+                "type": "setNetworkOutput",
+                "params": {
+                    "host": "127.0.0.1",
+                    "port": 55001
+                }
+            },
+            {
+                "type": "setConsoleOutput",
+                "params": {
+                    "enabled": "${global.verbose}"
+                }
+            },
+            {
+                "type": "setErrorHandler",
+                "params": {
+                    "logFile": "${global.logDirectory}error.log"
+                }
+            }
+        ]
+    }
+}

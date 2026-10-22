@@ -38,6 +38,10 @@ TimeDomainDetectionStage::TimeDomainDetectionStage(std::unique_ptr<ITimeDomainDe
 
 bool TimeDomainDetectionStage::process(std::shared_ptr<ProcessingContext> context)
 {
+
+    // if (dynamic_cast<SignalDurationDetector*>(mFunction.get())) // Announce stage reached -- Uncomment for dropout counting
+    //     std::cout << "REACHED SignalDuration\n";
+
     bool detected = mFunction->detect(context->channelData.row(0));
 
     if (detected)
@@ -123,6 +127,12 @@ FrequencyDomainDetectionStage::FrequencyDomainDetectionStage(std::unique_ptr<IFr
 
 bool FrequencyDomainDetectionStage::process(std::shared_ptr<ProcessingContext> context)
 {
+
+    // if (dynamic_cast<FPeakLocationDetector*>(mFunction.get())) // Announce stage reached -- Uncomment for dropout counting
+    //     std::cout << "REACHED FPeakLocation\n";
+    // else if (dynamic_cast<BandwidthDetector*>(mFunction.get()))
+    //     std::cout << "REACHED Bandwidth\n";
+
     if (!mFunction || context->frequencyDomainData.cols() == 0)
     {
         return true;
@@ -324,6 +334,9 @@ PeakExtractionStage::PeakExtractionStage(int numBefore, int numAfter)
 
 bool PeakExtractionStage::process(std::shared_ptr<ProcessingContext> context)
 {
+
+    // std::cout << "REACHED PeakExtraction\n"; // Announce stage reached -- Uncomment for dropout counting
+
     const Eigen::VectorXf& data = context->channelData.row(0);
     const int N = static_cast<int>(data.size());
     const int windowSize = mNumBefore + mNumAfter + 1;  // +1 for the peak sample itself
@@ -339,7 +352,8 @@ bool PeakExtractionStage::process(std::shared_ptr<ProcessingContext> context)
     const int end = static_cast<int>(idxMax) + mNumAfter + 1;  // exclusive
     if (start < 0 || end > N)
     {
-        std::cout << "PeakExtraction: peak too close to edge, skipping\n";
+        // std::cout << "PeakExtraction: peak too close to edge, skipping\n";
+        // std::cout << " idx=" << idxMax;
         return false;
     }
 
