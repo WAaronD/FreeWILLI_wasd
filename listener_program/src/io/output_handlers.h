@@ -126,6 +126,7 @@ class NetworkOutputHandler : public IOutputHandler
     struct sockaddr_in mDest;
     TimePoint mInitTimestamp;
     int mInitNumChannels;
+    std::string mHeaderRow;
 };
 
 class NullOutputHandler : public IOutputHandler
