@@ -61,10 +61,10 @@ bool HampelBandEnergyDetector::detect(const Eigen::VectorXcf& X)
     mLastMedian = m;
     mLastScaledMAD = scaledMad;
     mLastThreshold = thr;
-    // if (En > thr)
-    // {
-    //     std::cout << "Freq Thresh: " << thr << std::endl;
-    // }
+    if (En > thr)
+    {
+        std::cout << "Freq Thresh: " << thr << std::endl;
+    }
 
     return (En > thr);
     // return (En > 100);
@@ -106,49 +106,34 @@ float HampelBandEnergyDetector::medianInPlace(std::vector<float>& v)
     return med;
 }
 
-RuCCUSFDetector::RuCCUSFDetector(float f1, float f2, float srMin, float srMax, float sampleRate) // Made with love by Claude
-    : mSrMin(srMin), mSrMax(srMax)
+RuCCUSFDetector::RuCCUSFDetector(float f1, float f2, float srMin, float srMax, float sampleRate)
+    : mSrMin(srMin), mSrMax(srMax) // srMin and srMax are copied to member variables for later use by the detect() method
 {
     const int N = 992;  // FFT size
 
-    auto toBin = [&](float freqHz) -> int {
-        int bin = static_cast<int>(std::round(freqHz * N / sampleRate));
-        if (bin < 0) bin = 0;
-        if (bin >= N) bin = N - 1;
+    // Convert frequencies f1 and f2 to FFT bin indices
+    auto toBin = [&](float freqHz) -> int { // lambda function
+        int bin = static_cast<int>(std::round(freqHz * N / sampleRate)); // Convert frequency to bin index
+        if (bin < 0) bin = 0; // Clamp to 0 if below range
+        if (bin >= N) bin = N - 1; // Clamp to N-1 if above range 
         return bin;
     };
 
-    mBin1 = toBin(f1);
-    mBin2 = toBin(f2);
-
-    // // In constructor, after computing mBin1, mBin2: // for debug
-    // std::cout << "N=" << N << " sampleRate=" << sampleRate // for debug
-    // << " f1=" << f1 << " f2=" << f2 // for debug
-    // << " mBin1=" << mBin1 << " mBin2=" << mBin2 << std::endl; // for debug
+    mBin1 = toBin(f1); // Convert f1 to FFT bin index
+    mBin2 = toBin(f2); // Convert f2 to FFT bin index
 }
 
-bool RuCCUSFDetector::detect(const Eigen::VectorXcf& X) // Made with love by Claude
+bool RuCCUSFDetector::detect(const Eigen::VectorXcf& X)
 {
     if (X.size() <= 0) return false;
 
-    const float amp1 = std::abs(X(mBin1));
+    const float amp1 = std::abs(X(mBin1)); // abs is required because X is complex-valued
     const float amp2 = std::abs(X(mBin2));
 
-    if (amp1 <= 0.f) return false;
+    if (amp1 <= 0.f) return false; // Avoid dividing by zero
 
     const float sr = std::log10(amp2 / amp1);
     mLastSr = sr; // New!
-    //std::cout << "amp1=" << amp1 << " amp2=" << amp2 << " sr=" << sr // for debug
-    //      << " range=[" << mSrMin << "," << mSrMax << "]" << std::endl;
-    // std::cout << "X=" << X.transpose() << std::endl; // for debug
-    // std::cout << "result=" << ((sr >= mSrMin) && (sr <= mSrMax)) << std::endl; // for debug
-
-
-    // // In detect(), before returning:
-    // std::cout << "X.size()=" << X.size() // for debug
-    // << " amp1=" << amp1 << " amp2=" << amp2
-    // << " sr=" << sr << std::endl;
-
 
     return (sr >= mSrMin) && (sr <= mSrMax);
 }
@@ -178,15 +163,6 @@ bool FPeakLocationDetector::detect(const Eigen::VectorXcf& X)
             peakBin = k;
         }
     }
-
-    // debug
-    // std::cout << "Spectrum (bins 0.." << N-1 << ", freq resolution=" << mSampleRate/N << " Hz/bin):\n";
-    //for (int k = 0; k < N_full; ++k)
-    //{
-    //    std::cout << "  bin " << k << " (" << k * mSampleRate / N_full << " Hz): " << std::sqrt(std::norm(X(k))) << "\n";
-    //}
-    // std::cout << "peakBin=" << peakBin << " peakFreq=" << mLastPeakFreq << " centerFreq=" << mLastCenterFreq << "\n";
-    // std::cout << "X.size()=" << X.size() << " N=" << N << "\n";
 
     mLastPeakFreq = peakBin * mSampleRate / N_full;
     mLastCenterFreq = (magSqSum > 0.f) ? (weightedBinSum / magSqSum) * mSampleRate / N_full : 0.f;
