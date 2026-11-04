@@ -120,8 +120,8 @@ class CFARPeakDetector : public ITimeDomainDetector
 struct DurationBand
 {
     std::string label;
-    float durationMin;   // samples
-    float durationMax;   // samples
+    float durationMin; // microseconds
+    float durationMax; // microseconds
 };
 
 class SignalDurationDetector : public ITimeDomainDetector
@@ -130,11 +130,10 @@ class SignalDurationDetector : public ITimeDomainDetector
     SignalDurationDetector(std::vector<DurationBand> bands, float threshold, int edgeGuard = 30, float sampleRate = 100000.f);
 
     bool detect(const Eigen::VectorXf& timeDomainData) override;
-    float getLastDetection() const override;  // duration in samples (unchanged)
+    float getLastDetection() const override;  // returns duration in samples
     float getLastPeakAmplitude() const { return mLastPeakAmplitude; }
 
     const std::vector<bool>& getLastMatches() const { return mLastMatches; }
-    std::vector<std::string> getLastMatchLabels() const;
 
    private:
     std::vector<DurationBand> mBands;

@@ -39,8 +39,8 @@ class ITimeDomainDetectorFactory
             {
                 bands.push_back(DurationBand{
                     b.value("label", std::string("")),
-                    b.at("durationMin").get<float>(),
-                    b.at("durationMax").get<float>()
+                    b.at("durationMin").get<float>(), // in microseconds
+                    b.at("durationMax").get<float>() // in microseconds
                 });
             }
             return std::make_unique<SignalDurationDetector>(
