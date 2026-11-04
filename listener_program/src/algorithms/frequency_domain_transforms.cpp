@@ -10,13 +10,7 @@ FrequencyDomainFIRFilter::FrequencyDomainFIRFilter(
     mPaddedLength = static_cast<int>(filterWeights.size() + channelData.cols() - 1);
     mFftOutputSize = (mPaddedLength / 2) + 1;
 
-    // std::cout << "mPaddedLength=" << mPaddedLength // for debug
-    //      << " mFftOutputSize=" << mFftOutputSize << std::endl;
-
     channelData.conservativeResize(channelData.rows(), mPaddedLength);
-    //std::cout << "[construct] channelData.data()=" << (void*)channelData.data() << std::endl; // for debug
-    // std::cout << "[FreqDomainFilter ctor] resized to " << channelData.rows() // for debug
-    //       << "x" << channelData.cols() << " mPaddedLength=" << mPaddedLength << std::endl;
     channelData.setZero();
     mSavedFFTs = Eigen::MatrixXcf::Zero(mFftOutputSize, mNumChannels);
 
@@ -37,10 +31,8 @@ FrequencyDomainFIRFilter::~FrequencyDomainFIRFilter()
 void FrequencyDomainFIRFilter::apply()
 {
     // std::cout << "apply addr mSavedFFTs: " << mSavedFFTs.data() << std::endl;
-    // std::cout << "[FreqDomainFilter] mPaddedLength=" << mPaddedLength << std::endl; // for debug
 
     fftwf_execute(mForwardFftPlan);
-    // std::cout << "Frequency spectrum:\n" << mSavedFFTs << std::endl; // for debug
     mBeforeFilter = mSavedFFTs;
     for (int channelIndex = 0; channelIndex < mNumChannels; ++channelIndex)
     {

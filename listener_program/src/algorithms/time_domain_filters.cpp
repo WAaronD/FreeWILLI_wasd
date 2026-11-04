@@ -22,11 +22,8 @@ bool FIRFilter::apply()
     }
     auto& data = *mChannelDataPtr;  // shape: (C, N)
     
-    // std::cout << "[FIRFilter] channelData.data()=" << (void*)data.data() << std::endl; // for debug
-
     const int numChannels = data.rows();
     const int channelLength = data.cols();
-    // std::cout << "[FIRFilter] channelLength=" << channelLength << std::endl; // for debug
     const int numTaps = int(mFilterWeights.size());  // b[0..M-1]
 
     //  allocate same length as input
@@ -48,18 +45,10 @@ bool FIRFilter::apply()
             }
             filtered(ch, n) = acc;
         }
-
-        // if (ch == 0) { // for debug
-        //     std::cout << "[FIRFilter output] ";
-        //     for (int n = 0; n < channelLength; ++n) std::cout << filtered(0, n) << " ";
-        //     std::cout << std::endl;
-        // }
     }
 
     // data = std::move(filtered); // OLD
-    //std::cout << "originaldata=" << data << std::endl; // for debug
     data = filtered; // NEW - Fixed
-    //std::cout << "filtereddata=" << data << std::endl; // for debug
     return true;
 }
 
