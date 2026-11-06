@@ -21,8 +21,6 @@ bool DataAcquisitionStage::process(std::shared_ptr<ProcessingContext> context)
     }
 
     context->firmware->insertDataIntoChannelMatrix(context->channelData, context->dataBytes);
-    // std::cout << "[DataAcquisition] channelData: " << context->channelData.rows() // for debug
-    //       << "x" << context->channelData.cols() << std::endl;
 
     return true;
 }
@@ -38,26 +36,26 @@ TimeDomainDetectionStage::TimeDomainDetectionStage(std::unique_ptr<ITimeDomainDe
 
 bool TimeDomainDetectionStage::process(std::shared_ptr<ProcessingContext> context)
 {
+    // Perform time domain detection on first channel
 
     // if (dynamic_cast<SignalDurationDetector*>(mFunction.get())) // Announce stage reached -- Uncomment for dropout counting
     //     std::cout << "REACHED SignalDuration\n";
 
     bool detected = mFunction->detect(context->channelData.row(0));
 
-    if (detected)
+    if (detected) // If detection successful, store relevant values
     {
+        // Store detection amplitude and timestamp
         context->currentResult.peakAmplitude = mFunction->getLastDetection();
         context->currentResult.isValid = true;
 
-        // New! Populate oc if this is a RuCCUSDetector
+        // IF RuCCUSDetector, store oscillation count
         if (auto* ruccus = dynamic_cast<RuCCUSDetector*>(mFunction.get()))
         {
             context->currentResult.oscillationCount = ruccus->getLastExcursionCount();
         }
 
-        // std::cout << "Peak amplitude = " << context->currentResult.peakAmplitude << std::endl;
-
-        // Populate signal duration if SignalDurationDetector
+        // IF SignalDurationDetector, store duration
         if (auto* sigDur = dynamic_cast<SignalDurationDetector*>(mFunction.get()))
         {
             context->currentResult.peakAmplitude = sigDur->getLastPeakAmplitude();
@@ -107,11 +105,7 @@ bool FrequencyDomainFilteringStage::process(std::shared_ptr<ProcessingContext> c
 
     // Apply frequency domain filter
     mFunction->apply();
-    // std::cout << "Frequency spectrum:\n" << mFunction->getFrequencyDomainData() << std::endl; // for debug
-
-    // auto& fd = context->frequencyDomainData; // for debug
-    // std::cout << "[FreqDomainFilter apply] bin0=" << fd(0,0) << " bin100=" << fd(100,0) << std::endl; // for debug
-
+    
     // Store filtered and unfiltered frequency domain data
     context->frequencyDomainData = mFunction->getFrequencyDomainData();
     context->beforeFilterData = mFunction->mBeforeFilter;
@@ -135,18 +129,18 @@ bool FrequencyDomainDetectionStage::process(std::shared_ptr<ProcessingContext> c
 
     if (!mFunction || context->frequencyDomainData.cols() == 0)
     {
-        return true;
+        return true;  // Skip if no detector or no frequency data
     }
 
     bool detected = mFunction->detect(context->frequencyDomainData.col(0));
 
-    // New! Populate log10sr if this is a RuCCUSFDetector
+    // IF RuCCUSFDetector, store log10 spectrum ratio
     if (auto* ruccusF = dynamic_cast<RuCCUSFDetector*>(mFunction.get()))
     {
         context->currentResult.log10SpectrumRatio = ruccusF->getLastSpectrumRatio();
     }
 
-    // Populate peak frequency and center frequency if FPeakLocationDetector
+    // IF FPeakLocationDetector, store peak frequency, center frequency, and match vectors
     if (auto* fpeak = dynamic_cast<FPeakLocationDetector*>(mFunction.get()))
     {
         context->currentResult.peakFrequency = fpeak->getLastPeakFrequency();
@@ -155,7 +149,7 @@ bool FrequencyDomainDetectionStage::process(std::shared_ptr<ProcessingContext> c
         context->currentResult.centerFreqMatches = fpeak->getLastCenterMatches();
     }
 
-    // Populate bandwidth (-3dB and -10-dB) if BandwidthDetector
+    // IF BandwidthDetector, store bandwidths (-3dB and -10-dB) and match vectors
     if (auto* bw = dynamic_cast<BandwidthDetector*>(mFunction.get()))
     {
         context->currentResult.bw3dB = bw->getLastBw3dB();
@@ -179,7 +173,7 @@ bool ONNXClassificationStage::process(std::shared_ptr<ProcessingContext> context
 {
     if (!mFunction || context->classificationSnippet.size() == 0)
     {
-        return true;  // Skip if no model or no snippet available
+        return true;  // Skip if no model or no data
     }
 
     try
@@ -194,7 +188,7 @@ bool ONNXClassificationStage::process(std::shared_ptr<ProcessingContext> context
         {
             std::cerr << "Classification error: model produced " << output.size() << " outputs but "
                        << mClassLabels.size() << " class labels configured, skipping\n";
-            return true;
+            return true;  // Continue processing
         }
 
         // Generic argmax over N classes
@@ -204,15 +198,12 @@ bool ONNXClassificationStage::process(std::shared_ptr<ProcessingContext> context
         context->currentResult.classProbability = output[bestIdx];
         context->currentResult.allClassProbabilities = std::move(output);
 
-        // std::cout << "Classified as: " << *context->currentResult.classLabel
-        //            << " (p=" << *context->currentResult.classProbability << ")\n";
-
-        return true;
+        return true;  // Continue processing for signal
     }
     catch (const std::exception& e)
     {
         std::cerr << "Classification error: " << e.what() << ", continuing without classification\n";
-        return true;
+        return true;  // Continue processing on classification error
     }
 }
 
@@ -353,7 +344,6 @@ bool PeakExtractionStage::process(std::shared_ptr<ProcessingContext> context)
     if (start < 0 || end > N)
     {
         // std::cout << "PeakExtraction: peak too close to edge, skipping\n";
-        // std::cout << " idx=" << idxMax;
         return false;
     }
 

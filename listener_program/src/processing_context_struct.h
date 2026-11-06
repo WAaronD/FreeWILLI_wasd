@@ -2,7 +2,6 @@
 
 #include "firmware/firmware_interface.h"
 #include "pch.h"
-#include <limits>
 // Forward declarations
 /*
 class IFirmware;
@@ -18,24 +17,24 @@ using TimePoint = std::chrono::time_point<std::chrono::system_clock>;
 struct DetectionResult
 {
     float peakAmplitude = 0.f;
-    // Eigen::Vector3f directionOfArrival = Eigen::Vector3f::Zero(); // Old!
-    Eigen::Vector3f directionOfArrival = Eigen::Vector3f::Constant(std::numeric_limits<float>::quiet_NaN()); // New!
+    
+    Eigen::Vector3f directionOfArrival = Eigen::Vector3f::Zero();
     Eigen::VectorXf tdoaVector;
     Eigen::VectorXf crossCorrelationAmps;
-    std::optional<float> oscillationCount; // New! Optional oscillation count
-    std::optional<float> log10SpectrumRatio; // New! Optional log10 spectrum ratio
-    std::optional<float> signalDuration;      // New!
-    std::optional<float> peakFrequency;       // New!
-    std::optional<float> centerFrequency;     // New!
-    std::optional<float> bw3dB;                              // from BandwidthDetector
-    std::optional<float> bw10dB;                             // from BandwidthDetector
-    std::optional<std::vector<bool>> signalDurationMatches;   // from SignalDurationDetector
-    std::optional<std::vector<bool>> peakFreqMatches;         // from FPeakLocationDetector (peak freq)
-    std::optional<std::vector<bool>> centerFreqMatches;       // from FPeakLocationDetector (center freq)
-    std::optional<std::vector<bool>> bw3dBMatches;           // from BandwidthDetector
-    std::optional<std::vector<bool>> bw10dBMatches;          // from BandwidthDetector
-    std::optional<std::vector<bool>> agreedMatches;           // from AssignmentStage: final assignment
-    std::optional<std::string> classLabel;                 // final reconciled label (or ONNX's direct label)
+    std::optional<float> oscillationCount;                  // from RuCCUSDetector
+    std::optional<float> log10SpectrumRatio;                // from RuCCUSFDetector
+    std::optional<float> signalDuration;                    // from SignalDurationDetector
+    std::optional<float> peakFrequency;                     // from FPeakLocationDetector
+    std::optional<float> centerFrequency;                   // from FPeakLocationDetector
+    std::optional<float> bw3dB;                             // from BandwidthDetector
+    std::optional<float> bw10dB;                            // from BandwidthDetector
+    std::optional<std::vector<bool>> signalDurationMatches; // from SignalDurationDetector
+    std::optional<std::vector<bool>> peakFreqMatches;       // from FPeakLocationDetector (peak freq)
+    std::optional<std::vector<bool>> centerFreqMatches;     // from FPeakLocationDetector (center freq)
+    std::optional<std::vector<bool>> bw3dBMatches;          // from BandwidthDetector
+    std::optional<std::vector<bool>> bw10dBMatches;         // from BandwidthDetector
+    std::optional<std::vector<bool>> agreedMatches;         // from AssignmentStage: final assignment
+    std::optional<std::string> classLabel;                  // final reconciled label (or ONNX's direct label)
     std::optional<float> classProbability;
     std::optional<std::vector<float>> allClassProbabilities;  // New! full probability vector, N-class
     int trackingLabel = -1;

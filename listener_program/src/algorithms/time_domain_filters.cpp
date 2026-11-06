@@ -47,8 +47,8 @@ bool FIRFilter::apply()
         }
     }
 
-    // data = std::move(filtered); // OLD
-    data = filtered; // NEW - Fixed
+    // data = std::move(filtered); // Wrong! Do NOT use std::move
+    data = filtered; // Fixed (Reason: copying keeps the buffer address stable for the FFTW plan; move doesn't have this guarantee)
     return true;
 }
 
