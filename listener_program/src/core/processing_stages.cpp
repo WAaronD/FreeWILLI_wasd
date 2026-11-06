@@ -134,28 +134,31 @@ bool FrequencyDomainDetectionStage::process(std::shared_ptr<ProcessingContext> c
 
     bool detected = mFunction->detect(context->frequencyDomainData.col(0));
 
-    // IF RuCCUSFDetector, store log10 spectrum ratio
-    if (auto* ruccusF = dynamic_cast<RuCCUSFDetector*>(mFunction.get()))
+    if (detected) // If detection successful, store relevant values
     {
-        context->currentResult.log10SpectrumRatio = ruccusF->getLastSpectrumRatio();
-    }
+        // IF RuCCUSFDetector, store log10 spectrum ratio
+        if (auto* ruccusF = dynamic_cast<RuCCUSFDetector*>(mFunction.get()))
+        {
+            context->currentResult.log10SpectrumRatio = ruccusF->getLastSpectrumRatio();
+        }
 
-    // IF FPeakLocationDetector, store peak frequency, center frequency, and match vectors
-    if (auto* fpeak = dynamic_cast<FPeakLocationDetector*>(mFunction.get()))
-    {
-        context->currentResult.peakFrequency = fpeak->getLastPeakFrequency();
-        context->currentResult.centerFrequency = fpeak->getLastCenterFrequency();
-        context->currentResult.peakFreqMatches = fpeak->getLastPeakMatches();
-        context->currentResult.centerFreqMatches = fpeak->getLastCenterMatches();
-    }
+        // IF FPeakLocationDetector, store peak frequency, center frequency, and match vectors
+        if (auto* fpeak = dynamic_cast<FPeakLocationDetector*>(mFunction.get()))
+        {
+            context->currentResult.peakFrequency = fpeak->getLastPeakFrequency();
+            context->currentResult.centerFrequency = fpeak->getLastCenterFrequency();
+            context->currentResult.peakFreqMatches = fpeak->getLastPeakMatches();
+            context->currentResult.centerFreqMatches = fpeak->getLastCenterMatches();
+        }
 
-    // IF BandwidthDetector, store bandwidths (-3dB and -10-dB) and match vectors
-    if (auto* bw = dynamic_cast<BandwidthDetector*>(mFunction.get()))
-    {
-        context->currentResult.bw3dB = bw->getLastBw3dB();
-        context->currentResult.bw10dB = bw->getLastBw10dB();
-        context->currentResult.bw3dBMatches = bw->getLastBw3dBMatches();
-        context->currentResult.bw10dBMatches = bw->getLastBw10dBMatches();
+        // IF BandwidthDetector, store bandwidths (-3dB and -10-dB) and match vectors
+        if (auto* bw = dynamic_cast<BandwidthDetector*>(mFunction.get()))
+        {
+            context->currentResult.bw3dB = bw->getLastBw3dB();
+            context->currentResult.bw10dB = bw->getLastBw10dB();
+            context->currentResult.bw3dBMatches = bw->getLastBw3dBMatches();
+            context->currentResult.bw10dBMatches = bw->getLastBw10dBMatches();
+        }
     }
 
     return detected;

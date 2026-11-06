@@ -123,10 +123,10 @@ class TrackingStage : public IProcessingStage
     std::unique_ptr<Tracker> mFunction;
 };
 
-class PeakExtractionStage : public IProcessingStage
+class PeakExtractionStage : public IProcessingStage // This stage is REQUIRED before ONNX classification and must before it
 {
    public:
-    PeakExtractionStage(int numBefore = 87, int numAfter = 88);
+    explicit PeakExtractionStage(int numBefore = 87, int numAfter = 88);
     bool process(std::shared_ptr<ProcessingContext> context) override;
     std::string getName() const override;
 
@@ -135,7 +135,7 @@ class PeakExtractionStage : public IProcessingStage
     int mNumAfter;
 };
 
-class AssignmentStage : public IProcessingStage
+class AssignmentStage : public IProcessingStage // AssignmentStage: In multi-detector classification schemes, this stage must go LAST
 {
    public:
     explicit AssignmentStage(std::vector<std::string> classLabels);
@@ -145,3 +145,14 @@ class AssignmentStage : public IProcessingStage
    private:
     std::vector<std::string> mClassLabels;
 };
+
+// class TimeDomainDetectionStage : public IProcessingStage
+// {
+//    public:
+//     explicit TimeDomainDetectionStage(std::unique_ptr<ITimeDomainDetector> detector);
+//     bool process(std::shared_ptr<ProcessingContext> context) override;
+//     std::string getName() const override;
+
+//    private:
+//     std::unique_ptr<ITimeDomainDetector> mFunction;
+// };
