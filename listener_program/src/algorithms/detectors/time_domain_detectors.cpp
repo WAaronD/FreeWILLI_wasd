@@ -29,8 +29,7 @@ bool AbsPeakAmplitudeDetector::detect(const Eigen::VectorXf& timeDomainData)
 
 float AbsPeakAmplitudeDetector::getLastDetection() const { return peakAmplitude; }
 
-// RuCCUSDetector::RuCCUSDetector(float threshdet) : RuCCUSDetector(Params{threshdet, 10, 25}) {} // Old constructor, now replaced by the new one below
-RuCCUSDetector::RuCCUSDetector(float threshdet, int minExcursions, int maxExcursions) // New constructor that takes individual parameters
+RuCCUSDetector::RuCCUSDetector(float threshdet, int minExcursions, int maxExcursions)
 {
     Params p;
     p.threshdet = threshdet;
@@ -39,12 +38,12 @@ RuCCUSDetector::RuCCUSDetector(float threshdet, int minExcursions, int maxExcurs
     init_(p);
 }
 
-RuCCUSDetector::RuCCUSDetector(const Params& p) // New constructor that takes a Params struct
+RuCCUSDetector::RuCCUSDetector(const Params& p)
 {
     init_(p);
 }
 
-void RuCCUSDetector::init_(const Params& p) // New initialization function that takes a Params struct
+void RuCCUSDetector::init_(const Params& p)
 {
     mThreshdet = p.threshdet;
     mMinExcursions = p.minExcursions;
@@ -94,16 +93,15 @@ bool RuCCUSDetector::detect(const Eigen::VectorXf& data)
 
     // 7) Final decision
     bool result = (excursions >= mMinExcursions && excursions <= mMaxExcursions);
-    mLastAmplitude = result ? maxVal : 0.0f; // Changed: store real amplitude, not 1.0f/0.0f
+    mLastAmplitude = result ? maxVal : 0.0f; // store amplitude
     return result;
 }
 
-// float RuCCUSDetector::getLastDetection() const { return mLastDetection; }
-float RuCCUSDetector::getLastDetection() const { return mLastAmplitude; } // Changed: return real amplitude, not 1.0f/0.0f
+float RuCCUSDetector::getLastDetection() const { return mLastAmplitude; } // return amplitude
 
 PeakLocationDetector::PeakLocationDetector(float threshold) : mThreshold(threshold), mLastAmplitude(0.0f) {}
 
-bool PeakLocationDetector::detect(const Eigen::VectorXf& data) // Made with love by Claude
+bool PeakLocationDetector::detect(const Eigen::VectorXf& data)
 {
     // 1) Find index and value of peak (max absolute value)
     Eigen::Index idxMax;
@@ -274,14 +272,14 @@ bool SignalDurationDetector::detect(const Eigen::VectorXf& data)
     if (idx5 < mEdgeGuard || idx95 > data.size() - 1 - mEdgeGuard) return false;
 
     mLastDuration = static_cast<float>(idx95 - idx5 + 1);
-    const float durationMicroseconds = mLastDuration * 1e6f / mSampleRate;  // New!
+    const float durationMicroseconds = mLastDuration * 1e6f / mSampleRate;
 
     // 4) Check ALL bands, mark each as matched or not
     bool anyMatch = false;
     for (size_t i = 0; i < mBands.size(); ++i)
     {
         const auto& b = mBands[i];
-        if (durationMicroseconds >= b.durationMin && durationMicroseconds <= b.durationMax)  // changed
+        if (durationMicroseconds >= b.durationMin && durationMicroseconds <= b.durationMax)
         {
             mLastMatches[i] = true;
             anyMatch = true;

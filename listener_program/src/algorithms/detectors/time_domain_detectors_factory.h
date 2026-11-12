@@ -47,7 +47,7 @@ class ITimeDomainDetectorFactory
                 std::move(bands),
                 params.at("threshold").get<float>(),
                 static_cast<int>(params.value("edgeGuard", 30)),
-                params.value("sampleRate", 100000.f));  // New!
+                params.value("sampleRate", 100000.f));
         }
         else
         {

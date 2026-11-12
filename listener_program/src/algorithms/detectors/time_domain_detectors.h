@@ -38,32 +38,32 @@ class AbsPeakAmplitudeDetector : public ITimeDomainDetector
 class RuCCUSDetector : public ITimeDomainDetector
 {
    public:
-    struct Params // New!
+    struct Params
     {
-        float threshdet = 0.0f;         // threshold detection value // New!
-        int minExcursions = 10;         // minimum excursion count // New!
-        int maxExcursions = 25;         // maximum excursion count // New!
+        float threshdet = 0.0f; // threshold detection value
+        int minExcursions = 10; // minimum excursion count
+        int maxExcursions = 25; // maximum excursion count
     };
 
-    explicit RuCCUSDetector(float threshdet, int minExcursions = 10, int maxExcursions = 25); // New constructor that takes individual parameters
-    explicit RuCCUSDetector(const Params& p); // New!
+    explicit RuCCUSDetector(float threshdet, int minExcursions = 10, int maxExcursions = 25);
+    explicit RuCCUSDetector(const Params& p);
 
     bool detect(const Eigen::VectorXf& timeDomainData) override;
 
     float getLastDetection() const override;
-    float getLastExcursionCount() const { return mLastExcursions; }  // New!
+    float getLastExcursionCount() const { return mLastExcursions; }
 
    private:
-    void init_(const Params& p); // New!
+    void init_(const Params& p);
 
     float mThreshdet;
-    int mMinExcursions; // New!
-    int mMaxExcursions; // New!
-    float mLastAmplitude; // Changed from mLastDetection — now stores actual peak value
-    float mLastExcursions = 0.0f; // New!
+    int mMinExcursions;
+    int mMaxExcursions;
+    float mLastAmplitude; // stores actual peak value
+    float mLastExcursions = 0.0f;
 };
 
-class PeakLocationDetector : public ITimeDomainDetector // Made with love by Claude
+class PeakLocationDetector : public ITimeDomainDetector
 {
    public:
     explicit PeakLocationDetector(float threshold);
@@ -71,8 +71,8 @@ class PeakLocationDetector : public ITimeDomainDetector // Made with love by Cla
     float getLastDetection() const override;
 
    private:
-    float mThreshold;       // A
-    float mLastAmplitude;   // Changed from mLastDetection — now stores actual peak value
+    float mThreshold;
+    float mLastAmplitude;   // stores actual peak value
 };
 
 class CFARPeakDetector : public ITimeDomainDetector
@@ -130,7 +130,7 @@ class SignalDurationDetector : public ITimeDomainDetector
     SignalDurationDetector(std::vector<DurationBand> bands, float threshold, int edgeGuard = 30, float sampleRate = 100000.f);
 
     bool detect(const Eigen::VectorXf& timeDomainData) override;
-    float getLastDetection() const override;  // returns duration in samples
+    float getLastDetection() const override;    // returns duration in samples
     float getLastPeakAmplitude() const { return mLastPeakAmplitude; }
 
     const std::vector<bool>& getLastMatches() const { return mLastMatches; }
@@ -139,7 +139,7 @@ class SignalDurationDetector : public ITimeDomainDetector
     std::vector<DurationBand> mBands;
     float mThreshold;
     int mEdgeGuard;
-    float mSampleRate;  // New!
+    float mSampleRate;
 
     float mLastDuration = 0.0f;
     float mLastPeakAmplitude = 0.0f;

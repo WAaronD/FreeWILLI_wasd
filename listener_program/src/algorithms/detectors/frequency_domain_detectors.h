@@ -58,7 +58,7 @@ class HampelBandEnergyDetector : public IFrequencyDomainDetector
     float mLastThreshold = 0.f;
 };
 
-class RuCCUSFDetector : public IFrequencyDomainDetector // Made with love by Claude
+class RuCCUSFDetector : public IFrequencyDomainDetector
 {
    public:
     RuCCUSFDetector(float f1, float f2, float srMin, float srMax, float sampleRate = 100000.f);

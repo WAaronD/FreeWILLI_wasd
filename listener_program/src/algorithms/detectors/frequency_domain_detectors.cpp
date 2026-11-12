@@ -133,7 +133,7 @@ bool RuCCUSFDetector::detect(const Eigen::VectorXcf& X)
     if (amp1 <= 0.f) return false; // Avoid dividing by zero
 
     const float sr = std::log10(amp2 / amp1);
-    mLastSr = sr; // New!
+    mLastSr = sr;
 
     return (sr >= mSrMin) && (sr <= mSrMax);
 }
@@ -195,8 +195,8 @@ BandwidthDetector::BandwidthDetector(std::vector<BandwidthBand> bands, float sam
 {
 }
 
-namespace {
-    constexpr float kThreshRatio3dB = 0.5011872f;  // 10^(-3/10), linear power ratio
+namespace { // linear power ratios for 3dB and 10dB below peak
+    constexpr float kThreshRatio3dB = 0.5011872f;  // 10^(-3/10)
     constexpr float kThreshRatio10dB = 0.1f;       // 10^(-10/10)
 }
 
