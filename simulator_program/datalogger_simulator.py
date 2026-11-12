@@ -33,7 +33,7 @@ class ArgumentParserService:
         parser.add_argument('--data_glitch', default=0, type=int, help='Simulate data glitch at specific data chunk index')
         parser.add_argument('--tdoa_sim', nargs='?', const=0, type=int, default=False, action=TDOASimAction, help='Channel offset amount')
         parser.add_argument('--imu', action='store_true', help='Read in IMU data from file')
-        parser.add_argument('--rapid', action='store_true', help='Stream data 50x faster than real time')
+        parser.add_argument('--rapid', action='store_true', help='Stream data 10x faster than real time')
         parsedArgs = parser.parse_args()
         return parsedArgs
 
@@ -287,14 +287,7 @@ class DataSimulator:
 
                 # Send the UDP packet
                 self.socket.sendto(packet, (self.arguments.ip, self.arguments.port))
-                # print(packet)
-                # print(len(packet))
-                # # print(list(packet))
-                # chunk = packet
-                # toPrint = np.frombuffer(chunk, dtype='>u2')
-                # print(toPrint.astype(np.int32) - 32768)
-                # time.sleep(1)
-
+                
                 if isFirstRead:
                     isFirstRead = False
                     print("Transfer time (first packet):", time.time() - startTime)
