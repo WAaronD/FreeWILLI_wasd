@@ -38,10 +38,10 @@ PipelineBuilder& PipelineBuilder::addTimeDomainDetection(const nlohmann::json& p
 
 PipelineBuilder& PipelineBuilder::addTimeDomainFilter(
     const std::string& filterType, const std::string& weightsPath, const std::shared_ptr<ProcessingContext>& ctx,
-    int numChannels)
+    int numChannels, bool Ch1Only)
 {
     std::cout << "Adding TimeDomainFiltering stage to pipeline" << std::endl;
-    auto filter = ITimeDomainFiltersFactory::create(filterType, weightsPath, ctx->channelData, numChannels);
+    auto filter = ITimeDomainFiltersFactory::create(filterType, weightsPath, ctx->channelData, numChannels, Ch1Only);
     if (!filter)
     {
         throw std::runtime_error("Failed to create time-domain filter: " + filterType);

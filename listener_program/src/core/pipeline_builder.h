@@ -27,7 +27,7 @@ class PipelineBuilder
 
     PipelineBuilder& addTimeDomainFilter(
         const std::string& filterType, const std::string& weightsPath, const std::shared_ptr<ProcessingContext>& ctx,
-        int numChannels);
+        int numChannels, bool Ch1Only);
 
     PipelineBuilder& addPeakExtraction(int numBefore, int numAfter);
 

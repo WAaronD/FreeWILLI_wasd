@@ -62,7 +62,7 @@ void FlexiblePipelineFactory::executeStep(
     {
         builder.addTimeDomainFilter(
             params.at("filter").get<std::string>(), params.at("filterWeightsFile").get<std::string>(), ctx,
-            ctx->firmware->numChannels());
+            ctx->firmware->numChannels(), params.at("Ch1Only").get<bool>());
     }
     else if (step.type == "addPeakExtraction")
     {

@@ -8,11 +8,11 @@ class ITimeDomainFiltersFactory
     static std::unique_ptr<ITimeDomainFilter> create(
         const std::string& timeDomainDetector, const std::string& filterWeightsPath,
         Eigen::MatrixXf& channelData,  // pass by ref, so it can be resized if needed
-        int numChannels)
+        int numChannels, bool Ch1Only = false)
     {
         if (timeDomainDetector == "FIRFilter")
         {
-            return std::make_unique<FIRFilter>(filterWeightsPath, channelData);
+            return std::make_unique<FIRFilter>(filterWeightsPath, channelData, Ch1Only);
         }
         else
         {
