@@ -136,6 +136,10 @@ bool FrequencyDomainDetectionStage::process(std::shared_ptr<ProcessingContext> c
 
     if (detected) // If detection successful, store relevant values
     {
+
+        // std::cout << "[FreqDetection] frequencyDomainData size: " << context->frequencyDomainData.rows() // debug
+        //     << " x " << context->frequencyDomainData.cols() << std::endl;
+
         // IF RuCCUSFDetector, store log10 spectrum ratio
         if (auto* ruccusF = dynamic_cast<RuCCUSFDetector*>(mFunction.get()))
         {

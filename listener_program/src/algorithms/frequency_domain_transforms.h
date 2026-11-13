@@ -17,7 +17,8 @@ class IFrequencyDomainTransform
 class FrequencyDomainFIRFilter : public IFrequencyDomainTransform
 {
    public:
-    FrequencyDomainFIRFilter(const std::string& filterPath, Eigen::MatrixXf& channelData, int numChannels);
+    FrequencyDomainFIRFilter(const std::string& filterPath, Eigen::MatrixXf& channelData, 
+        int numChannels, bool Ch1Only = false);
     ~FrequencyDomainFIRFilter();
 
     void apply() override;
@@ -28,7 +29,8 @@ class FrequencyDomainFIRFilter : public IFrequencyDomainTransform
     void initializeFilterWeights(const std::vector<float>& filterWeights);
     void initializeFFT(Eigen::MatrixXf& channelData);
 
-    int mNumChannels;
+    int mNumChannels;          // Rows in channelData
+    int mNumChannelsToProcess; // 1 if Ch1Only, otherwise mNumChannels
     int mPaddedLength;
     int mFftOutputSize;
     Eigen::VectorXcf mFilterFreq;
@@ -41,16 +43,17 @@ class FrequencyDomainFIRFilter : public IFrequencyDomainTransform
 class FrequencyDomainTransform : public IFrequencyDomainTransform
 {
    public:
-    FrequencyDomainTransform(Eigen::MatrixXf& channelData, int numChannels) : mNumChannels(numChannels)
+    FrequencyDomainTransform(Eigen::MatrixXf& channelData, int numChannels, bool Ch1Only = false) 
+        : mNumChannels(numChannels), mNumChannelsToProcess(Ch1Only ? 1 : numChannels)
     {
         // Suppose you don't need padding, so just take channelData.cols() as is
         mPaddedLength = channelData.cols();
         mFftOutputSize = (mPaddedLength / 2) + 1;
 
-        mSavedFFTs = Eigen::MatrixXcf::Zero(mFftOutputSize, mNumChannels);
+        mSavedFFTs = Eigen::MatrixXcf::Zero(mFftOutputSize, mNumChannelsToProcess);
 
         mForwardFftPlan = fftwf_plan_many_dft_r2c(
-            1, &mPaddedLength, mNumChannels, channelData.data(), nullptr, mNumChannels, 1,
+            1, &mPaddedLength, mNumChannelsToProcess, channelData.data(), nullptr, mNumChannels, 1,
             reinterpret_cast<fftwf_complex*>(mSavedFFTs.data()), nullptr, 1, mFftOutputSize, FFTW_ESTIMATE);
     }
 
@@ -64,8 +67,9 @@ class FrequencyDomainTransform : public IFrequencyDomainTransform
     Eigen::MatrixXcf& getFrequencyDomainData() override { return mSavedFFTs; }
 
    private:
-    int mNumChannels;
-    int mPaddedLength;
+   int mNumChannels;
+   int mNumChannelsToProcess;
+   int mPaddedLength;
     int mFftOutputSize;
     fftwf_plan mForwardFftPlan = nullptr;
     Eigen::MatrixXcf mSavedFFTs;

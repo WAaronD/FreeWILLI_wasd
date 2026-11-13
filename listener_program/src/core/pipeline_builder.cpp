@@ -73,10 +73,10 @@ PipelineBuilder& PipelineBuilder::addAssignment(const std::vector<std::string>& 
 
 PipelineBuilder& PipelineBuilder::addFrequencyDomainTransform(
     const std::string& strategyType, const std::string& weightsPath, const std::shared_ptr<ProcessingContext>& ctx,
-    int numChannels)
+    int numChannels, bool Ch1Only)
 {
     std::cout << "Adding FrequencyDomainTransform stage to pipeline" << std::endl;
-    auto filter = IFrequencyDomainTransformFactory::create(strategyType, weightsPath, ctx->channelData, numChannels);
+    auto filter = IFrequencyDomainTransformFactory::create(strategyType, weightsPath, ctx->channelData, numChannels, Ch1Only);
 
     ctx->frequencyDomainData = filter->getFrequencyDomainData();
 

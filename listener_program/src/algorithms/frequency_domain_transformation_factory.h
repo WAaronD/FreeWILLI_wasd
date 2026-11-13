@@ -8,15 +8,15 @@ class IFrequencyDomainTransformFactory
     static std::unique_ptr<IFrequencyDomainTransform> create(
         const std::string& frequencyDomainStrategy, const std::string& filterWeightsPath,
         Eigen::MatrixXf& channelData,  // pass by ref, so it can be resized if needed
-        int numChannels)
+        int numChannels, bool Ch1Only = false)
     {
         if (frequencyDomainStrategy == "None")
         {
-            return std::make_unique<FrequencyDomainTransform>(channelData, numChannels);
+            return std::make_unique<FrequencyDomainTransform>(channelData, numChannels, Ch1Only);
         }
         else if (frequencyDomainStrategy == "Filter")
         {
-            return std::make_unique<FrequencyDomainFIRFilter>(filterWeightsPath, channelData, numChannels);
+            return std::make_unique<FrequencyDomainFIRFilter>(filterWeightsPath, channelData, numChannels, Ch1Only);
         }
         else
         {

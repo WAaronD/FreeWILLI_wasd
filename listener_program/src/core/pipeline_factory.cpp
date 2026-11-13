@@ -38,7 +38,7 @@ void FlexiblePipelineFactory::executeStep(
     {
         builder.addFrequencyDomainTransform(
             params.at("strategy").get<std::string>(), params.at("filterWeightsFile").get<std::string>(), ctx,
-            ctx->firmware->numChannels());
+            ctx->firmware->numChannels(), params.at("Ch1Only").get<bool>());
     }
     else if (step.type == "addONNXClassification")
     {

@@ -3,8 +3,8 @@
 #include "filter_utility_functions.h"
 
 FrequencyDomainFIRFilter::FrequencyDomainFIRFilter(
-    const std::string& filterPath, Eigen::MatrixXf& channelData, int numChannels)
-    : mNumChannels(numChannels)
+    const std::string& filterPath, Eigen::MatrixXf& channelData, int numChannels, bool Ch1Only)
+    : mNumChannels(numChannels), mNumChannelsToProcess(Ch1Only ? 1 : numChannels)
 {
     auto filterWeights = readFirFilterFile(filterPath);
     mPaddedLength = static_cast<int>(filterWeights.size() + channelData.cols() - 1);
@@ -12,7 +12,7 @@ FrequencyDomainFIRFilter::FrequencyDomainFIRFilter(
 
     channelData.conservativeResize(channelData.rows(), mPaddedLength);
     channelData.setZero();
-    mSavedFFTs = Eigen::MatrixXcf::Zero(mFftOutputSize, mNumChannels);
+    mSavedFFTs = Eigen::MatrixXcf::Zero(mFftOutputSize, mNumChannelsToProcess);
 
     initializeFilterWeights(filterWeights);
 
@@ -34,7 +34,7 @@ void FrequencyDomainFIRFilter::apply()
 
     fftwf_execute(mForwardFftPlan);
     mBeforeFilter = mSavedFFTs;
-    for (int channelIndex = 0; channelIndex < mNumChannels; ++channelIndex)
+    for (int channelIndex = 0; channelIndex < mNumChannelsToProcess; ++channelIndex)
     {
         mSavedFFTs.col(channelIndex) = mSavedFFTs.col(channelIndex).array() * mFilterFreq.array();
     }
@@ -48,7 +48,7 @@ void FrequencyDomainFIRFilter::initializeFFT(Eigen::MatrixXf& channelData)
 {
     // channelData now has the final size we need
     mForwardFftPlan = fftwf_plan_many_dft_r2c(
-        1, &mPaddedLength, mNumChannels, channelData.data(), nullptr, mNumChannels, 1,
+        1, &mPaddedLength, mNumChannelsToProcess, channelData.data(), nullptr, mNumChannels, 1,
         reinterpret_cast<fftwf_complex*>(mSavedFFTs.data()), nullptr, 1, mFftOutputSize, FFTW_ESTIMATE);
 }
 

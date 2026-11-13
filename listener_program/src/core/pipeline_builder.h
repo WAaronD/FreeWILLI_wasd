@@ -35,7 +35,7 @@ class PipelineBuilder
     
     PipelineBuilder& addFrequencyDomainTransform(
         const std::string& strategyType, const std::string& weightsPath, const std::shared_ptr<ProcessingContext>& ctx,
-        int numChannels);
+        int numChannels, bool Ch1Only);
 
     PipelineBuilder& addFrequencyDomainDetection(const nlohmann::json& params);
 
