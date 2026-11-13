@@ -68,8 +68,9 @@ void NetworkOutputHandler::initialize(const TimePoint& timestamp, int numChannel
 
     std::vector<std::string> columnNames = {
         "PeakTime", "Amplitude", "DOA_x", "DOA_y", "DOA_z", "OC", "Log10SR",
-        "SignalDuration", "PeakFreq", "CenterFreq", "ClassLabel", "ClassProb",
-        "DurationMatches", "PeakMatches", "CenterMatches", "FinalAssignment"};
+        "SignalDuration", "PeakFreq", "CenterFreq", "BW3dB", "BW10dB", "ClassLabel", "ClassProb",
+        "DurationMatches", "PeakMatches", "CenterMatches", "BW3Matches", "BW10Matches", "FinalAssignment"
+    };
 
     auto tdoaLabels = generateChannelComboLabels("TDOA", numChannels);
     auto xcorrLabels = generateChannelComboLabels("XCorr", numChannels);
@@ -108,11 +109,15 @@ void NetworkOutputHandler::handleOutput(const ProcessingContext& result)
     f.push_back(optionalToString(r.signalDuration));
     f.push_back(optionalToString(r.peakFrequency));
     f.push_back(optionalToString(r.centerFrequency));
+    f.push_back(optionalToString(r.bw3dB));
+    f.push_back(optionalToString(r.bw10dB));
     f.push_back(optionalToString(r.classLabel));
     f.push_back(optionalToString(r.classProbability));
     f.push_back(matchesToString(r.signalDurationMatches));
     f.push_back(matchesToString(r.peakFreqMatches));
     f.push_back(matchesToString(r.centerFreqMatches));
+    f.push_back(matchesToString(r.bw3dBMatches));
+    f.push_back(matchesToString(r.bw10dBMatches));
     f.push_back(matchesToString(r.agreedMatches));
 
     for (int j = 0; j < r.tdoaVector.size(); ++j) f.push_back(std::to_string(r.tdoaVector[j]));
